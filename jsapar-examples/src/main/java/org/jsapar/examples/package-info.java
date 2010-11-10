@@ -1,5 +1,5 @@
 /**
- * TODO write text :)
+ * TODO write some text :)
  * 
  * @since 2.0
  */

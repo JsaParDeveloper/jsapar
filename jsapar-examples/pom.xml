@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.jsapar</groupId>
-		<artifactId>jsapar</artifactId>
+		<artifactId>jsapar-parent</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jsapar</groupId>
@@ -24,52 +24,12 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-	<!-- TODO change to tigris.org scm: <scm> <url>http://svn.apache.org/viewcvs.cgi/maven</url> 
-		<connection>http://svn.apache.org/viewcvs.cgi/maven</connection> </scm> -->
-	<developers>
-		<developer>
-			<id>jsg</id>
-			<name>Jason Stenberg</name>
-			<roles>
-				<role>main developer</role>
-				<role>designer</role>
-			</roles>
-			<url>http://jsapar.tigris.org</url>
-		</developer>
-		<developer>
-			<id>jsapar</id>
-			<name>JsaPar Developer</name>
-			<roles>
-				<role>developer</role>
-				<role>designer</role>
-			</roles>
-		</developer>
-	</developers>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.build.timestamp.format>ddMMyyyy-HHmm</maven.build.timestamp.format>
-		<signed.jar.location>${project.build.directory}/signed/${project.build.finalName}.jar</signed.jar.location>
-		<java.version>1.6</java.version>
-		<maven.version>2.2.1</maven.version>
-		<!-- Maybe this should be handled in a profile? -->
-		<release.mode>Development</release.mode>
-	</properties>
 
 	<dependencies>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- Old version: 1.3.0-3 -->
-		<!-- New version: jsapar-lib, 2.0-SNAPSHOT -->
-		<dependency>
 			<groupId>org.jsapar</groupId>
-			<artifactId>jsapar</artifactId>
-			<version>1.3.0-3</version>
+			<artifactId>jsapar-lib</artifactId>
+			<version>2.0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 
@@ -148,7 +108,7 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
 					<descriptors>
-						<descriptor>src/main/assembly/development-assembly.xml</descriptor>
+						<descriptor>src/main/assembly/assembly-development.xml</descriptor>
 					</descriptors>
 				</configuration>
 				<executions>
