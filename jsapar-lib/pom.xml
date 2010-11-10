@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.jsapar</groupId>
+		<artifactId>jsapar</artifactId>
+		<version>2.0-SNAPSHOT</version>
+	</parent>
+	<groupId>org.jsapar</groupId>
+	<artifactId>jsapar-lib</artifactId>
+	<version>2.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>JsaPar Library</name>
+	<description>
+	  The JSaPar library that provides a parser for flat and delimited files.
+	</description>
+	<url>http://jsapar.tigris.org</url>
+	<inceptionYear>2010</inceptionYear>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<!-- TODO change to tigris.org scm: <scm> <url>http://svn.apache.org/viewcvs.cgi/maven</url> 
+		<connection>http://svn.apache.org/viewcvs.cgi/maven</connection> </scm> -->
+	<developers>
+		<developer>
+			<id>jsg</id>
+			<name>Jason Stenberg</name>
+			<roles>
+				<role>main developer</role>
+				<role>designer</role>
+			</roles>
+			<url>http://jsapar.tigris.org</url>
+		</developer>
+		<developer>
+			<id>jsapar</id>
+			<name>JsaPar Developer</name>
+			<roles>
+				<role>developer</role>
+				<role>designer</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.build.timestamp.format>ddMMyyyy-HHmm</maven.build.timestamp.format>
+		<signed.jar.location>${project.build.directory}/signed/${project.build.finalName}.jar</signed.jar.location>
+		<java.version>1.6</java.version>
+		<maven.version>2.2.1</maven.version>
+		<!-- Change this from 'Development' into 'Production' when release is made -->
+		<!-- Maybe this should be handled in a profile? -->
+		<release.mode>Development</release.mode>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+
+	<!-- TODO: add profiles for development and production -->
+
+	<build>
+		<finalName>${project.artifactId}-${project.version}</finalName>
+
+		<resources>
+			<resource>
+				<filtering>false</filtering>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<filtering>false</filtering>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>${basedir}</directory>
+				<targetPath>META-INF</targetPath>
+				<includes>
+					<include>NOTICE.TXT</include>
+					<include>LICENSE.TXT</include>
+					<include>DISCLAIMER.TXT</include>
+					<include>README.TXT</include>
+				</includes>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<filtering>false</filtering>
+				<directory>src/test/java</directory>
+				<includes>
+					<include>**</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</testResource>
+		</testResources>
+
+		<plugins>
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>src/main/assembly/development-assembly.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- This plugin should ONLY be used in an production profile and NOT 
+				for local development builds, because of the duration of recompiling all 
+				classes!! -->
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>auto-clean</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>enforce-versions</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>${maven.version}</version>
+								</requireMavenVersion>
+								<requireJavaVersion>
+									<version>${java.version}</version>
+								</requireJavaVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<!-- <alias>${keystore.alias}</alias> <keystore>${keystore.location}</keystore> 
+						<storepass>${keystore.password}</storepass> <signedjar>${signed.jar.location}</signedjar> 
+						<verify>true</verify> -->
+					<!-- Text within the archive-tag is included in the MANIFEST.MF file 
+						in the generated META-INF directory -->
+					<archive>
+						<addMavenDescriptor>false</addMavenDescriptor>
+						<compress>true</compress>
+						<forced>true</forced>
+						<index>false</index>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<addDefaultImplementationEntries>false</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>false</addDefaultSpecificationEntries>
+							<addExtensions>false</addExtensions>
+							<mainClass>org.jsapar.io.FilterConverterMain</mainClass>
+						</manifest>
+						<manifestEntries>
+							<Specification-Title>${project.name}</Specification-Title>
+							<Specification-Version>${project.version}</Specification-Version>
+							<Specification-Vendor>${project.organization.name}</Specification-Vendor>
+							<Implementation-Title>${project.name}</Implementation-Title>
+							<Implementation-Version>${project.version}</Implementation-Version>
+							<Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
+							<Implementation-Vendor-Id>org.apache</Implementation-Vendor-Id>
+							<X-Compile-Source-JDK>${maven.compile.source}</X-Compile-Source-JDK>
+							<X-Compile-Target-JDK>${maven.compile.target}</X-Compile-Target-JDK>
+							<Implementation-Vendor-Website>${project.url}</Implementation-Vendor-Website>
+							<Release-Mode>${release.mode}</Release-Mode>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+
+
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>javadoc-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<!-- switch on/off dependency-driven aggregation -->
+							<includeDependencySources>false</includeDependencySources>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>attach-javadocs</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+
+					<execution>
+						<id>resource-bundles</id>
+						<phase>package</phase>
+						<goals>
+							<!-- produce source artifact for main project sources -->
+							<goal>resource-bundle</goal>
+						</goals>
+						<configuration>
+							<detectOfflineLinks>false</detectOfflineLinks>
+						</configuration>
+					</execution>
+				</executions>
+				<configuration>
+					<show>public</show>
+				</configuration>
+			</plugin>
+
+			<!-- Resources options -->
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-resources-plugin</artifactId> 
+				<version>2.4.3</version> <executions> <execution> <id>copy-resources</id> 
+				<phase>validate</phase> <goals> <goal>copy-resources</goal> </goals> <configuration> 
+				<outputDirectory>${basedir}/target/extra-resources</outputDirectory> <resources> 
+				<resource> <directory>src/main/resources</directory> <filtering>true</filtering> 
+				</resource> </resources> </configuration> </execution> </executions> </plugin> -->
+
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Jar signer -->
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-jarsigner-plugin</artifactId> 
+				<version>1.2</version> <executions> <execution> <id>sign</id> <goals> <goal>sign</goal> 
+				</goals> </execution> <execution> <id>verify</id> <goals> <goal>verify</goal> 
+				</goals> </execution> </executions> <configuration> <alias>${keystore.alias}</alias> 
+				<keypass>${keystore.password}</keypass> <storepass>${keystore.passphrase}</storepass> 
+				</configuration> </plugin> -->
+
+			<!-- GPG options: Signing the artifacts with GnuPG -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Surefire options: running the junit tests -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skip>false</skip>
+				</configuration>
+			</plugin>
+
+			<!-- TODO: -->
+
+			<!-- Release options: -->
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-release-plugin</artifactId> 
+				<version>2.0</version> <configuration> <tagBase>https://svn.apache.org/repos/asf/maven/components/releases</tagBase> 
+				</configuration> </plugin> -->
+
+		</plugins>
+	</build>
+</project>
