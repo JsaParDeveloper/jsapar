@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.jsapar</groupId>
-		<artifactId>jsapar</artifactId>
+		<artifactId>jsapar-parent</artifactId>
 		<version>2.0-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jsapar</groupId>
@@ -13,7 +13,7 @@
 	<packaging>jar</packaging>
 	<name>JsaPar Library</name>
 	<description>
-	  The JSaPar library that provides a parser for flat and delimited files.
+	  The JSaPar library that provides tools for working with flat and delimited files.
 	</description>
 	<url>http://jsapar.tigris.org</url>
 	<inceptionYear>2010</inceptionYear>
@@ -24,48 +24,6 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-	<!-- TODO change to tigris.org scm: <scm> <url>http://svn.apache.org/viewcvs.cgi/maven</url> 
-		<connection>http://svn.apache.org/viewcvs.cgi/maven</connection> </scm> -->
-	<developers>
-		<developer>
-			<id>jsg</id>
-			<name>Jason Stenberg</name>
-			<roles>
-				<role>main developer</role>
-				<role>designer</role>
-			</roles>
-			<url>http://jsapar.tigris.org</url>
-		</developer>
-		<developer>
-			<id>jsapar</id>
-			<name>JsaPar Developer</name>
-			<roles>
-				<role>developer</role>
-				<role>designer</role>
-			</roles>
-		</developer>
-	</developers>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.build.timestamp.format>ddMMyyyy-HHmm</maven.build.timestamp.format>
-		<signed.jar.location>${project.build.directory}/signed/${project.build.finalName}.jar</signed.jar.location>
-		<java.version>1.6</java.version>
-		<maven.version>2.2.1</maven.version>
-		<!-- Change this from 'Development' into 'Production' when release is made -->
-		<!-- Maybe this should be handled in a profile? -->
-		<release.mode>Development</release.mode>
-	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-
 
 	<!-- TODO: add profiles for development and production -->
 
@@ -112,12 +70,11 @@
 		</testResources>
 
 		<plugins>
-
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
 					<descriptors>
-						<descriptor>src/main/assembly/development-assembly.xml</descriptor>
+						<descriptor>src/main/assembly/assembly-development.xml</descriptor>
 					</descriptors>
 				</configuration>
 				<executions>
@@ -256,7 +213,7 @@
 			</plugin>
 
 			<!-- Resources options -->
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-resources-plugin</artifactId> 
+			<!-- <plugin> <artifactId>maven-resources-plugin</artifactId> 
 				<version>2.4.3</version> <executions> <execution> <id>copy-resources</id> 
 				<phase>validate</phase> <goals> <goal>copy-resources</goal> </goals> <configuration> 
 				<outputDirectory>${basedir}/target/extra-resources</outputDirectory> <resources> 
@@ -277,7 +234,7 @@
 			</plugin>
 
 			<!-- Jar signer -->
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-jarsigner-plugin</artifactId> 
+			<!-- <plugin> <artifactId>maven-jarsigner-plugin</artifactId> 
 				<version>1.2</version> <executions> <execution> <id>sign</id> <goals> <goal>sign</goal> 
 				</goals> </execution> <execution> <id>verify</id> <goals> <goal>verify</goal> 
 				</goals> </execution> </executions> <configuration> <alias>${keystore.alias}</alias> 
@@ -286,7 +243,6 @@
 
 			<!-- GPG options: Signing the artifacts with GnuPG -->
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
 				<version>1.1</version>
 				<executions>
@@ -302,7 +258,6 @@
 
 			<!-- Surefire options: running the junit tests -->
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<skip>false</skip>
@@ -312,7 +267,7 @@
 			<!-- TODO: -->
 
 			<!-- Release options: -->
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-release-plugin</artifactId> 
+			<!-- <plugin> <artifactId>maven-release-plugin</artifactId> 
 				<version>2.0</version> <configuration> <tagBase>https://svn.apache.org/repos/asf/maven/components/releases</tagBase> 
 				</configuration> </plugin> -->
 
