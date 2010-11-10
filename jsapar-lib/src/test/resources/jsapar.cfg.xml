@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsaparsettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="jsapar.cfg.xsd">
+  <errorhandling>
+    <parser>
+      <exception-threshold>0</exception-threshold>
+      <build-error-resultset>false</build-error-resultset>
+    </parser>
+    <composer>
+      <exception-threshold>0</exception-threshold>
+      <build-error-resultset>true</build-error-resultset>
+    </composer>
+  </errorhandling>
+  <schemas>
+    <schema name="test" location="/tst-format.xml"/>
+  </schemas>
+</jsaparsettings>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified">
+
+	<!--
+		<xs:schema xmlns="http://www.w3.org/2001/XMLSchema"
+		targetNamespace="http://jsapar.tigris.org/jsaparschema/jsapar.cfg/2.0"
+		xmlns:tns="http://jsapar.tigris.org/jsaparschema/jsapar.cfg/2.0"
+		elementFormDefault="qualified">
+	-->
+
+	<!-- ============ -->
+	<!-- ROOT ELEMENT -->
+	<!-- ============ -->
+	<xs:element name="jsaparsettings">
+		<xs:annotation>
+			<xs:documentation>
+				The root element of the jsapar configuration file.
+			</xs:documentation>
+		</xs:annotation>
+		<!-- =========================== -->
+		<!-- JSAPAR SETTINGS DEFINITIONS -->
+		<!-- =========================== -->
+		<!--
+			Needs to be an anonymous complex type otherwise no @XmlRootElement is
+			added to the generated class.
+		-->
+		<!-- =========================== -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="errorhandling" type="errorHandlingType"
+					minOccurs="0" maxOccurs="1" nillable="false">
+					<xs:annotation>
+						<xs:documentation>
+							The error-handling element. Indicates what kind
+							of errors should be handled and how to handle them.
+							When absent,
+							the defaults are used.
+					</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+
+				<xs:element name="schemas" type="schemasType" minOccurs="0"
+					maxOccurs="1" nillable="false">
+					<xs:annotation>
+						<xs:documentation>
+							The schemas element. Indicates the
+							location of
+							the
+							schema resources.
+					</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<!-- ========================= -->
+	<!-- ERRORHANDLING DEFINITIONS -->
+	<!-- ========================= -->
+	<xs:complexType name="errorHandlingType">
+		<xs:sequence>
+			<xs:element name="parser" type="errorHandlingValuesType"
+				minOccurs="0" maxOccurs="1" nillable="false" />
+			<xs:element name="composer" type="errorHandlingValuesType"
+				minOccurs="0" maxOccurs="1" nillable="false" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="errorHandlingValuesType">
+		<xs:sequence>
+			<xs:element name="exception-threshold" type="xs:decimal"
+				minOccurs="0" maxOccurs="1" nillable="false" default="5">
+				<xs:annotation>
+					<xs:documentation>
+						The exception-threshold element. Indicates the
+						number of errors that may occur before a JsaParException
+						will be
+						thrown.
+						When this threshold is exceeded, it makes no sense to
+						continue with the current process: just quit this process
+						and
+						notice the library user by throwing a JsaParException.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="build-error-resultset" type="xs:boolean"
+				minOccurs="0" maxOccurs="1" nillable="false" default="true">
+				<xs:annotation>
+					<xs:documentation>
+						The build-error-resultset element. Indicates
+						whether an error
+						resultset should be constructed or not. When the
+						library user
+						is not
+						interested in the actual resultset itself, but
+						only want
+						to know if the source/target was successfully processed
+						or not,
+						the internal construction of this resultset can be skipped.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- ========================= -->
+	<!-- JSAPAR SCHEMA DEFINITIONS -->
+	<!-- ========================= -->
+	<xs:complexType name="schemasType">
+		<xs:annotation>
+			<xs:documentation>
+				The jsapar schema specification is used to
+				include
+				schemas so that the JsaPar library
+				is initialized with these schemas
+				so the user doesn't have to specify them
+				dynamically.
+				This is
+				especially useful when the files are in a fixed
+				location, like on a
+				server.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="schema" type="schemaSource" minOccurs="0"
+				maxOccurs="unbounded" nillable="false">
+				<xs:annotation>
+					<xs:documentation>
+						The schema element. Specifies the schema.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="schemaSource">
+		<xs:attribute name="name" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					The name attribute. Indicates a name of
+					specified
+					schema.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="location" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					The resource attribute. Indicates the location of
+					specified schema.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+</xs:schema>

@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://jsapar.tigris.org/JSaParSchema/2.0" xmlns="http://jsapar.tigris.org/JSaParSchema/2.0"
+	elementFormDefault="qualified">
+
+	<!-- ============ -->
+	<!-- ROOT ELEMENT -->
+	<!-- ============ -->
+	<xs:element name="schema">
+		<xs:annotation>
+			<xs:documentation>
+				The root element for the document definition file.
+			</xs:documentation>
+		</xs:annotation>
+		<!-- ================== -->
+		<!-- SCHEMA DEFINITIONS -->
+		<!-- ================== -->
+		<!--
+			Needs to be an anonymous complex type otherwise no @XmlRootElement is
+			added to the generated class.
+		-->
+		<!-- ==================== -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="document" type="schemaType"
+					minOccurs="1" maxOccurs="unbounded" nillable="false">
+					<xs:annotation>
+						<xs:documentation>
+							The document element.
+					</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="schemaType">
+		<xs:sequence>
+			<xs:element name="locale" type="Locale" minOccurs="0"
+				maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The locale specifies how numbers and dates
+						should
+						be parsed.
+						The default is to use the system default locale,
+						i.e. the
+						locale of the operating system.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="paragraph" type="paragraphType"
+				minOccurs="1" maxOccurs="unbounded" nillable="false">
+				<xs:annotation>
+					<xs:documentation>
+						The paragraph element which specifies the rules
+						in a particular part of the document. 
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>
+					The id attribute: An unique id that identifies
+					this particular document definition. All document definition must
+					have a unique id, otherwise the library can not distinguish the
+					documents.
+					This should be checked in Java (duplicates)!
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="default-lineseparator" type="xs:string"
+			use="required">
+			<xs:annotation>
+				<xs:documentation>
+					Specifies the default line separator (a sequence
+					of characters that separates each line) for ALL the lines in the
+					given source document.
+					This line separator can be overruled by the
+					delimitedContentType line separator or by the fixedwidthContentType
+					line separator.
+					Default is the system default line separator
+					characters. To specify control
+					characters, use xml syntax e.g.
+					&amp;#13; = \n and
+					&amp;#10; = \r.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<!-- ===================== -->
+	<!-- PARAGRAPH DEFINITIONS -->
+	<!-- ===================== -->
+	<xs:complexType name="paragraphType">
+		<xs:choice>
+			<xs:element name="delimited" type="delimitedContentType"
+				minOccurs="1" maxOccurs="1" />
+			<xs:element name="fixedwidth" type="fixedwidthContentType"
+				minOccurs="1" maxOccurs="1" />
+		</xs:choice>
+		<xs:attribute name="name" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>
+					Specifies the name of the paragraph.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="type" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					Specifies the structure of a combination of lines.
+				</xs:documentation>
+			</xs:annotation>
+			<!--
+				how to deal with paragraphs? is this the way to deal with
+				master-detail?
+			-->
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="master" />
+					<xs:enumeration value="detail" />
+					<xs:enumeration value="single" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+
+	<!-- =================== -->
+	<!-- CONTENT DEFINITIONS -->
+	<!-- =================== -->
+	<xs:complexType name="baseContentType">
+		<xs:annotation>
+			<xs:documentation>
+				The base content type: delimited content type and
+				fixed width content type derive from this base.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="lineseparator" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					Specifies the default line separator for lines in
+					the given source document.
+					Overrides the document line separator
+					when specified.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="delimitedContentType">
+		<xs:complexContent>
+			<xs:extension base="baseContentType">
+				<xs:sequence>
+					<xs:element name="line" type="delimitedLineType"
+						minOccurs="1" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>
+								Specifies the structure of the delimited line.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="fixedwidthContentType">
+		<xs:complexContent>
+			<xs:extension base="baseContentType">
+				<xs:sequence>
+					<xs:element name="line" type="fixedwidthLineType"
+						minOccurs="1" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>
+								Specifies the structure of the fixed width
+								line.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<!-- ================ -->
+	<!-- LINE DEFINITIONS -->
+	<!-- ================ -->
+	<xs:complexType name="baseLineType">
+		<xs:attribute name="occurs" use="required">
+			<!-- TODO why does 'occurs' have no relation to master-detail? -->
+			<!-- why only occurs and not min/max occurs -->
+			<xs:annotation>
+				<xs:documentation>
+					Specifies how many times this type of line occurs.
+					A '*' character denotes that it occurs infinitely amount of times
+					until the end of input buffer is reached.
+				</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="[0-9]*|\*" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+
+		<xs:attribute name="linetype" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					todo
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<!-- in jsapar 1.3 this is called linetypecontrolvalue -->
+		<!--
+			why not call it controlstring: after all it could be more chars than
+			one
+		-->
+		<xs:attribute name="linetype-controlcharacter" type="xs:string"
+			use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					Specifies the control character of the line. Can
+					be one or more characters long.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<!--
+			why call this: ignoreREADemptylines? the line is read anyway (how do
+			you know it's empty?), so this text doesn't fit the bill.
+		-->
+		<xs:attribute name="ignore-emptylines" type="xs:boolean"
+			use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					todo
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="delimitedLineType">
+		<xs:complexContent>
+			<xs:extension base="baseLineType">
+				<xs:sequence>
+					<xs:element name="cell" type="delimitedCellType"
+						minOccurs="1" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>
+								The cell definition. 
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="cellseparator" type="xs:string"
+					use="optional">
+					<xs:annotation>
+						<xs:documentation>
+							todo
+				</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="fixedwidthLineType">
+		<xs:complexContent>
+			<xs:extension base="baseLineType">
+				<xs:sequence>
+					<xs:element name="cell" type="fixedwidthCellType"
+						minOccurs="1" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>
+								The cell definition. 
+					</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="trimfillcharacters" type="xs:boolean">
+					<xs:annotation>
+						<xs:documentation>
+							todo
+				</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<!-- What extra attributes must go here? -->
+				<xs:attribute name="linetype-controlcharacter-position"
+					type="xs:integer">
+					<xs:annotation>
+						<xs:documentation>
+							todo
+				</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<!-- ================ -->
+	<!-- CELL DEFINITIONS -->
+	<!-- ================ -->
+	<xs:complexType name="baseCellType">
+		<xs:sequence>
+			<xs:element name="format" type="CellFormatType" minOccurs="0"
+				maxOccurs="1">
+			</xs:element>
+			<xs:element name="range" type="CellValueRangeType"
+				minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Not used in current version!! Specifies a valid
+						range for the cell value.
+	  				</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" maxOccurs="1" name="locale"
+				type="Locale">
+				<xs:annotation>
+					<xs:documentation>
+						The locale of this cell. Overrides the locale
+						setting fot the whole schema.
+  					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					The name of the cell. The name is referenced by
+					the objects. also used in toString method.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<!-- in jsapar 1.3 this celltype was called type -->
+		<xs:attribute name="celltype" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					Specifies the type of the cell. Use enumaration.
+					What if custom type? 
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="default-value" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					The name of the cell. The name is referenced by
+					the objects. also used in toString method.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ignore" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					Specifies if the cell should be ignored (that is:
+					no memory representation as a Cell object). Default is false.
+					"ignoreread" -> this is an impossible name because the Reader
+					traverses over the file, and reads also this 'cell'.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="mandatory" type="xs:boolean" use="optional"
+			default="false">
+			<xs:annotation>
+				<xs:documentation>
+					Specifies whether the value of this cell can be
+					absent or not.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<!-- extra attribute for delimited files -->
+	<xs:complexType name="delimitedCellType">
+		<xs:complexContent>
+			<xs:extension base="baseCellType">
+				<xs:attribute name="cellposition" type="xs:boolean"
+					use="required">
+					<xs:annotation>
+						<xs:documentation>
+							todo
+				</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="unquote" type="xs:boolean" use="required">
+					<xs:annotation>
+						<xs:documentation>
+							Specifies whether the quotes, single or double
+							quotes, of a cell value should be stripped from the result.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<!-- extra attributes for fixedwidth files -->
+	<xs:complexType name="fixedwidthCellType">
+		<xs:complexContent>
+			<xs:extension base="baseCellType">
+				<xs:attribute name="startposition" type="xs:integer"
+					use="required">
+					<xs:annotation>
+						<xs:documentation>
+							By specifying a start position within the cell,
+							there is no need for ordering the cell elements in the xml,
+							because
+							the start position of the cell gives the correct
+							order in
+							the line.
+							Sorting of the elements must be done in JAVA!
+							Otherwise
+							the
+							traversing of the cell objects is time consuming.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="length" type="xs:integer" use="optional">
+					<xs:annotation>
+						<xs:documentation>
+							After xml validation has been done, the length
+							and
+							startposition elements must be checked if they do not overlap.
+							Otherwise error in documentdefinition file!
+				</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<!-- ====================== -->
+	<!-- FORMATTING DEFINITIONS -->
+	<!-- ====================== -->
+	<xs:complexType name="CellFormatType">
+		<xs:attribute name="type" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					The type of the cell. Default is "string". Have
+					to
+					be one of the following:
+					string
+					date
+					decimal
+					integer
+					float
+					boolean
+					Note
+					that the number formats are parsed according to the specified
+					locale.
+				</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="string" />
+					<xs:enumeration value="date" />
+					<xs:enumeration value="decimal" />
+					<xs:enumeration value="integer" />
+					<xs:enumeration value="float" />
+					<xs:enumeration value="boolean" />
+					<xs:enumeration value="character" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="pattern" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>* If the type is string then the pattern should
+					contain a regular expression to which the value is validated
+					against. This only works while parsing.
+					* If the type is any of the
+					numerical types, then the pattern should
+					be described according to
+					the java.text.DecimalFormat
+					(http://java.sun.com/javase/6/docs/api/java/text/DecimalFormat.html).
+					* If the type is date, then the pattern should be described
+					according to java.text.SimpleDateFormat
+					(http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="CellValueRangeType">
+		<xs:annotation>
+			<xs:documentation>Not used yet!!
+
+				Contains a range for a cell value.
+				The format of the min and max attribute
+				are the same as for the
+				parsing of the cell values.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="min" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>The smallest value allowed for this cell.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="max" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>The largest value allowed for this cell.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<!-- =============== -->
+	<!-- LOCALE SETTINGS -->
+	<!-- =============== -->
+	<xs:complexType name="Locale">
+		<xs:attribute name="language" use="required">
+			<xs:annotation>
+				<xs:documentation>A valid ISO Language Code. These codes are the
+					lower-case, two-letter codes as defined by ISO-639. You can find a
+					full list of these codes at a number of sites, such as:
+					http://www.loc.gov/standards/iso639-2/englangn.html
+				</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="[a-z]{2,3}" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="country" use="optional">
+			<xs:annotation>
+				<xs:documentation>A valid ISO Country Code. These codes are the
+					upper-case, two-letter codes as defined by ISO-3166. You can find a
+					full list of these codes at a number of sites, such as:
+					http://www.iso.ch/iso/en/prods-services/iso3166ma/02iso-3166-code-lists/list-en1.html
+				</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="[A-Z]{2}" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+</xs:schema>

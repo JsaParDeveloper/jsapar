@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Default settings of the JsaPar Library Configuration -->
+<jsaparsettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="jsapar.cfg.xsd">
+  <errorhandling>
+    <parser>
+      <exception-threshold>5</exception-threshold>
+      <build-error-resultset>true</build-error-resultset>
+    </parser>
+    <composer>
+      <exception-threshold>5</exception-threshold>
+      <build-error-resultset>true</build-error-resultset>
+    </composer>
+  </errorhandling>
+</jsaparsettings>

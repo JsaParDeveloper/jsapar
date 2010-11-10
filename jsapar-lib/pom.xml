@@ -25,16 +25,33 @@
 		</license>
 	</licenses>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<!-- JAXB Plugin -->
+		<dependency>
+			<groupId>org.jvnet.jaxb2_commons</groupId>
+			<artifactId>jaxb2-basics-runtime</artifactId>
+			<version>0.6.0</version>
+		</dependency>
+	</dependencies>
+
 	<!-- TODO: add profiles for development and production -->
 
 	<build>
 		<finalName>${project.artifactId}-${project.version}</finalName>
 
 		<resources>
+			<!-- Configuration and file resources -->
 			<resource>
 				<filtering>false</filtering>
 				<directory>src/main/resources</directory>
 			</resource>
+			<!-- Java class resources -->
 			<resource>
 				<filtering>false</filtering>
 				<directory>src/main/java</directory>
@@ -45,6 +62,19 @@
 					<exclude>**/*.java</exclude>
 				</excludes>
 			</resource>
+			<!-- XML Schema resources -->
+			<resource>
+				<filtering>false</filtering>
+				<directory>src/main/schema</directory>
+				<includes>
+					<include>**/*.xml</include>
+					<include>**/*.xsd</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+			<!-- Legal disclaimer resources -->
 			<resource>
 				<directory>${basedir}</directory>
 				<targetPath>META-INF</targetPath>
@@ -57,6 +87,7 @@
 			</resource>
 		</resources>
 		<testResources>
+			<!-- Test class resources -->
 			<testResource>
 				<filtering>false</filtering>
 				<directory>src/test/java</directory>
@@ -70,43 +101,18 @@
 		</testResources>
 
 		<plugins>
-		
-			<!-- Only in production profile!
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptors>
-						<descriptor>src/main/assembly/assembly-development.xml</descriptor>
-					</descriptors>
-				</configuration>
-				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
--->
+
+			<!-- Only in production profile! <plugin> <artifactId>maven-assembly-plugin</artifactId> 
+				<configuration> <descriptors> <descriptor>src/main/assembly/assembly-development.xml</descriptor> 
+				</descriptors> </configuration> <executions> <execution> <id>make-assembly</id> 
+				<phase>package</phase> <goals> <goal>single</goal> </goals> </execution> 
+				</executions> </plugin> -->
 			<!-- This plugin should ONLY be used in an production profile and NOT 
 				for local development builds, because of the duration of recompiling all 
 				classes!! -->
-				<!--
-			<plugin>
-				<artifactId>maven-clean-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>auto-clean</id>
-						<phase>initialize</phase>
-						<goals>
-							<goal>clean</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
--->
+			<!-- <plugin> <artifactId>maven-clean-plugin</artifactId> <executions> 
+				<execution> <id>auto-clean</id> <phase>initialize</phase> <goals> <goal>clean</goal> 
+				</goals> </execution> </executions> </plugin> -->
 			<plugin>
 				<artifactId>maven-enforcer-plugin</artifactId>
 				<executions>
@@ -128,6 +134,100 @@
 					</execution>
 				</executions>
 			</plugin>
+
+
+			<!-- JAXB2 PLUGIN -->
+			<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb2-plugin</artifactId>
+				<version>0.7.4</version>
+				<executions>
+					<execution>
+						<id>generate-cfg</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<schemaDirectory>src/main/schema/cfg</schemaDirectory>
+							<schemaIncludes>
+								<include>jsapar.cfg.xsd</include>
+							</schemaIncludes>
+							<bindingDirectory>src/main/schema/cfg</bindingDirectory>
+							<generatePackage>org.jsapar.schema.cfg</generatePackage>
+							<generateDirectory>src/main/generated/cfg</generateDirectory>
+							<!-- Watch out with setting the removeOldOutput to TRUE! -->
+							<!-- Only set this to TRUE when generateDirectories are DIFFERENT! -->
+							<removeOldOutput>true</removeOldOutput>
+							<extension>true</extension>
+							<args>
+								<arg>-Xequals</arg>
+								<!-- We need a custom equalsStrategy! -->
+								<!--
+									<arg>-Xequals-equalsStrategyClass=org.jsapar.schema.cfg.CustomEqualsStrategy</arg>
+								-->
+								<arg>-XhashCode</arg>
+								<arg>-Xsetters</arg>
+								<!-- Do not generate package-info.java file -->
+								<param>-npa</param>
+							</args>
+
+							<plugins>
+								<plugin>
+									<groupId>org.jvnet.jaxb2_commons</groupId>
+									<artifactId>jaxb2-basics</artifactId>
+									<version>0.6.0</version>
+								</plugin>
+							</plugins>
+							<!-- generate lots of output -->
+							<verbose>true</verbose>
+						</configuration>
+					</execution>
+					<execution>
+						<id>generate-schema</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<schemaDirectory>src/main/schema/doc</schemaDirectory>
+							<schemaIncludes>
+								<include>jsapar.doc.xsd</include>
+							</schemaIncludes>
+							<bindingDirectory>src/main/schema/doc</bindingDirectory>
+							<generatePackage>org.jsapar.schema.doc</generatePackage>
+							<generateDirectory>src/main/generated/doc</generateDirectory>
+							<!-- Watch out with setting the removeOldOutput to TRUE! -->
+							<!-- Only set this to TRUE when generateDirectories are DIFFERENT! -->
+							<removeOldOutput>true</removeOldOutput>
+							<extension>true</extension>
+							<!--
+								See:
+								http://confluence.highsource.org/display/J2B/JAXB2+Basics+Plugins
+							-->
+							<args>
+								<!-- Do not generate package-info.java file -->
+								<param>-npa</param>
+								<!-- Implement the factories when needed for ToString and others -->
+								<!-- <arg>-Xequals</arg> -->
+								<!-- <arg>-XhashCode</arg> -->
+								<!-- <arg>-XtoString</arg> -->
+								<!-- <arg>-Xcopyable</arg> -->
+								<!-- <arg>-Xinheritance</arg> -->
+								<!-- <arg>-Xsetters</arg> -->
+							</args>
+							<plugins>
+								<plugin>
+									<groupId>org.jvnet.jaxb2_commons</groupId>
+									<artifactId>jaxb2-basics</artifactId>
+									<version>0.6.0</version>
+								</plugin>
+							</plugins>
+							<!-- generate lots of output -->
+							<verbose>true</verbose>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
 
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -216,11 +316,10 @@
 			</plugin>
 
 			<!-- Resources options -->
-			<!-- <plugin> <artifactId>maven-resources-plugin</artifactId> 
-				<version>2.4.3</version> <executions> <execution> <id>copy-resources</id> 
-				<phase>validate</phase> <goals> <goal>copy-resources</goal> </goals> <configuration> 
-				<outputDirectory>${basedir}/target/extra-resources</outputDirectory> <resources> 
-				<resource> <directory>src/main/resources</directory> <filtering>true</filtering> 
+			<!-- <plugin> <artifactId>maven-resources-plugin</artifactId> <version>2.4.3</version> 
+				<executions> <execution> <id>copy-resources</id> <phase>validate</phase> 
+				<goals> <goal>copy-resources</goal> </goals> <configuration> <outputDirectory>${basedir}/target/extra-resources</outputDirectory> 
+				<resources> <resource> <directory>src/main/resources</directory> <filtering>true</filtering> 
 				</resource> </resources> </configuration> </execution> </executions> </plugin> -->
 
 			<plugin>
@@ -237,29 +336,17 @@
 			</plugin>
 
 			<!-- Jar signer -->
-			<!-- <plugin> <artifactId>maven-jarsigner-plugin</artifactId> 
-				<version>1.2</version> <executions> <execution> <id>sign</id> <goals> <goal>sign</goal> 
-				</goals> </execution> <execution> <id>verify</id> <goals> <goal>verify</goal> 
-				</goals> </execution> </executions> <configuration> <alias>${keystore.alias}</alias> 
+			<!-- <plugin> <artifactId>maven-jarsigner-plugin</artifactId> <version>1.2</version> 
+				<executions> <execution> <id>sign</id> <goals> <goal>sign</goal> </goals> 
+				</execution> <execution> <id>verify</id> <goals> <goal>verify</goal> </goals> 
+				</execution> </executions> <configuration> <alias>${keystore.alias}</alias> 
 				<keypass>${keystore.password}</keypass> <storepass>${keystore.passphrase}</storepass> 
 				</configuration> </plugin> -->
 
 			<!-- GPG options: Signing the artifacts with GnuPG -->
-			<!-- Only to be used in the prodcution profile!
-			<plugin>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.1</version>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
--->
+			<!-- Only to be used in the prodcution profile! <plugin> <artifactId>maven-gpg-plugin</artifactId> 
+				<version>1.1</version> <executions> <execution> <id>sign-artifacts</id> <phase>verify</phase> 
+				<goals> <goal>sign</goal> </goals> </execution> </executions> </plugin> -->
 			<!-- Surefire options: running the junit tests -->
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -271,8 +358,8 @@
 			<!-- TODO: -->
 
 			<!-- Release options: -->
-			<!-- <plugin> <artifactId>maven-release-plugin</artifactId> 
-				<version>2.0</version> <configuration> <tagBase>https://svn.apache.org/repos/asf/maven/components/releases</tagBase> 
+			<!-- <plugin> <artifactId>maven-release-plugin</artifactId> <version>2.0</version> 
+				<configuration> <tagBase>https://svn.apache.org/repos/asf/maven/components/releases</tagBase> 
 				</configuration> </plugin> -->
 
 		</plugins>
