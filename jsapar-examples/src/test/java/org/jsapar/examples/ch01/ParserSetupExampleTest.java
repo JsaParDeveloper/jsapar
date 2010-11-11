@@ -1,5 +1,8 @@
 package org.jsapar.examples.ch01;
 
+import org.junit.Test;
+
+
 /**
  * TODO test class for first example.
  * 
@@ -7,4 +10,8 @@ package org.jsapar.examples.ch01;
  */
 public class ParserSetupExampleTest {
 
+    @Test
+    public void doSometesting() {
+        
+    }
 }
