@@ -16,6 +16,13 @@
 	</description>
 
 	<dependencies>
+		<!-- Needed for JFileHelpers library -->
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.3</version>
+		</dependency>
+
 		<!-- Add your own project dependencies here -->
 	</dependencies>
 </project>
