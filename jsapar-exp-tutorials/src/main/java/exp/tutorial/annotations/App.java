@@ -1,4 +1,4 @@
-package org.jsapar;
+package exp.tutorial.annotations;
 
 public class App {
 

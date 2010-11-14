@@ -1,8 +1,10 @@
-package org.jsapar;
+package exp.tutorial.annotations;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import exp.tutorial.annotations.App;
 
 /**
  * The class <code>AppTest</code> contains tests for the class <code>{@link App}</code>.
