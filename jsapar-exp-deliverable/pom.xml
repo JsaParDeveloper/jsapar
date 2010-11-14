@@ -1,0 +1,16 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.jsapar</groupId>
+	<artifactId>jsapar-exp-deliverable</artifactId>
+	<packaging>jar</packaging>
+	<version>2.0-SNAPSHOT</version>
+	<name>Playground: Deliverable</name>
+	<description>
+	   The jsapar-exp-deliverable project is used to make a transition from the playground/experimental branch into the official jsapar 2.0 branch.
+	</description>
+
+	<dependencies>
+		<!-- Add your own project dependencies here -->
+	</dependencies>
+</project>
