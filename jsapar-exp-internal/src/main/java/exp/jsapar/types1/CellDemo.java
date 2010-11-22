@@ -1,4 +1,4 @@
-package exp.jsapar.types;
+package exp.jsapar.types1;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
