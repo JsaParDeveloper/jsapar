@@ -107,6 +107,8 @@ public class Document implements Iterable<Paragraph>, Serializable, Cloneable {
 		return paragraph;
 	}
 
+    // public int getNumberOfParagraphs() {}
+	
 	/**
 	 * Checks if the document is empty. If the list of paragraphs is empty, then
 	 * the document is empty too.
@@ -125,7 +127,8 @@ public class Document implements Iterable<Paragraph>, Serializable, Cloneable {
 	 */
 	@Override
 	public Iterator<Paragraph> iterator() {
-		return new DocumentIterator();
+		// TODO
+		return null;
 	}
 	
 	/**

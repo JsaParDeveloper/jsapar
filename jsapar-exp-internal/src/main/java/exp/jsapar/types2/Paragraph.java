@@ -1,10 +1,12 @@
 package exp.jsapar.types2;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import exp.jsapar.filters.Filter;
+import exp.jsapar.filters.Filterable;
+import exp.jsapar.lists.LineList;
 import exp.jsapar.utils.EqualsUtil;
 import exp.jsapar.utils.HashCodeUtil;
 import exp.jsapar.utils.ParamsUtil;
@@ -20,9 +22,9 @@ import exp.jsapar.utils.StringUtil;
  * @see exp.jsapar.types2.Document
  * @see exp.jsapar.types2.Line
  */
-public class Paragraph implements Iterable<Line>, Comparable<Paragraph>,
+// TODO completely rewrite to use a LineList!
+public class Paragraph implements Comparable<Paragraph>, Filterable<Paragraph>,
 		Serializable, Cloneable {
-	// TODO Filterable
 	/**
 	 * The Serial version ID for this class.
 	 */
@@ -30,7 +32,7 @@ public class Paragraph implements Iterable<Line>, Comparable<Paragraph>,
 	/**
 	 * The list of line objects in this paragraph.
 	 */
-	private List<Line> lines = null;
+	private LineList lines = null;
 
 	// ------------------------------------------------------------------------
 
@@ -39,7 +41,7 @@ public class Paragraph implements Iterable<Line>, Comparable<Paragraph>,
 	 * {@link exp.jsapar.types2.Line} objects.
 	 */
 	public Paragraph() {
-		lines = new ArrayList<Line>();
+		lines = new LineList();
 	}
 
 	/**
@@ -52,16 +54,7 @@ public class Paragraph implements Iterable<Line>, Comparable<Paragraph>,
 		return lines;
 	}
 
-	/**
-	 * Sets the list of lines.
-	 * 
-	 * @param lines
-	 *            the list containing the lines.
-	 */
-	public void setLines(List<Line> lines) {
-		ParamsUtil.checkForNullPointer(lines);
-		this.lines = lines;
-	}
+
 
 	/**
 	 * Adds a line to the list of lines.
@@ -137,8 +130,9 @@ public class Paragraph implements Iterable<Line>, Comparable<Paragraph>,
 	 * Provides an iterator for iterating over the list of lines.
 	 */
 	@Override
-	public Iterator<Line> iterator() {
-		return new ParagraphIterator();
+	public Iterator<Paragraph> iterator() {
+		// TODO
+		return null;
 	}
 
 	/**
@@ -203,5 +197,47 @@ public class Paragraph implements Iterable<Line>, Comparable<Paragraph>,
 			result = HashCodeUtil.hash(result, line);
 		}
 		return result;
+	}
+
+	@Override
+	public void addFilters(Filter... filters) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Filter getFilter(String filterName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<? extends Filter> getFilters() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isFilterPresent(String filterName) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean hasFilters() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void removeAllFilters() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeFilter(Filter filter) {
+		// TODO Auto-generated method stub
+		
 	}
 }

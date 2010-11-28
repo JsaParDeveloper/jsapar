@@ -32,6 +32,13 @@ public final class HashCodeUtil {
 	public static final int SEED = 23;
 
 	/**
+     * Check style rule: utility classes should not have a public constructor.
+     */
+    private HashCodeUtil() {
+    	// Intentionally left blank.
+    }
+	
+	/**
 	 * booleans.
 	 */
 	public static int hash(int aSeed, boolean aBoolean) {

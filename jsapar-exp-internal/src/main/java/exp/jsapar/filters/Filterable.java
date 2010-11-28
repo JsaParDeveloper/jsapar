@@ -10,16 +10,19 @@ import java.util.List;
  * iterator.
  * 
  * @author JsaPar Developer
+ * @param <T> TODO
  */
-public interface Filterable {
+public interface Filterable<T> extends Iterable<T> {
 
 	/**
-	 * Adds a filter to this elements chain of filters.
+	 * Adds one or more filters to this elements chain of filters.
 	 * 
-	 * @param filter
-	 *            the filter to be added.
+	 * @param filters
+	 *            the filters to be added.
+	 * @throws FilterNotApplicableForThisElementException
+	 *             TODO
 	 */
-	public void addFilter(Filter filter);
+	public void addFilters(Filter... filters);
 
 	/**
 	 * Gets the filter from this elements chain of filters.
@@ -32,7 +35,7 @@ public interface Filterable {
 	/**
 	 * Gets all the filters from this elements chain of filters.
 	 */
-	public List<Filter> getFilter();
+	public List<? extends Filter> getFilters();
 
 	/**
 	 * Checks if a certain filter is present in this elements chain of filters.
@@ -40,7 +43,7 @@ public interface Filterable {
 	 * @return {@code true} when this filter is present, {@code false} when this
 	 *         filter is not present.
 	 */
-	public boolean isFilterPresent(Filter filter);
+	public boolean isFilterPresent(String filterName);
 
 	/**
 	 * Checks if this element has filters present.
@@ -49,16 +52,6 @@ public interface Filterable {
 	 *         {@code false} when no filters are present in this element.
 	 */
 	public boolean hasFilters();
-
-	/**
-	 * Enables the filters for this element.
-	 */
-	public void enableFilters();
-
-	/**
-	 * Disables the filters for this element.
-	 */
-	public void disableFilters();
 
 	/**
 	 * Removes all filters from the chain of filters for this element.

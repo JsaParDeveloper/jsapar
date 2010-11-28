@@ -6,7 +6,15 @@ package exp.jsapar.utils;
  * 
  * @author JsaPar Developer
  */
-public class StringUtil {
+public final class StringUtil {
+	
+	/**
+     * Check style rule: utility classes should not have a public constructor.
+     */
+    private StringUtil() {
+    	// Intentionally left blank.
+    }
+	
 	/**
 	 * Returns a string containing only leading zeros based on the current
 	 * number in range and the maximum number in range. This is needed to align

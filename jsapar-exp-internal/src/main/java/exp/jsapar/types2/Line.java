@@ -1,7 +1,6 @@
 package exp.jsapar.types2;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -9,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import exp.jsapar.filters.Filter;
+import exp.jsapar.filters.Filterable;
+import exp.jsapar.lists.CellList;
 import exp.jsapar.utils.EqualsUtil;
 import exp.jsapar.utils.HashCodeUtil;
 import exp.jsapar.utils.ParamsUtil;
@@ -17,16 +19,18 @@ import exp.jsapar.utils.StringUtil;
 /**
  * The line type within the Paragraph {@link exp.jsapar.types2.Paragraph}
  * object. A line contains a number of cells specified by a list of
- * {@link exp.jsapar.types2.Cell} objects.
+ * {@link exp.jsapar.types2.Cell} objects.<br>
+ * 
+ * The line object can be iterated and filtered.
  * 
  * @author JsaPar Developer
  * 
  * @see exp.jsapar.types2.Paragraph
  * @see exp.jsapar.types2.Cell
  */
-public class Line implements Iterable<Cell>, Comparable<Line>, Serializable,
+// TODO completely rewrite to use a CellList!
+public class Line implements Comparable<Line>, Filterable<Cell>, Serializable,
 		Cloneable {
-	// TODO Filterable
 	/**
 	 * The Serial version ID for this class.
 	 */
@@ -34,14 +38,7 @@ public class Line implements Iterable<Cell>, Comparable<Line>, Serializable,
 	/**
 	 * The list of cell objects in this line.
 	 */
-	private List<Cell> cells;
-	/**
-	 * The map of cell objects in this line.<br>
-	 * The map is used for performing a quick look up on the cell name, like:
-	 * getCell(name); The map is also used to prevent that another cell with the
-	 * same name is added to this line (which contains a list of cells).
-	 */
-	private Map<String, Cell> cellsByName = null;
+	private CellList cells = null;
 
 	// ------------------------------------------------------------------------
 
@@ -50,8 +47,7 @@ public class Line implements Iterable<Cell>, Comparable<Line>, Serializable,
 	 * {@link exp.jsapar.types2.Cell} objects.
 	 */
 	public Line() {
-		cells = new ArrayList<Cell>();
-		cellsByName = new HashMap<String, Cell>();
+		cells = new CellList();
 	}
 
 	/**
@@ -61,12 +57,12 @@ public class Line implements Iterable<Cell>, Comparable<Line>, Serializable,
 	 * @return the list containing the cells.
 	 */
 	public List<Cell> getCells() {
-		// return a Collections.unmodifiableList(cells); instead ?
 		return cells;
 	}
 
 	/**
-	 * Sets the list of cells.
+	 * Sets the list of cells. This method is always applied to the
+	 * <tt>full</tt> list of cells.
 	 * 
 	 * @param cells
 	 *            the list containing the cells.
@@ -79,11 +75,12 @@ public class Line implements Iterable<Cell>, Comparable<Line>, Serializable,
 		for (Cell cell : cells) {
 			ParamsUtil.checkForNullPointer(cell);
 		}
-		setCellListAndCellMap(cells);
+		setCellListAndCellMap(cells); // TODO rewrite to CellList
 	}
 
 	/**
-	 * Adds a cell to the list of cells.
+	 * Adds a cell to the list of cells. This method is always applied to the
+	 * <tt>full</tt> list of cells.
 	 * 
 	 * @param cell
 	 *            the cell object to be added to the list of cells.
@@ -94,11 +91,12 @@ public class Line implements Iterable<Cell>, Comparable<Line>, Serializable,
 	 */
 	public void addCell(Cell cell) {
 		ParamsUtil.checkForNullPointer(cell);
-		setCellListItemAndCellMapItem(cell);
+		setCellListItemAndCellMapItem(cell); // TODO rewrite
 	}
 
 	/**
-	 * Inserts a cell object in the list of cells at the given index.
+	 * Inserts a cell object in the list of cells at the given index. This
+	 * method is always applied to the <tt>full</tt> list of cells.
 	 * 
 	 * @param cell
 	 *            the cell object to be inserted into the list of cells.
@@ -111,13 +109,13 @@ public class Line implements Iterable<Cell>, Comparable<Line>, Serializable,
 	 */
 	public void insertCell(Cell cell, int index) {
 		ParamsUtil.checkForNullPointer(cell);
-		if (cellsByName.containsKey(cell.getName())) {
-			// name already exists in this Line object!
-			throw new IllegalArgumentException("Duplicate cell name: "
-					+ cell.getName());
-		}
+		// if (cellsByName.containsKey(cell.getName())) {
+		// // name already exists in this Line object!
+		// throw new IllegalArgumentException("Duplicate cell name: "
+		// + cell.getName());
+		// }
 		cells.add(index, cell);
-		cellsByName.put(cell.getName(), cell);
+		// cellsByName.put(cell.getName(), cell);
 	}
 
 	/**
@@ -135,12 +133,41 @@ public class Line implements Iterable<Cell>, Comparable<Line>, Serializable,
 		Cell removedCell = null;
 		try {
 			removedCell = cells.remove(index);
-			cellsByName.remove(removedCell.getName());
+			// cellsByName.remove(removedCell.getName());
 		} catch (IndexOutOfBoundsException e) {
 			// swallow exception and return null.
 			removedCell = null;
 		}
 		return removedCell;
+	}
+
+	/**
+	 * Removes a cell object from the list of cells at the given index.
+	 * 
+	 * @param name
+	 *            the name of the cell to be removed.
+	 * 
+	 * @return the cell object that is removed from the list of cells, or
+	 *         {@code null} when there is no cell with that name.
+	 */
+	public Cell removeCell(String name) {
+		// TODO
+		return null;
+	}
+
+	/**
+	 * Replaces a cell object from the list with the given cell object.
+	 * 
+	 * @param cell
+	 *            the cell object to be replaced with the old cell in the list
+	 *            of cells.
+	 * 
+	 * @return the cell object from the list that is replaced by the new cell.
+	 */
+	public Cell replaceCell(Cell cell) {
+		ParamsUtil.checkForNullPointer(cell);
+		// TODO
+		return cell;
 	}
 
 	/**
@@ -160,14 +187,14 @@ public class Line implements Iterable<Cell>, Comparable<Line>, Serializable,
 
 		// first check if new cell is not already present in list of cells.
 		currentCell = cells.get(index);
-		if (!cellsByName.containsKey(cell.getName())
-				&& !cell.getName().equals(currentCell.getName())) {
-			// name of new cell not in map: remove cell from list and map.
-			currentCell = cells.remove(index);
-			cellsByName.remove(currentCell.getName());
-			cells.add(index, cell);
-			cellsByName.put(cell.getName(), cell);
-		}
+		// if (!cellsByName.containsKey(cell.getName())
+		// && !cell.getName().equals(currentCell.getName())) {
+		// // name of new cell not in map: remove cell from list and map.
+		// currentCell = cells.remove(index);
+		// cellsByName.remove(currentCell.getName());
+		// cells.add(index, cell);
+		// cellsByName.put(cell.getName(), cell);
+		// }
 		return currentCell;
 	}
 
@@ -189,6 +216,21 @@ public class Line implements Iterable<Cell>, Comparable<Line>, Serializable,
 		} catch (IndexOutOfBoundsException e) {
 			retval = null;
 		}
+		return retval;
+	}
+
+	/**
+	 * Gets the cell with the given name.
+	 * 
+	 * @param name
+	 *            the name of the cell.
+	 * @return the cell with the given name or {@code null} when there is no
+	 *         cell with that name.
+	 */
+	public Cell getCell(String name) {
+		Cell retval = null;
+		ParamsUtil.checkForNullPointer(name);
+		// TODO get cell by name
 		return retval;
 	}
 
@@ -221,7 +263,7 @@ public class Line implements Iterable<Cell>, Comparable<Line>, Serializable,
 	 */
 	@Override
 	public Iterator<Cell> iterator() {
-		return new LineIterator();
+		return null; // TODO
 	}
 
 	/**
@@ -302,12 +344,12 @@ public class Line implements Iterable<Cell>, Comparable<Line>, Serializable,
 	 *             thrown when cell name is {@code null}.
 	 */
 	private void setCellListItemAndCellMapItem(final Cell cell) {
-		if (cellsByName.containsKey(cell.getName())) {
-			throw new IllegalArgumentException("Duplicate cell name: "
-					+ cell.getName());
-		}
-		this.cells.add(cell);
-		this.cellsByName.put(cell.getName(), cell);
+		// if (cellsByName.containsKey(cell.getName())) {
+		// throw new IllegalArgumentException("Duplicate cell name: "
+		// + cell.getName());
+		// }
+		// this.cells.add(cell);
+		// this.cellsByName.put(cell.getName(), cell);
 	}
 
 	/**
@@ -342,7 +384,49 @@ public class Line implements Iterable<Cell>, Comparable<Line>, Serializable,
 				throw new NullPointerException("Cell name is NULL.");
 			}
 		}
-		this.cells = cells;
-		this.cellsByName = cellMap;
+		// this.cells = cells;
+		// this.cellsByName = cellMap;
+	}
+
+	@Override
+	public void addFilters(Filter... filters) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Filter getFilter(String filterName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<? extends Filter> getFilters() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isFilterPresent(String filterName) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean hasFilters() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void removeAllFilters() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void removeFilter(Filter filter) {
+		// TODO Auto-generated method stub
+
 	}
 }

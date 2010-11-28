@@ -31,6 +31,13 @@ import java.util.List;
  */
 public final class EqualsUtil {
 
+	/**
+     * Check style rule: utility classes should not have a public constructor.
+     */
+    private EqualsUtil() {
+    	// Intentionally left blank.
+    }
+	
 	static public boolean areEqual(boolean aThis, boolean aThat) {
 		return aThis == aThat;
 	}

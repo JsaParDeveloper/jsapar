@@ -1,7 +1,7 @@
-package exp.jsapar.types2;
+package exp.jsapar.exception;
 
 /**
- * 
+ * See official branch for 2.0 with correct implementation!
  * 
  * @author JsaPar Developer
  */

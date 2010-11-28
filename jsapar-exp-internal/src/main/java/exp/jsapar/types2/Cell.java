@@ -5,13 +5,14 @@ import java.io.Serializable;
 import exp.jsapar.utils.EqualsUtil;
 import exp.jsapar.utils.HashCodeUtil;
 import exp.jsapar.utils.ParamsUtil;
+import exp.jsapar.utils.TypesUtil;
 
 /**
  * The cell type within the Line {@link exp.jsapar.types2.Line} object. A cell
  * has a name and a value. The value type is generic, meaning that the value
  * type can be any of the normal data types available within java.<br>
  * <br>
- * The approved data types for use within the JsaPar library are:
+ * The supported data types for use within the JsaPar library are:
  * <ul>
  * <li> {@link java.lang.Byte}
  * <li> {@link java.lang.Boolean}
@@ -25,8 +26,9 @@ import exp.jsapar.utils.ParamsUtil;
  * <li> {@link java.lang.String}
  * <li> {@link java.math.BigDecimal}
  * <li> {@link java.math.BigInteger}
+ * <li> {@link java.util.Date}
  * </ul>
- * Trying to add a data type that is not approved for use within the JsaPar
+ * Trying to add a data type that is not supported for use within the JsaPar
  * library results in a thrown {@link IllegalArgumentException} exception.<br>
  * <br>
  * 
@@ -89,7 +91,7 @@ public class Cell implements Serializable, Cloneable {
 		ParamsUtil.checkForNullPointer(name);
 		ParamsUtil.checkForEmptyString(name);
 
-		if (isValidDataType(value)) {
+		if (TypesUtil.isValidDataType(value)) {
 			this.name = name;
 			this.value = value;
 		} else {
@@ -107,6 +109,7 @@ public class Cell implements Serializable, Cloneable {
 	 */
 	@Override
 	public String toString() {
+		// TODO add Date mode and format date with simpledateformat using locale?
 		String representation = "[name: " + this.name + ", value: "
 				+ String.valueOf(value) + "]";
 		return representation;
@@ -186,7 +189,7 @@ public class Cell implements Serializable, Cloneable {
 	 *             thrown when the data type of the cell value is not supported.
 	 */
 	public <T> void setValue(T value) {
-		if (isValidDataType(value)) {
+		if (TypesUtil.isValidDataType(value)) {
 			this.value = value;
 		} else {
 			throw new IllegalArgumentException();
@@ -195,49 +198,5 @@ public class Cell implements Serializable, Cloneable {
 
 	// ------------------------------------------------------------------------
 
-	/**
-	 * Validates the data type that is added into the value of the cell against
-	 * one of the approved data types for use within the JsaPar library.
-	 * 
-	 * @param <T>
-	 *            the cell data type that must match with one of the approved
-	 *            data types for use within the JsaPar library.
-	 * @param value
-	 *            the cell value.
-	 * 
-	 * @return {@code true} when data type is valid, {@code false} when data
-	 *         type doesn't match with one of the approved data types.
-	 */
-	private <T> boolean isValidDataType(T value) {
-		boolean validDataType = false;
 
-		if (value == null) {
-			validDataType = true;
-		} else if (value instanceof java.lang.Byte) {
-			validDataType = true;
-		} else if (value instanceof java.lang.Boolean) {
-			validDataType = true;
-		} else if (value instanceof java.lang.Character) {
-			validDataType = true;
-		} else if (value instanceof java.lang.Double) {
-			validDataType = true;
-		} else if (value instanceof java.lang.Enum) {
-			validDataType = true;
-		} else if (value instanceof java.lang.Float) {
-			validDataType = true;
-		} else if (value instanceof java.lang.Integer) {
-			validDataType = true;
-		} else if (value instanceof java.lang.Long) {
-			validDataType = true;
-		} else if (value instanceof java.lang.Short) {
-			validDataType = true;
-		} else if (value instanceof java.lang.String) {
-			validDataType = true;
-		} else if (value instanceof java.math.BigDecimal) {
-			validDataType = true;
-		} else if (value instanceof java.math.BigInteger) {
-			validDataType = true;
-		}
-		return validDataType;
-	}
 }

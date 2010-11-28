@@ -5,8 +5,15 @@ package exp.jsapar.utils;
  * 
  * @author JsaPar Developer
  */
-public class ParamsUtil {
+public final class ParamsUtil {
 
+	/**
+     * Check style rule: utility classes should not have a public constructor.
+     */
+    private ParamsUtil() {
+    	// Intentionally left blank.
+    }
+	
 	/**
 	 * Checks if given parameter isn't NULL.
 	 * 
