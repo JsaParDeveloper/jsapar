@@ -1,5 +1,6 @@
 package exp.jsapar.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -10,15 +11,67 @@ import java.util.GregorianCalendar;
  * @author JsaPar Developer
  */
 public class DateUtil {
+	// for more information about the ISO 8601 standard:
+	// http://www.iso.org/iso/support/faqs/faqs_widely_used_standards/widely_used_standards_other/date_and_time_format.htm
+	private static final String DATE_TIME_FORMAT_ISO8601 = "yyyy-MM-dd HH:mm:ss";
+
 	private static GregorianCalendar calendar = new GregorianCalendar();
 
 	/**
-     * Check style rule: utility classes should not have a public constructor.
-     */
-    private DateUtil() {
-    	// Intentionally left blank.
-    }
-	
+	 * Check style rule: utility classes should not have a public constructor.
+	 */
+	private DateUtil() {
+		// Intentionally left blank.
+	}
+
+	/**
+	 * Returns the current date as a Date object.
+	 * 
+	 * @return the current date.
+	 */
+	public static Date now() {
+		Calendar cal = Calendar.getInstance();
+		return cal.getTime();
+	}
+
+	/**
+	 * Returns the current date as string, formatted as "yyyy-MM-dd HH:mm:ss".
+	 * 
+	 * @return the current date as string.
+	 */
+	public static String nowAsString() {
+		SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT_ISO8601);
+		return sdf.format(calendar.getTime());
+	}
+
+	/**
+	 * Returns the current date as string, formatted in the specified date
+	 * format.
+	 * 
+	 * @param dateFormat
+	 *            in which format the date must be formatted.
+	 * @return the current date as string, formatted in the specified date
+	 *         format.
+	 */
+	public static String nowAsString(String dateFormat) {
+		// TODO Calendar cal = Calendar.getInstance(); cal.getTime();
+		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+		return sdf.format(calendar.getTime());
+	}
+
+	/**
+	 * Returns the specified date as string, formatted as "yyyy-MM-dd HH:mm:ss".
+	 * 
+	 * @param date
+	 *            the specified date that needs to be formatted.
+	 * 
+	 * @return the specified date as string.
+	 */
+	public static String formattedDateAsString(Date date) {
+		SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT_ISO8601);
+		return sdf.format(date.getTime());
+	}
+
 	public static Date getStartDate(Date date) {
 		calendar.setTime(date);
 		calendar.set(GregorianCalendar.HOUR_OF_DAY,

@@ -1,6 +1,7 @@
 package exp.jsapar.types2;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -14,6 +15,102 @@ import org.junit.Test;
  * @author JsaPar Developer
  */
 public class CellTestOnInstantiations {
+
+	// ------------------------------------------------------------------------
+	// Cell value type: NULL
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Tests the instantiation of a cell with a NULL cell type (and value) and
+	 * cell name.
+	 */
+	@Test
+	public void instantiateValidNullCell() {
+		String cellName = "test";
+
+		Cell cell = new Cell(cellName, null);
+
+		assertEquals(cellName, cell.getName());
+		assertEquals(null, cell.getValue());
+	}
+
+	/**
+	 * Tests the instantiation of a cell with a NULL cell type (and value) and
+	 * cell name that is empty.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void instantiateInvalidNullCellWithNameEmpty() {
+		String cellName = ""; // must be empty.
+
+		Cell cell = new Cell(cellName, null);
+
+		fail("Test should have thrown an IllegalArgumentException.");
+		assertEquals(cellName, cell.getName());
+		assertEquals(null, cell.getValue());
+	}
+
+	/**
+	 * Tests the instantiation of a cell with a NULL cell type (and value) and
+	 * cell name that is null.
+	 */
+	@Test(expected = NullPointerException.class)
+	public void instantiateInvalidNullCellWithNameNull() {
+		String cellName = null; // must be null.
+
+		Cell cell = new Cell(cellName, null);
+
+		fail("Test should have thrown a NullPointerException.");
+		assertEquals(cellName, cell.getName());
+		assertEquals(null, cell.getValue());
+	}
+
+	// ------------------------------------------------------------------------
+	// Cell value type: <not specified>
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Tests the instantiation of a cell with a not specified cell type and cell
+	 * name.
+	 */
+	@Test
+	public void instantiateValidCellNoSpecifiedCellType() {
+		String cellName = "test";
+
+		Cell cell = new Cell(cellName);
+
+		assertEquals(cellName, cell.getName());
+		assertEquals(null, cell.getValue());
+	}
+
+	/**
+	 * Tests the instantiation of a cell with a not specified cell type and cell
+	 * name that is empty.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void instantiateValidCellNoSpecifiedCellTypeNameEmpty() {
+		String cellName = ""; // must be empty.
+
+		Cell cell = new Cell(cellName);
+
+		fail("Test should have thrown an IllegalArgumentException.");
+		assertEquals(cellName, cell.getName());
+		assertEquals(null, cell.getValue());
+	}
+
+	/**
+	 * Tests the instantiation of a cell with a not specified cell type and cell
+	 * name that is null.
+	 */
+	@Test(expected = NullPointerException.class)
+	public void instantiateValidCellNoSpecifiedCellTypeNameNull() {
+		String cellName = null; // must be null.
+
+		Cell cell = new Cell(cellName);
+
+		fail("Test should have thrown a NullPointerException.");
+		assertEquals(cellName, cell.getName());
+		assertEquals(null, cell.getValue());
+	}
 
 	// ------------------------------------------------------------------------
 	// Cell value type: java.lang.Byte
@@ -58,6 +155,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown an IllegalArgumentException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -73,6 +171,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown a NullPointerException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -122,6 +221,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown an IllegalArgumentException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -137,6 +237,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown a NullPointerException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -186,6 +287,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown an IllegalArgumentException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -201,6 +303,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown a NullPointerException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -248,6 +351,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown an IllegalArgumentException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -263,6 +367,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown a NullPointerException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -314,6 +419,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown an IllegalArgumentException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -329,6 +435,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown a NullPointerException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -376,6 +483,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown an IllegalArgumentException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -391,6 +499,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown a NullPointerException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -400,7 +509,8 @@ public class CellTestOnInstantiations {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Tests the instantiation of a cell with a Integer cell value and cell name.
+	 * Tests the instantiation of a cell with a Integer cell value and cell
+	 * name.
 	 */
 	@Test
 	public void instantiateValidIntegerCell() {
@@ -414,7 +524,8 @@ public class CellTestOnInstantiations {
 	}
 
 	/**
-	 * Tests the instantiation of a cell with a Integer cell value which is null.
+	 * Tests the instantiation of a cell with a Integer cell value which is
+	 * null.
 	 */
 	@Test
 	public void instantiateValidIntegerCellWithNullValue() {
@@ -438,6 +549,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown an IllegalArgumentException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -453,6 +565,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown a NullPointerException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -500,6 +613,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown an IllegalArgumentException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -515,6 +629,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown a NullPointerException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -562,6 +677,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown an IllegalArgumentException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -577,6 +693,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown a NullPointerException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -624,6 +741,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown an IllegalArgumentException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -639,6 +757,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown a NullPointerException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -688,6 +807,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown an IllegalArgumentException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -703,6 +823,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown a NullPointerException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -752,6 +873,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown an IllegalArgumentException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}
@@ -767,6 +889,7 @@ public class CellTestOnInstantiations {
 
 		Cell cell = new Cell(cellName, cellValue);
 
+		fail("Test should have thrown a NullPointerException.");
 		assertEquals(cellName, cell.getName());
 		assertEquals(cellValue, cell.getValue());
 	}

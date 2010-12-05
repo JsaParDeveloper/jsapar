@@ -1,0 +1,4 @@
+01. implement toString for Line, Section and Document
+02. implement filtering
+03. implement CellList, LineList, SectionList
+04. add extra xml element to jsapar.cfg.xsd -> language (optional element)

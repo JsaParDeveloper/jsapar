@@ -4,8 +4,11 @@ import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Date;
 
 import org.junit.Test;
+
+import exp.jsapar.utils.DateUtil;
 
 /**
  * Unit tests for testing the toString representation of Cell objects with
@@ -264,5 +267,25 @@ public class CellTestOnStringRepresentations {
 		assertEquals(expectedResult, actualResult);
 	}
 
+	// ------------------------------------------------------------------------
+	// Cell value type: java.util.Date
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Test textual representation of a cell with Date value.
+	 */
+	@Test
+	public void toStringRepresentationOfDateCell() {
+		String cellName = "date";
+		Date cellValue = DateUtil.now();
+		String dateAsString = DateUtil.formattedDateAsString(cellValue);
+		String expectedResult = "[name: date, value: " + dateAsString + "]";
+		
+		Cell cell = new Cell(cellName, cellValue);
+
+		String actualResult = cell.toString();
+		assertEquals(expectedResult, actualResult);
+	}
+	
 	// ------------------------------------------------------------------------
 }

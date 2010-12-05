@@ -13,8 +13,8 @@ import exp.jsapar.utils.ParamsUtil;
 import exp.jsapar.utils.StringUtil;
 
 /**
- * The paragraph type within the Document {@link exp.jsapar.types2.Document}
- * object. A paragraph contains a number of lines specified by a list of
+ * The section type within the Document {@link exp.jsapar.types2.Document}
+ * object. A section contains a number of lines specified by a list of
  * {@link exp.jsapar.types2.Line} objects.
  * 
  * @author JsaPar Developer
@@ -23,24 +23,24 @@ import exp.jsapar.utils.StringUtil;
  * @see exp.jsapar.types2.Line
  */
 // TODO completely rewrite to use a LineList!
-public class Paragraph implements Comparable<Paragraph>, Filterable<Paragraph>,
+public class Section implements Filterable<Line>, Comparable<Section>,
 		Serializable, Cloneable {
 	/**
 	 * The Serial version ID for this class.
 	 */
 	private static final long serialVersionUID = 3631830254686023021L;
 	/**
-	 * The list of line objects in this paragraph.
+	 * The list of line objects in this section.
 	 */
 	private LineList lines = null;
 
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Constructs an empty {@link exp.jsapar.types2.Paragraph} with zero
+	 * Constructs an empty {@link exp.jsapar.types2.Section} with zero
 	 * {@link exp.jsapar.types2.Line} objects.
 	 */
-	public Paragraph() {
+	public Section() {
 		lines = new LineList();
 	}
 
@@ -53,8 +53,6 @@ public class Paragraph implements Comparable<Paragraph>, Filterable<Paragraph>,
 	public List<Line> getLines() {
 		return lines;
 	}
-
-
 
 	/**
 	 * Adds a line to the list of lines.
@@ -103,11 +101,11 @@ public class Paragraph implements Comparable<Paragraph>, Filterable<Paragraph>,
 	}
 
 	/**
-	 * Checks if the paragraph is empty. If the list of lines is empty, then the
-	 * paragraph is empty too.
+	 * Checks if the Section is empty. If the list of lines is empty, then the
+	 * Section is empty too.
 	 * 
-	 * @return {@code true} when paragraph is empty, {@code false} when
-	 *         paragraph is not empty.
+	 * @return {@code true} when Section is empty, {@code false} when Section is
+	 *         not empty.
 	 */
 	public boolean isEmpty() {
 		return (lines.isEmpty());
@@ -116,12 +114,12 @@ public class Paragraph implements Comparable<Paragraph>, Filterable<Paragraph>,
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Compares this Paragraph object with the specified Paragraph object for order.
-	 * Returns a negative integer, zero, or a positive integer as this Paragraph is
-	 * less than, equal to, or greater than the specified Paragraph.
+	 * Compares this Section object with the specified Section object for order.
+	 * Returns a negative integer, zero, or a positive integer as this Section
+	 * is less than, equal to, or greater than the specified Section.
 	 */
 	@Override
-	public int compareTo(Paragraph o) {
+	public int compareTo(Section o) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -130,14 +128,16 @@ public class Paragraph implements Comparable<Paragraph>, Filterable<Paragraph>,
 	 * Provides an iterator for iterating over the list of lines.
 	 */
 	@Override
-	public Iterator<Paragraph> iterator() {
+	public Iterator<Line> iterator() {
 		// TODO
 		return null;
 	}
 
+	// ------------------------------------------------------------------------
+
 	/**
-	 * Returns the textual representation of a exp.jsapar.types2.Paragraph,
-	 * including all the elements within this exp.jsapar.types2.Paragraph as a
+	 * Returns the textual representation of a exp.jsapar.types2.Section,
+	 * including all the elements within this exp.jsapar.types2.Section as a
 	 * textual representation.
 	 * 
 	 * @see java.lang.Object#toString()
@@ -164,7 +164,7 @@ public class Paragraph implements Comparable<Paragraph>, Filterable<Paragraph>,
 	}
 
 	/**
-	 * Compares this Paragraph with the specified Paragraph for equality.
+	 * Compares this Section with the specified Section for equality.
 	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -175,18 +175,18 @@ public class Paragraph implements Comparable<Paragraph>, Filterable<Paragraph>,
 			return true;
 		}
 		// check for same type
-		if (!(aThat instanceof Paragraph)) {
+		if (!(aThat instanceof Section)) {
 			return false;
 		}
 		// cast to native object is now safe
-		Paragraph that = (Paragraph) aThat;
+		Section that = (Section) aThat;
 
 		// compare the content of the line lists.
 		return EqualsUtil.areEqual(this.lines, that.lines);
 	}
 
 	/**
-	 * Returns a hash code value for this Paragraph.
+	 * Returns a hash code value for this Section.
 	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -202,7 +202,7 @@ public class Paragraph implements Comparable<Paragraph>, Filterable<Paragraph>,
 	@Override
 	public void addFilters(Filter... filters) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -232,12 +232,12 @@ public class Paragraph implements Comparable<Paragraph>, Filterable<Paragraph>,
 	@Override
 	public void removeAllFilters() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void removeFilter(Filter filter) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

@@ -29,7 +29,7 @@ class DocumentDefinitions {
 		// TODO add more Documents for testing purposes.
 
 		Document doc = null;
-		Paragraph paragraph = null;
+		Section section = null;
 		Line line = null;
 		Cell cell = null;
 
@@ -37,34 +37,34 @@ class DocumentDefinitions {
 		doc = new Document();
 		testDocuments.add(doc);
 
-		// add a document with one paragraph.
+		// add a document with one section.
 		doc = new Document();
-		paragraph = new Paragraph();
-		doc.addParagraph(paragraph);
+		section = new Section();
+		doc.addSection(section);
 		testDocuments.add(doc);
 
-		// add a document with one paragraph and one line.
+		// add a document with one section and one line.
 		doc = new Document();
-		paragraph = new Paragraph();
+		section = new Section();
 		line = new Line();
-		paragraph.addLine(line);
-		doc.addParagraph(paragraph);
+		section.addLine(line);
+		doc.addSection(section);
 		testDocuments.add(doc);
 
-		// add a document with one paragraph, one line and one cell.
+		// add a document with one section, one line and one cell.
 		doc = new Document();
-		paragraph = new Paragraph();
+		section = new Section();
 		line = new Line();
 		cell = new Cell("movie", "A View To A Kill");
 		line.addCell(cell);
-		paragraph.addLine(line);
-		doc.addParagraph(paragraph);
+		section.addLine(line);
+		doc.addSection(section);
 		testDocuments.add(doc);
 
-		// add a document with one paragraph, one line and a few cells with
+		// add a document with one section, one line and a few cells with
 		// different types.
 		doc = new Document();
-		paragraph = new Paragraph();
+		section = new Section();
 		line = new Line();
 		cell = new Cell("name", "robert");
 		line.addCell(cell);
@@ -74,14 +74,14 @@ class DocumentDefinitions {
 		line.addCell(cell);
 		cell = new Cell("gender", Gender.MALE);
 		line.addCell(cell);
-		paragraph.addLine(line);
-		doc.addParagraph(paragraph);
+		section.addLine(line);
+		doc.addSection(section);
 		testDocuments.add(doc);
 
-		// add a document with one paragraph, a few lines with different lengths
+		// add a document with one section, a few lines with different lengths
 		// of cells, and cells having different types.
 		doc = new Document();
-		paragraph = new Paragraph();
+		section = new Section();
 		line = new Line();
 		cell = new Cell("name", "peter");
 		line.addCell(cell);
@@ -94,7 +94,7 @@ class DocumentDefinitions {
 		line.addCell(cell);
 		cell = new Cell("hasgirlfriend", new Boolean(true));
 		line.addCell(cell);
-		paragraph.addLine(line);
+		section.addLine(line);
 		line = new Line();
 		cell = new Cell("name", "natascha");
 		line.addCell(cell);
@@ -103,8 +103,8 @@ class DocumentDefinitions {
 		line.addCell(cell);
 		cell = new Cell("favoritesport", "baseball");
 		line.addCell(cell);
-		paragraph.addLine(line);
-		doc.addParagraph(paragraph);
+		section.addLine(line);
+		doc.addSection(section);
 		testDocuments.add(doc);
 
 		return testDocuments;

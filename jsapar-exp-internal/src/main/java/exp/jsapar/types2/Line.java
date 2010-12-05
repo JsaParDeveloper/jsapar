@@ -17,19 +17,19 @@ import exp.jsapar.utils.ParamsUtil;
 import exp.jsapar.utils.StringUtil;
 
 /**
- * The line type within the Paragraph {@link exp.jsapar.types2.Paragraph}
- * object. A line contains a number of cells specified by a list of
+ * The line type within the Section {@link exp.jsapar.types2.Section} object.
+ * A line contains a number of cells specified by a list of
  * {@link exp.jsapar.types2.Cell} objects.<br>
  * 
  * The line object can be iterated and filtered.
  * 
  * @author JsaPar Developer
  * 
- * @see exp.jsapar.types2.Paragraph
+ * @see exp.jsapar.types2.Section
  * @see exp.jsapar.types2.Cell
  */
 // TODO completely rewrite to use a CellList!
-public class Line implements Comparable<Line>, Filterable<Cell>, Serializable,
+public class Line implements Filterable<Cell>, Comparable<Line>, Serializable,
 		Cloneable {
 	/**
 	 * The Serial version ID for this class.
@@ -266,6 +266,52 @@ public class Line implements Comparable<Line>, Filterable<Cell>, Serializable,
 		return null; // TODO
 	}
 
+	// ------------------------------------------------------------------------
+
+	@Override
+	public void addFilters(Filter... filters) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Filter getFilter(String filterName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<? extends Filter> getFilters() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isFilterPresent(String filterName) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean hasFilters() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void removeAllFilters() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void removeFilter(Filter filter) {
+		// TODO Auto-generated method stub
+
+	}
+
+	// ------------------------------------------------------------------------
+
 	/**
 	 * Returns the textual representation of a exp.jsapar.types2.Line, including
 	 * all the elements within this exp.jsapar.types2.Line as a textual
@@ -386,47 +432,5 @@ public class Line implements Comparable<Line>, Filterable<Cell>, Serializable,
 		}
 		// this.cells = cells;
 		// this.cellsByName = cellMap;
-	}
-
-	@Override
-	public void addFilters(Filter... filters) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Filter getFilter(String filterName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<? extends Filter> getFilters() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isFilterPresent(String filterName) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean hasFilters() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void removeAllFilters() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void removeFilter(Filter filter) {
-		// TODO Auto-generated method stub
-
 	}
 }

@@ -37,11 +37,11 @@ public class DocumentTestOnStringRepresentations {
 	}
 
 	@Test
-	public void getRespresentationOfAnDocumentWithEmptyParagraph() {
+	public void getRespresentationOfAnDocumentWithEmptySection() {
 		Document expected = testDocuments.get(1);
 		Document actual = new Document();
-		Paragraph p = new Paragraph();
-		actual.addParagraph(p);
+		Section s = new Section();
+		actual.addSection(s);
 		
 		assertEquals(expected, actual);
 	}

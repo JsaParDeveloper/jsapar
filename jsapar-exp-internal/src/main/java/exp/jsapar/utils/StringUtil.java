@@ -7,14 +7,14 @@ package exp.jsapar.utils;
  * @author JsaPar Developer
  */
 public final class StringUtil {
-	
+
 	/**
-     * Check style rule: utility classes should not have a public constructor.
-     */
-    private StringUtil() {
-    	// Intentionally left blank.
-    }
-	
+	 * Check style rule: utility classes should not have a public constructor.
+	 */
+	private StringUtil() {
+		// Intentionally left blank.
+	}
+
 	/**
 	 * Returns a string containing only leading zeros based on the current
 	 * number in range and the maximum number in range. This is needed to align
@@ -37,6 +37,34 @@ public final class StringUtil {
 			sb.append("0");
 		}
 		return sb.toString();
+	}
+
+	/**
+	 * Right pads a given string.
+	 * 
+	 * @param s
+	 *            the string to be padded to the right.
+	 * @param n
+	 *            the number of pads to the right.
+	 *            
+	 * @return the padded string.
+	 */
+	public static String padRight(String s, int n) {
+		return String.format("%1$-" + n + "s", s);
+	}
+
+	/**
+	 * Left pads a given string.
+	 * 
+	 * @param s
+	 *            the string to be padded to the left.
+	 * @param n
+	 *            the number of pads to the left.
+	 *            
+	 * @return the padded string.
+	 */
+	public static String padLeft(String s, int n) {
+		return String.format("%1$#" + n + "s", s);
 	}
 
 	/**

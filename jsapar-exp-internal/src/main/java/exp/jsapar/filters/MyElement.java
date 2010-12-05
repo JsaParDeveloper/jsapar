@@ -92,17 +92,17 @@ public class MyElement implements Filterable<Object> {
 	}
 
 	
-	// FIXME DO NOT create a inner class -> MAKE an CellList, LineList and ParagraphList that contain the 
+	// FIXME DO NOT create a inner class -> MAKE an CellList, LineList and SectionList that contain the 
 	// inner iterator class with the filter possibilities. Also add extra methods to be used by user for adding
 	// filters to the CellList etc. Make an skeletal implementation of the List!
 	// --
 	// CellList implements Filterable<Cell>
 	// LineList implements Filterable<Line>
-	// ParagraphList implements Filterable<Paragraph>
+	// SectionList implements Filterable<Section>
 	// --
 	// Line: contains CellList; 
-	// Paragraph: contains LineList;
-	// Document: contains ParagraphList;
+	// Section: contains LineList;
+	// Document: contains SectionList;
 	
 	
 	// inner iterator is needed because otherwise we cannot reach the objList.

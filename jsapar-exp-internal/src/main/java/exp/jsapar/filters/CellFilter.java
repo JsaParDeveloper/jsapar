@@ -3,7 +3,7 @@ package exp.jsapar.filters;
 import exp.jsapar.utils.TypesUtil;
 
 // how to restrict the filter from being used in the wrong context
-// like: a linefilter used in a paragraph!
+// like: a linefilter used in a section!
 public class CellFilter extends Filter {
 
 	private Class theClass = null;

@@ -47,30 +47,30 @@ public class DocumentTestOnInstantiations {
 		line2.addCell(cell3);
 		line2.insertCell(cell4, 0); // inserted before cel3!
 
-		Paragraph par = new Paragraph();
-		par.addLine(line1);
-		par.insertLine(line2, 0); // inserted before lin1!
+		Section sec = new Section();
+		sec.addLine(line1);
+		sec.insertLine(line2, 0); // inserted before lin1!
 
 		Document doc = new Document();
-		doc.addParagraph(par);
+		doc.addSection(sec);
 
 		// test the Document object
-		assertEquals(doc.getParagraph(0).getLine(0).getCell(0).getName(),
+		assertEquals(doc.getSection(0).getLine(0).getCell(0).getName(),
 				lastName);
-		assertEquals(doc.getParagraph(0).getLine(0).getCell(0).getValue(),
+		assertEquals(doc.getSection(0).getLine(0).getCell(0).getValue(),
 				lastName2);
-		assertEquals(doc.getParagraph(0).getLine(0).getCell(1).getName(),
+		assertEquals(doc.getSection(0).getLine(0).getCell(1).getName(),
 				firstName);
-		assertEquals(doc.getParagraph(0).getLine(0).getCell(1).getValue(),
+		assertEquals(doc.getSection(0).getLine(0).getCell(1).getValue(),
 				firstName2);
 
-		assertEquals(doc.getParagraph(0).getLine(1).getCell(0).getName(),
+		assertEquals(doc.getSection(0).getLine(1).getCell(0).getName(),
 				lastName);
-		assertEquals(doc.getParagraph(0).getLine(1).getCell(0).getValue(),
+		assertEquals(doc.getSection(0).getLine(1).getCell(0).getValue(),
 				lastName1);
-		assertEquals(doc.getParagraph(0).getLine(1).getCell(1).getName(),
+		assertEquals(doc.getSection(0).getLine(1).getCell(1).getName(),
 				firstName);
-		assertEquals(doc.getParagraph(0).getLine(1).getCell(1).getValue(),
+		assertEquals(doc.getSection(0).getLine(1).getCell(1).getValue(),
 				firstName1);
 	}
 

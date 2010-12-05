@@ -1,7 +1,7 @@
 package exp.jsapar.filters;
 
 // how to restrict the filter from being used in the wrong context
-// like: a linefilter used in a paragraph!
+// like: a linefilter used in a section!
 public class LineFilter extends Filter {
 	// this filter is used in to line context, and should be included in the
 	// Line object

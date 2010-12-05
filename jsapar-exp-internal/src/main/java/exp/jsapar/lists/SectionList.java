@@ -8,39 +8,39 @@ import java.util.ListIterator;
 
 import exp.jsapar.filters.Filter;
 import exp.jsapar.filters.FilterChain;
-import exp.jsapar.filters.ParagraphFilter;
-import exp.jsapar.types2.Paragraph;
+import exp.jsapar.filters.SectionFilter;
+import exp.jsapar.types2.Section;
 
 /**
  * TODO
  * 
  * @author JsaPar Developer
  * 
- * @param <Paragraph>
+ * @param <Section>
  *            TODO
  */
-public class ParagraphList implements List<Paragraph>,
-		FilterableList<Paragraph> {
+public class SectionList implements List<Section>,
+		FilterableList<Section> {
 
 	/**
 	 * The list containing the lines.
 	 */
-	private List<Paragraph> paragraphs = null;
+	private List<Section> sections = null;
 
 	/**
-	 * The list of filters applicable for the paragraph list.
+	 * The list of filters applicable for the section list.
 	 */
-	private FilterChain<ParagraphFilter> filterChain = new FilterChain<ParagraphFilter>();
+	private FilterChain<SectionFilter> filterChain = new FilterChain<SectionFilter>();
 
 	/**
 	 * Constructs a LineList.
 	 */
-	public ParagraphList() {
-		paragraphs = new ArrayList<Paragraph>();
+	public SectionList() {
+		sections = new ArrayList<Section>();
 	}
 
 	// ------------------------------------------------------------------------
-	// FilterableList<Paragraph> interface method implementations
+	// FilterableList<Section> interface method implementations
 	// ------------------------------------------------------------------------
 
 	@Override
@@ -80,14 +80,14 @@ public class ParagraphList implements List<Paragraph>,
 	}
 
 	// ------------------------------------------------------------------------
-	// List<Paragraph> interface method implementations
+	// List<Section> interface method implementations
 	// ------------------------------------------------------------------------
 
 	@Override
 	public int size() {
 		// TODO check if filters apply? should the filtered size be returned or
 		// the normal size?
-		return paragraphs.size();
+		return sections.size();
 	}
 
 	@Override
@@ -103,8 +103,8 @@ public class ParagraphList implements List<Paragraph>,
 	}
 
 	@Override
-	public Iterator<Paragraph> iterator() {
-		// TODO return an implementation of ParagraphIteratorImpl
+	public Iterator<Section> iterator() {
+		// TODO return an implementation of SectionIteratorImpl
 		// TODO what is the difference between the Iterator and ListIterator
 		// definitions?
 
@@ -129,7 +129,7 @@ public class ParagraphList implements List<Paragraph>,
 	}
 
 	@Override
-	public boolean add(Paragraph e) {
+	public boolean add(Section e) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -147,13 +147,13 @@ public class ParagraphList implements List<Paragraph>,
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends Paragraph> c) {
+	public boolean addAll(Collection<? extends Section> c) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean addAll(int index, Collection<? extends Paragraph> c) {
+	public boolean addAll(int index, Collection<? extends Section> c) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -177,25 +177,25 @@ public class ParagraphList implements List<Paragraph>,
 	}
 
 	@Override
-	public Paragraph get(int index) {
+	public Section get(int index) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Paragraph set(int index, Paragraph element) {
+	public Section set(int index, Section element) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void add(int index, Paragraph element) {
+	public void add(int index, Section element) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public Paragraph remove(int index) {
+	public Section remove(int index) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -213,31 +213,31 @@ public class ParagraphList implements List<Paragraph>,
 	}
 
 	@Override
-	public ListIterator<Paragraph> listIterator() {
-		// TODO return an implementation of ParagraphIteratorImpl
+	public ListIterator<Section> listIterator() {
+		// TODO return an implementation of SectionIteratorImpl
 		return null;
 	}
 
 	@Override
-	public ListIterator<Paragraph> listIterator(int index) {
-		// TODO return an implementation of ParagraphIteratorImpl
+	public ListIterator<Section> listIterator(int index) {
+		// TODO return an implementation of SectionIteratorImpl
 		return null;
 	}
 
 	@Override
-	public List<Paragraph> subList(int fromIndex, int toIndex) {
+	public List<Section> subList(int fromIndex, int toIndex) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	// ------------------------------------------------------------------------
-	// ParagraphIterator<Paragraph> interface method implementations
+	// SectionIterator<Section> interface method implementations
 	// ------------------------------------------------------------------------
 
 	/**
 	 * TODO
 	 */
-	private class ParagraphIteratorImpl implements Iterator<Paragraph> {
+	private class SectionIteratorImpl implements Iterator<Section> {
 
 		@Override
 		public boolean hasNext() {
@@ -246,7 +246,7 @@ public class ParagraphList implements List<Paragraph>,
 		}
 
 		@Override
-		public Paragraph next() {
+		public Section next() {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -260,13 +260,13 @@ public class ParagraphList implements List<Paragraph>,
 	}
 
 	// ------------------------------------------------------------------------
-	// ParagraphListIterator<Paragraph> interface method implementations
+	// SectionListIterator<Section> interface method implementations
 	// ------------------------------------------------------------------------
 
 	/**
 	 * TODO
 	 */
-	private class ParagraphListIteratorImpl implements ListIterator<Paragraph> {
+	private class SectionListIteratorImpl implements ListIterator<Section> {
 
 		@Override
 		public boolean hasNext() {
@@ -275,7 +275,7 @@ public class ParagraphList implements List<Paragraph>,
 		}
 
 		@Override
-		public Paragraph next() {
+		public Section next() {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -287,7 +287,7 @@ public class ParagraphList implements List<Paragraph>,
 		}
 
 		@Override
-		public Paragraph previous() {
+		public Section previous() {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -311,13 +311,13 @@ public class ParagraphList implements List<Paragraph>,
 		}
 
 		@Override
-		public void set(Paragraph e) {
+		public void set(Section e) {
 			// TODO Auto-generated method stub
 
 		}
 
 		@Override
-		public void add(Paragraph e) {
+		public void add(Section e) {
 			// TODO Auto-generated method stub
 
 		}

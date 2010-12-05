@@ -4,7 +4,7 @@ import org.junit.Test;
 
 /**
  * Unit tests for testing the iteration of Document objects with different
- * operations on the Document objects. The actual iteration is over a Paragraph
+ * operations on the Document objects. The actual iteration is over a Section
  * object that contains Line objects.
  * 
  * @author JsaPar Developer
@@ -12,19 +12,19 @@ import org.junit.Test;
 public class DocumentTestOnIteration {
 
 	/**
-	 * Tests the iteration over the list of paragraphs within a Document object.
+	 * Tests the iteration over the list of sections within a Document object.
 	 */
 	@Test
-	public void iterateOverAllParagraphInADocumentNormal() {
+	public void iterateOverAllSectionInADocumentNormal() {
 		// TODO
 	}
 
 	/**
-	 * Tests the reverse iteration over the list of paragraphs within a Document
+	 * Tests the reverse iteration over the list of sections within a Document
 	 * object.
 	 */
 	@Test
-	public void iterateOverAllParagraphInADocumentReverse() {
+	public void iterateOverAllSectionInADocumentReverse() {
 		// TODO
 	}
 	

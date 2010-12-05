@@ -1,7 +1,9 @@
 package exp.jsapar.types2;
 
 import java.io.Serializable;
+import java.util.Date;
 
+import exp.jsapar.utils.DateUtil;
 import exp.jsapar.utils.EqualsUtil;
 import exp.jsapar.utils.HashCodeUtil;
 import exp.jsapar.utils.ParamsUtil;
@@ -32,9 +34,13 @@ import exp.jsapar.utils.TypesUtil;
  * library results in a thrown {@link IllegalArgumentException} exception.<br>
  * <br>
  * 
- * @author JsaPar Developer
+ * @throws IllegalArgumentException
+ *             thrown when data type of the cell is not supported, or when cell
+ *             name is empty.
+ * @throws NullPointerException
+ *             thrown when cell name is {@code null}.
  * 
- * @see IllegalArgumentException
+ * @author JsaPar Developer
  */
 public class Cell implements Serializable, Cloneable {
 	/**
@@ -61,11 +67,17 @@ public class Cell implements Serializable, Cloneable {
 	}
 
 	/**
+	 * Constructs an {@link exp.jsapar.types2.Cell} with a cell name and no cell
+	 * value.
 	 * 
 	 * @param name
+	 *            the name of the cell. The name must be a valid String that is
+	 *            not {@code null} and is not empty.
 	 */
 	public Cell(String name) {
-		// TODO value is by default NULL;
+		ParamsUtil.checkForNullPointer(name);
+		ParamsUtil.checkForEmptyString(name);
+		this.name = name;
 	}
 
 	/**
@@ -101,59 +113,6 @@ public class Cell implements Serializable, Cloneable {
 	}
 
 	// ------------------------------------------------------------------------
-
-	/**
-	 * Returns the textual representation of a exp.jsapar.types2.Cell.
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		// TODO add Date mode and format date with simpledateformat using locale?
-		String representation = "[name: " + this.name + ", value: "
-				+ String.valueOf(value) + "]";
-		return representation;
-	}
-
-	/**
-	 * Indicates whether some other object is "equal to" this cell.
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object aThat) {
-		// check for self-comparison
-		if (this == aThat) {
-			return true;
-		}
-		// check for same type
-		if (!(aThat instanceof Cell)) {
-			return false;
-		}
-		// cast to native object is now safe
-		Cell that = (Cell) aThat;
-
-		// FIXME also test the name of the cell?
-		// should the test only work for the value? No matter what type?
-		// this = double(5.0), that = float(5.0) -> still equals?
-
-		// now a proper field-by-field evaluation can be made
-		return EqualsUtil.areEqual(this.name, that.name)
-				&& EqualsUtil.areEqual(this.value, that.value);
-	}
-
-	/**
-	 * Returns a hash code value for this cell.
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		int result = HashCodeUtil.SEED;
-		result = HashCodeUtil.hash(result, name);
-		result = HashCodeUtil.hash(result, value);
-		return result;
-	}
 
 	/**
 	 * Gets the name of the cell.
@@ -198,5 +157,66 @@ public class Cell implements Serializable, Cloneable {
 
 	// ------------------------------------------------------------------------
 
+	/**
+	 * Indicates whether some other object is "equal to" this cell.
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object aThat) {
+		// check for self-comparison
+		if (this == aThat) {
+			return true;
+		}
+		// check for same type
+		if (!(aThat instanceof Cell)) {
+			return false;
+		}
+		// cast to native object is now safe
+		Cell that = (Cell) aThat;
 
+		// FIXME also test the name of the cell?
+		// should the test only work for the value? No matter what type?
+		// this = double(5.0), that = float(5.0) -> still equals?
+
+		// now a proper field-by-field evaluation can be made
+		return EqualsUtil.areEqual(this.name, that.name)
+				&& EqualsUtil.areEqual(this.value, that.value);
+	}
+
+	/**
+	 * Returns a hash code value for this cell.
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		int result = HashCodeUtil.SEED;
+		result = HashCodeUtil.hash(result, name);
+		result = HashCodeUtil.hash(result, value);
+		return result;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Returns the textual representation of a exp.jsapar.types2.Cell.
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		StringBuilder representation = new StringBuilder();
+		representation.append("[name: " + this.name + ", value: ");
+
+		if (value instanceof Date) {
+			Date dateValue = (Date) value;
+			representation.append(DateUtil.formattedDateAsString(dateValue));
+		} else {
+			representation.append(String.valueOf(value));
+		}
+		representation.append("]");
+
+		return representation.toString();
+	}
 }

@@ -1,136 +1,180 @@
 package exp.jsapar.types2;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import exp.jsapar.filters.Filter;
+import exp.jsapar.filters.Filterable;
+import exp.jsapar.lists.SectionList;
 import exp.jsapar.utils.EqualsUtil;
 import exp.jsapar.utils.HashCodeUtil;
 import exp.jsapar.utils.ParamsUtil;
 import exp.jsapar.utils.StringUtil;
 
 /**
- * The document type. A document contains a number of paragraphs specified by a
- * list of {@link exp.jsapar.types2.Paragraph} objects.
+ * The document type. A document contains a number of sections specified by a
+ * list of {@link exp.jsapar.types2.Section} objects.
  * 
  * @author JsaPar Developer
  * 
- * @see exp.jsapar.types2.Paragraph
+ * @see exp.jsapar.types2.Section
  */
-public class Document implements Iterable<Paragraph>, Serializable, Cloneable {
-	// TODO Filterable
+public class Document implements Filterable<Section>, Serializable, Cloneable {
 	/**
 	 * The Serial version ID for this class.
 	 */
 	private static final long serialVersionUID = -8200923869340725883L;
 
 	/**
-	 * The list of paragraph objects in this document.
+	 * The list of section objects in this document.
 	 */
-	private List<Paragraph> paragraphs = null;
+	private SectionList sections = null;
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Constructs an empty exp.jsapar.types2.Document with zero
-	 * exp.jsapar.types2.Paragraph objects.
+	 * exp.jsapar.types2.Section objects.
 	 */
 	public Document() {
-		paragraphs = new ArrayList<Paragraph>();
+		sections = new SectionList();
 	}
 
 	/**
-	 * Gets the list of paragraphs.
+	 * Gets the list of sections.
 	 * 
-	 * @return the list containing the paragraphs.
+	 * @return the list containing the sections.
 	 */
-	public List<Paragraph> getParagraphs() {
-		return paragraphs;
+	public List<Section> getSections() {
+		return sections;
 	}
 
 	/**
-	 * Sets the list of paragraphs.
+	 * Sets the list of sections.
 	 * 
-	 * @param paragraphs
-	 *            the list containing the paragraphs.
+	 * @param sections
+	 *            the list containing the sections.
 	 */
-	public void setParagraphs(List<Paragraph> paragraphs) {
-		ParamsUtil.checkForNullPointer(paragraphs);
-		this.paragraphs = paragraphs;
+	public void setSections(SectionList sections) {
+		ParamsUtil.checkForNullPointer(sections);
+		this.sections = sections;
 	}
 
 	/**
-	 * Adds a paragraph to the list of paragraphs.
+	 * Adds a section to the list of sections.
 	 * 
-	 * @param paragraph
-	 *            the paragraph object to be added to the list of paragraphs.
+	 * @param section
+	 *            the section object to be added to the list of sections.
 	 */
-	public void addParagraph(Paragraph paragraph) {
-		ParamsUtil.checkForNullPointer(paragraph);
-		paragraphs.add(paragraph);
+	public void addSection(Section section) {
+		ParamsUtil.checkForNullPointer(section);
+		sections.add(section);
 	}
 
 	/**
-	 * Inserts a paragraph object in the list of paragraphs at the given index.
+	 * Inserts a section object in the list of sections at the given index.
 	 * 
-	 * @param paragraph
-	 *            the paragraph object to be inserted into the list of
-	 *            paragraphs.
+	 * @param section
+	 *            the section object to be inserted into the list of sections.
 	 * @param index
-	 *            the index in the list where the paragraph should be inserted.
+	 *            the index in the list where the section should be inserted.
 	 */
-	public void insertParagraph(Paragraph paragraph, int index) {
-		ParamsUtil.checkForNullPointer(paragraph);
-		paragraphs.add(index, paragraph);
+	public void insertSection(Section section, int index) {
+		ParamsUtil.checkForNullPointer(section);
+		sections.add(index, section);
 	}
 
 	/**
-	 * Gets the paragraph with the given index.<br>
+	 * Gets the section with the given index.<br>
 	 * <br>
 	 * Note: IndexOutOfBoundsExceptions are swallowed, and <tt>null</tt> is
 	 * returned instead.
 	 * 
 	 * @param index
-	 *            the index of the paragraph.
-	 * @return the paragraph at the given index or <tt>null</tt> when there is
-	 *         no paragraph at the given index.
+	 *            the index of the section.
+	 * @return the section at the given index or <tt>null</tt> when there is no
+	 *         section at the given index.
 	 */
-	public Paragraph getParagraph(int index) {
-		Paragraph paragraph = null;
+	public Section getSection(int index) {
+		Section section = null;
 		try {
-			paragraph = paragraphs.get(index);
+			section = sections.get(index);
 		} catch (IndexOutOfBoundsException e) {
 			// swallow exception and return null.
-			paragraph = null;
+			section = null;
 		}
-		return paragraph;
+		return section;
 	}
 
-    // public int getNumberOfParagraphs() {}
-	
+	// public int getNumberOfsections() {}
+
 	/**
-	 * Checks if the document is empty. If the list of paragraphs is empty, then
+	 * Checks if the document is empty. If the list of sections is empty, then
 	 * the document is empty too.
 	 * 
 	 * @return <tt>true</tt> when document is empty, <tt>false</tt> when
 	 *         document is not empty.
 	 */
 	public boolean isEmpty() {
-		return (paragraphs.isEmpty());
+		return (sections.isEmpty());
 	}
 
 	// ------------------------------------------------------------------------
-	
+
+	@Override
+	public void addFilters(Filter... filters) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Filter getFilter(String filterName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<? extends Filter> getFilters() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isFilterPresent(String filterName) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean hasFilters() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void removeAllFilters() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void removeFilter(Filter filter) {
+		// TODO Auto-generated method stub
+
+	}
+
+	// ------------------------------------------------------------------------
+
 	/**
-	 * Provides an iterator for iterating over the paragraph list.
+	 * Provides an iterator for iterating over the section list.
 	 */
 	@Override
-	public Iterator<Paragraph> iterator() {
+	public Iterator<Section> iterator() {
 		// TODO
 		return null;
 	}
-	
+
 	/**
 	 * Returns the textual representation of a exp.jsapar.types2.Document,
 	 * including all the elements within this exp.jsapar.types2.Document as a
@@ -140,20 +184,20 @@ public class Document implements Iterable<Paragraph>, Serializable, Cloneable {
 	 */
 	@Override
 	public String toString() {
-		Paragraph par = null;
+		Section par = null;
 		String str = null;
 		StringBuilder representation = new StringBuilder();
 
-		for (int index = 0; index < paragraphs.size(); index++) {
-			par = paragraphs.get(index);
+		for (int index = 0; index < sections.size(); index++) {
+			par = sections.get(index);
 			str = par.toString();
 			// check for null otherwise 'null' gets added as a string.
 			if (str != null) {
-				representation.append("Paragraph "
-						+ StringUtil.getLeadingZerosString(index, paragraphs.size())
-						+ index + ": ");
+				representation.append("Section "
+						+ StringUtil.getLeadingZerosString(index,
+								sections.size()) + index + ": ");
 				representation.append(str);
-				// TODO check if next paragraph is displayed afterwards
+				// TODO check if next section is displayed afterwards
 			}
 		}
 		return representation.toString();
@@ -177,8 +221,8 @@ public class Document implements Iterable<Paragraph>, Serializable, Cloneable {
 		// cast to native object is now safe
 		Document that = (Document) aThat;
 
-		// compare the content of the paragraph lists.
-		return EqualsUtil.areEqual(this.paragraphs, that.paragraphs);
+		// compare the content of the section lists.
+		return EqualsUtil.areEqual(this.sections, that.sections);
 	}
 
 	/**
@@ -189,8 +233,8 @@ public class Document implements Iterable<Paragraph>, Serializable, Cloneable {
 	@Override
 	public int hashCode() {
 		int result = HashCodeUtil.SEED;
-		for (Paragraph paragraph : paragraphs) {
-			result = HashCodeUtil.hash(result, paragraph);
+		for (Section section : sections) {
+			result = HashCodeUtil.hash(result, section);
 		}
 		return result;
 	}
