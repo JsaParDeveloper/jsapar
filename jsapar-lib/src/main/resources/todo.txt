@@ -1,0 +1,18 @@
+TODO for JsaPar 2.0 library:
+
+Make a maven-jsapar-plugin to:
+- validate the jsapar configuration file at build time
+- validate the jsapar schema files at build time
+- validate the jsapar annotations at build time
+- generate xml files based on annotations (remember: xml overrules annotated classes!)
+- generate xml mapping files based on the available jsapar schema's 
+  (first create the jsapar schemata from xml and annotation, then use these jsaparschemata
+   as input for the xml-mapper-creator-tool)
+- validate the xml mapping files for correct mapping of jsapar schemata.
+- Win the next Nobel Prize for feature-requester-of-the-year ;-)
+
+
+- change xml-element in jsapar.cfg.xsd: exception-threshold --> error-threshold
+- remove xml-element in jsapar.cfg.xsd: build-error-errorset
+
+- 

@@ -4,11 +4,11 @@
   <errorhandling>
     <parser>
       <exception-threshold>5</exception-threshold>
-      <build-error-resultset>true</build-error-resultset>
+      <build-error-errorset>true</build-error-errorset>
     </parser>
     <composer>
       <exception-threshold>5</exception-threshold>
-      <build-error-resultset>true</build-error-resultset>
+      <build-error-errorset>true</build-error-errorset>
     </composer>
   </errorhandling>
 </jsaparsettings>

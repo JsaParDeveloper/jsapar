@@ -1,6 +1,6 @@
 /**
- * TODO write some text :)
+ * All the examples for the JsaPar Library that demonstrates the capabilities of the library. 
  * 
- * @since 2.0
+ * @author JsaPar Developer
  */
 package org.jsapar.examples;

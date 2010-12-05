@@ -3,11 +3,11 @@
   <errorhandling>
     <parser>
       <exception-threshold>0</exception-threshold>
-      <build-error-resultset>false</build-error-resultset>
+      <build-error-errorset>false</build-error-errorset>
     </parser>
     <composer>
       <exception-threshold>0</exception-threshold>
-      <build-error-resultset>true</build-error-resultset>
+      <build-error-errorset>true</build-error-errorset>
     </composer>
   </errorhandling>
   <schemas>

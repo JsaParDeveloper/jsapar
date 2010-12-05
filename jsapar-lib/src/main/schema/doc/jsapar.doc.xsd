@@ -49,11 +49,11 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="paragraph" type="paragraphType"
+			<xs:element name="section" type="sectionType"
 				minOccurs="1" maxOccurs="unbounded" nillable="false">
 				<xs:annotation>
 					<xs:documentation>
-						The paragraph element which specifies the rules
+						The section element which specifies the rules
 						in a particular part of the document. 
 					</xs:documentation>
 				</xs:annotation>
@@ -90,10 +90,10 @@
 		</xs:attribute>
 	</xs:complexType>
 
-	<!-- ===================== -->
-	<!-- PARAGRAPH DEFINITIONS -->
-	<!-- ===================== -->
-	<xs:complexType name="paragraphType">
+	<!-- =================== -->
+	<!-- SECTION DEFINITIONS -->
+	<!-- =================== -->
+	<xs:complexType name="sectionType">
 		<xs:choice>
 			<xs:element name="delimited" type="delimitedContentType"
 				minOccurs="1" maxOccurs="1" />
@@ -103,7 +103,7 @@
 		<xs:attribute name="name" type="xs:string">
 			<xs:annotation>
 				<xs:documentation>
-					Specifies the name of the paragraph.
+					Specifies the name of the section.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -114,7 +114,7 @@
 				</xs:documentation>
 			</xs:annotation>
 			<!--
-				how to deal with paragraphs? is this the way to deal with
+				how to deal with section? is this the way to deal with
 				master-detail?
 			-->
 			<xs:simpleType>

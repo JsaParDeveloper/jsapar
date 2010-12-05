@@ -13,7 +13,8 @@
 	<packaging>jar</packaging>
 	<name>JsaPar Library</name>
 	<description>
-	  The JSaPar library that provides tools for working with flat and delimited files.
+		The JSaPar library that provides tools for working with flat and
+		delimited files.
 	</description>
 	<url>http://jsapar.tigris.org</url>
 	<inceptionYear>2010</inceptionYear>
@@ -162,9 +163,7 @@
 							<args>
 								<arg>-Xequals</arg>
 								<!-- We need a custom equalsStrategy! -->
-								<!--
-									<arg>-Xequals-equalsStrategyClass=org.jsapar.schema.cfg.CustomEqualsStrategy</arg>
-								-->
+								<!-- <arg>-Xequals-equalsStrategyClass=org.jsapar.schema.cfg.CustomEqualsStrategy</arg> -->
 								<arg>-XhashCode</arg>
 								<arg>-Xsetters</arg>
 								<!-- Do not generate package-info.java file -->
@@ -199,10 +198,7 @@
 							<!-- Only set this to TRUE when generateDirectories are DIFFERENT! -->
 							<removeOldOutput>true</removeOldOutput>
 							<extension>true</extension>
-							<!--
-								See:
-								http://confluence.highsource.org/display/J2B/JAXB2+Basics+Plugins
-							-->
+							<!-- See: http://confluence.highsource.org/display/J2B/JAXB2+Basics+Plugins -->
 							<args>
 								<!-- Do not generate package-info.java file -->
 								<param>-npa</param>
@@ -227,7 +223,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>

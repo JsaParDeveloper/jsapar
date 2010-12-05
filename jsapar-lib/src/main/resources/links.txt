@@ -28,13 +28,17 @@ http://www.javaworld.com/javaworld/jw-08-2005/jw-0808-xml.html
 
 Design Patterns:
 http://en.wikipedia.org/wiki/Design_Patterns
+http://en.wikipedia.org/wiki/Builder_pattern
 
 JUnit:
 http://www.cavdar.net/2008/07/21/junit-4-in-60-seconds/
+http://weblogs.java.net/blog/johnsmart/archive/2010/07/06/running-junit-tests-parallel-maven
+http://www.gunjandoshi.com/2005/06/14/junit-40-in-10-minutes-a-quick-reference-guide/
 
 JFileHelpers:
 http://www.jfilehelpers.com/index_en.php
 http://jfilehelpers.com/examples_en.php
+http://www.filehelpers.com/
 
 New Line Character:
 http://en.wikipedia.org/wiki/Newline
@@ -46,6 +50,13 @@ Calling this method to terminate each output line is therefore preferred to writ
 
 CSV Libraries:
 http://ostermiller.org/utils/CSV.html
+http://supercsv.sourceforge.net/
+http://www.filehelpers.com/
+http://sourceforge.net/projects/javacsv/
+http://opencsv.sourceforge.net/
+http://flatpack.sourceforge.net/
+http://commons.apache.org/sandbox/csv/
+http://poi.apache.org/
 
 Paragraphs:
 http://www.suite101.com/content/seven-types-of-paragraphs-a99946
@@ -71,6 +82,9 @@ http://www.java2s.com/Code/Java/File-Input-Output/CircularCharBuffer.htm
 http://ostermiller.org/utils/CircularBuffer.html
 http://ostermiller.org/convert_java_writer_reader.html
 
+Round real's
+http://www.rgagnon.com/javadetails/java-0016.html
+http://www.java-tips.org/java-se-tips/java.math/how-to-round-a-double.html
 
 Important: how to read files fast:
 http://nadeausoftware.com/articles/2008/02/java_tip_how_read_files_quickly#Benchmarks
@@ -79,6 +93,9 @@ Events and Threads:
 http://www.ibm.com/developerworks/java/library/j-jtp07265/index.html
 http://forums.sun.com/thread.jspa?threadID=5418655
 http://java.sun.com/products/jfc/tsc/articles/threads/threads1.html
+
+Java Language Specifications, 3rd edition:
+http://java.sun.com/docs/books/jls/
 
 Javadoc:
 http://www.javapractices.com/topic/TopicAction.do?Id=60
@@ -95,6 +112,7 @@ http://www.stylusstudio.com/xmldev/200503/post50110.html
 
 Exceptions:
 http://tutorials.jenkov.com/java-exception-handling/exception-wrapping.html
+http://onjava.com/pub/a/onjava/2003/11/19/exceptions.html
 
 File separator:
 http://stackoverflow.com/questions/6639/how-should-i-load-files-into-my-java-application
@@ -104,3 +122,81 @@ http://generally.wordpress.com/2007/10/24/removing-items-in-a-list-while-iterati
 
 Equals and HashCode:
 http://www.javapractices.com/topic/TopicAction.do?Id=17
+http://www.javapractices.com/topic/TopicAction.do?Id=28
+http://www.javapractices.com/topic/TopicAction.do?Id=10
+http://stevenharman.net/blog/archive/2006/04/27/HowTo_Override_equals_and_hashCode_Part1.aspx
+http://stevenharman.net/blog/archive/2006/04/28/HowTo_Override_equals_and_hashCode_Part2.aspx
+http://www.artima.com/lejava/articles/equality.html
+
+SLF4J:
+http://runjva.appspot.com/logging101/index.html
+
+Return-Type-Based Method Overloading in Java:
+http://today.java.net/article/2008/07/29/return-type-based-method-overloading-java
+
+Generics:
+http://download.oracle.com/javase/tutorial/java/generics/erasure.html
+http://www.angelikalanger.com/GenericsFAQ/JavaGenericsFAQ.html
+http://www.java2s.com/Code/Java/Language-Basics/Asimplegenericclass.htm
+http://www.oracle.com/technetwork/articles/javase/generics-136597.html
+http://tutorials.jenkov.com/java-generics/index.html
+http://home.cogeco.ca/~ve3ll/jatutor8.htm
+
+JDK Profiler:
+http://download.oracle.com/javase/6/docs/technotes/tools/share/jvisualvm.html
+
+UUID:
+http://www.javapractices.com/topic/TopicAction.do?Id=56
+http://download.oracle.com/javase/6/docs/api/java/util/UUID.html
+
+Enums:
+http://java.dzone.com/blogs/mrjohnsmart/2008/05/19/a-short-primer-java-enums-part
+
+Annotations:
+http://en.wikipedia.org/wiki/Java_annotation
+http://technology.amis.nl/blog/188/java-50-tiger-metadata-and-annotations-introduction-and-thoughts-on-application
+http://www.ibm.com/developerworks/java/library/j-annotate1/
+http://www.ibm.com/developerworks/library/j-annotate1/
+http://www.ibm.com/developerworks/library/j-annotate2.html
+http://www.javaworld.com/javaworld/jw-08-2005/jw-0801-annotations.html
+http://download.oracle.com/javase/tutorial/java/javaOO/annotations.html
+http://www.javaworld.com/javaworld/jw-07-2004/jw-0719-tiger3.html
+http://bill.burkecentral.com/2008/01/14/scanning-java-annotations-at-runtime/
+http://www.artima.com/forums/flat.jsp?forum=276&thread=179769
+http://yourmitra.wordpress.com/2008/02/15/java-custom-annotations-runtime-and-compile-build-time-processing/
+http://www.javalobby.org/java/forums/t17876.html
+
+API design in java:
+http://wiki.apidesign.org/wiki/FriendPackages
+http://wiki.apidesign.org/wiki/TheAPIBook
+
+Apt: (should we use: apt-maven-plugin OR maven-annotation-plugin ??)
+http://mojo.codehaus.org/apt-maven-plugin/
+http://code.google.com/p/maven-annotation-plugin/
+http://download.oracle.com/javase/1.5.0/docs/guide/apt/GettingStarted.html
+
+Generation site documentation:
+http://maven.apache.org/plugins/maven-pdf-plugin/usage.html
+
+Better designing:
+http://www.workingfrog.org/
+http://clarkware.com/software/JDepend.html
+http://chasethedevil.blogspot.com/2006/10/how-jdepend-changed-my-java-packaging.html
+http://www.artima.com/lejava/articles/designprinciples.html
+
+Iterators:
+http://chaoticjava.com/posts/how-to-write-iterators-really-really-fast/
+
+Liquibase:
+http://www.ibm.com/developerworks/library/j-ap08058/
+
+Resource bundles:
+http://download.oracle.com/javase/tutorial/i18n/resbundle/concept.html
+http://java.sun.com/developer/technicalArticles/Intl/ResourceBundles/
+
+DocBook:
+http://www.syntext.com/downloads/serna-free/
+http://www.syntext.com/products/serna/docbook-xml-format-support/
+
+Static methods:
+http://www.javaworld.com/javaworld/javaqa/2001-11/03-qa-1121-mrhappy.html

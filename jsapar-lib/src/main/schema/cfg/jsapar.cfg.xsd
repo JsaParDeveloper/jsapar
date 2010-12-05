@@ -84,20 +84,20 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="build-error-resultset" type="xs:boolean"
+			<xs:element name="build-error-errorset" type="xs:boolean"
 				minOccurs="0" maxOccurs="1" nillable="false" default="true">
 				<xs:annotation>
 					<xs:documentation>
-						The build-error-resultset element. Indicates
+						The build-error-errorset element. Indicates
 						whether an error
-						resultset should be constructed or not. When the
+						errorset should be constructed or not. When the
 						library user
 						is not
-						interested in the actual resultset itself, but
+						interested in the actual errorset itself, but
 						only want
 						to know if the source/target was successfully processed
 						or not,
-						the internal construction of this resultset can be skipped.
+						the internal construction of this errorset can be skipped.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
