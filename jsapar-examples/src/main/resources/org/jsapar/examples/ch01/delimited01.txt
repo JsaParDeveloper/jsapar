@@ -1,0 +1,8 @@
+Sales per region, Africa, Asia, Europe
+Jan, 34, 67, 56
+Feb, 36, 87, 78
+Mar, 31, 56, 88
+Apr, 29, 67, 92
+May, 54, 71, 68
+Jun, 42, 65, 82
+
