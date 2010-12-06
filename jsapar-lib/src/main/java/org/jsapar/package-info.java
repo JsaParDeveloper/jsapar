@@ -25,7 +25,8 @@
  * The input of the parser is a java.io.Reader object that represents the source document, which can be any of 
  * the derived classes of the java.io.Reader class. 
  * The output of the parser is in successful situations a org.jsapar.types.Document object that contains a list
- * of org.jsapar.types.Line objects which contains a list of org.jsapar.types.Cell objects.<br>
+ * of org.jsapar.types.Section objects which contains a list of org.jsapar.types.Line objects, which contains a
+ * list of org.jsapar.types.Cell objects.<br>
  * <br> 
  * The input of the converter is the same as for a parser. The output of the converter is in successful 
  * situations a java.io.Writer object, that represents the destination document. First the converter parses the
@@ -42,7 +43,7 @@
  * 
  * <h2>Non successful situations</h2>
  * When the parser, converter, composer or splitter cannot be successful, for whatever reason, the cause or causes
- * of the failure is stored in a ErrorSet object that can be retrieved from the parser/converter/composer/splitter
+ * of the failure is stored in an ErrorSet object that can be retrieved from the parser/converter/composer/splitter
  * after an exception was received from the library. A org.jsapar.error.ErrorSet is only constructed when errors
  * or other failures arise within the parser/converter/composer/splitter.<br>
  * 
@@ -50,10 +51,8 @@
  * For more information about the org.jsapar.types.Document structure and how to compose a new <tt>Document</tt>
  * object or retrieve information from a <tt>Document</tt> object, see the information provided in the 
  * org.jsapar.types package.
- * 
  *   
  * @author JsaPar Developer
- * @since 2.0 
  *
  * @see java.io.Reader
  * @see java.io.Writer
@@ -64,6 +63,7 @@
  * @see org.jsapar.Splitter
  * 
  * @see org.jsapar.types.Document
+ * @see org.jsapar.types.Section
  * @see org.jsapar.types.Line
  * @see org.jsapar.types.Cell
  * 
