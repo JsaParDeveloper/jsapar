@@ -3,7 +3,6 @@ package exp.jsapar.types2;
 import java.io.Serializable;
 import java.util.Date;
 
-import exp.jsapar.utils.DateUtil;
 import exp.jsapar.utils.EqualsUtil;
 import exp.jsapar.utils.HashCodeUtil;
 import exp.jsapar.utils.ParamsUtil;
@@ -80,26 +79,30 @@ public class Cell implements Serializable, Cloneable {
 		this.name = name;
 	}
 
-	/**
-	 * Constructs an {@link exp.jsapar.types2.Cell} with a cell name and cell
-	 * value specific to the given generic type definition.
-	 * 
-	 * @param <T>
-	 *            the data type that is used for the value of the cell. The data
-	 *            type must be one of the supported data types, see class
-	 *            comments in {@link exp.jsapar2.types.Cell} for details.
-	 * @param name
-	 *            the name of the cell. The name must be a valid String that is
-	 *            not {@code null} and is not empty.
-	 * @param value
-	 *            the value of the cell. The value can be set to null.
-	 * @throws NullPointerException
-	 *             thrown when cell name is {@code null}.
-	 * @throws IllegalArgumentException
-	 *             thrown when data type of the cell is not supported, or when
-	 *             cell name is empty.
-	 */
+    /**
+     * Should be protected!! Then remove the checks from the constructor, they are only needed in
+     * the factory.
+     * 
+     * Constructs an {@link exp.jsapar.types2.Cell} with a cell name and cell value specific to the
+     * given generic type definition.
+     * 
+     * @param <T>
+     *            the data type that is used for the value of the cell. The data type must be one of
+     *            the supported data types, see class comments in {@link exp.jsapar2.types.Cell} for
+     *            details.
+     * @param name
+     *            the name of the cell. The name must be a valid String that is not {@code null} and
+     *            is not empty.
+     * @param value
+     *            the value of the cell. The value can be set to null.
+     * @throws NullPointerException
+     *             thrown when cell name is {@code null}.
+     * @throws IllegalArgumentException
+     *             thrown when data type of the cell is not supported, or when cell name is empty.
+     */
+	@Deprecated
 	public <T> Cell(String name, T value) {
+	    
 		ParamsUtil.checkForNullPointer(name);
 		ParamsUtil.checkForEmptyString(name);
 
@@ -111,6 +114,26 @@ public class Cell implements Serializable, Cloneable {
 					"The data type of the cell is not supported.");
 		}
 	}
+
+    /**
+     * 
+     * @param <T>
+     * @param name
+     * @param value
+     * @return A newly created cell
+     */
+    public static <T> Cell makeCell(String name, T value) {
+        ParamsUtil.checkForNullPointer(name);
+        ParamsUtil.checkForEmptyString(name);
+
+        if (!TypesUtil.isValidDataType(value)) {
+            throw new IllegalArgumentException("The data type of the cell is not supported.");
+        }
+
+        if (value instanceof Date)
+            return new DateCell(name, value);
+        return new Cell(name, value);
+    }
 
 	// ------------------------------------------------------------------------
 
@@ -208,18 +231,23 @@ public class Cell implements Serializable, Cloneable {
 	public String toString() {
 		StringBuilder representation = new StringBuilder();
 		representation.append("[name: " + this.name + ", value: ");
-
-		if (value instanceof Date) {
-			Date dateValue = (Date) value;
-			representation.append(DateUtil.formattedDateAsString(dateValue));
-		} else {
-			representation.append(String.valueOf(value));
-		}
+		representation.append(valueAsString());
 		representation.append("]");
 
 		return representation.toString();
 	}
+	
+    /**
+     * @return The value as a string with standard toString method.
+     */
+    public String valueAsString() {
+        return String.valueOf(value);
+    }
 
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
     @Override
     public Object clone() throws CloneNotSupportedException {
         Cell clone = (Cell) super.clone();
