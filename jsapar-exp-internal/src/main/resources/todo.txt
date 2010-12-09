@@ -2,3 +2,11 @@
 02. implement filtering
 03. implement CellList, LineList, SectionList
 04. add extra xml element to jsapar.cfg.xsd -> language (optional element)
+
+http://willcode4beer.com/opinion.jsp?set=annotations_gotchas_best_practices
+http://download.oracle.com/javase/1.5.0/docs/guide/language/annotations.html
+http://download.oracle.com/javase/tutorial/java/javaOO/annotations.html
+http://download.oracle.com/javase/6/docs/technotes/guides/apt/GettingStarted.html
+http://download.oracle.com/javase/6/docs/api/javax/annotation/processing/package-summary.html
+http://download.oracle.com/javase/6/docs/api/javax/lang/model/element/package-summary.html
+http://www.javabeat.net/articles/30-annotations-in-java-50-1.html

@@ -1,6 +1,7 @@
 package exp.jsapar.types2;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -8,17 +9,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import exp.jsapar.exception.AnnotationException;
 import exp.jsapar.filters.Filter;
 import exp.jsapar.filters.Filterable;
 import exp.jsapar.lists.CellList;
+import exp.jsapar.utils.AnnotationUtil;
 import exp.jsapar.utils.EqualsUtil;
 import exp.jsapar.utils.HashCodeUtil;
 import exp.jsapar.utils.ParamsUtil;
 import exp.jsapar.utils.StringUtil;
 
 /**
- * The line type within the Section {@link exp.jsapar.types2.Section} object.
- * A line contains a number of cells specified by a list of
+ * The line type within the Section {@link exp.jsapar.types2.Section} object. A
+ * line contains a number of cells specified by a list of
  * {@link exp.jsapar.types2.Cell} objects.<br>
  * 
  * The line object can be iterated and filtered.
@@ -28,7 +31,6 @@ import exp.jsapar.utils.StringUtil;
  * @see exp.jsapar.types2.Section
  * @see exp.jsapar.types2.Cell
  */
-// TODO completely rewrite to use a CellList!
 public class Line implements Filterable<Cell>, Comparable<Line>, Serializable,
 		Cloneable {
 	/**
@@ -39,6 +41,8 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable,
 	 * The list of cell objects in this line.
 	 */
 	private CellList cells = null;
+
+	// TODO completely rewrite to use a CellList!
 
 	// ------------------------------------------------------------------------
 
@@ -51,32 +55,79 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable,
 	}
 
 	/**
-	 * Gets the list of cells. This method always returns the <tt>full</tt> list
-	 * of cells without any filtering of cells.
+	 * Constructs a {@link exp.jsapar.types2.Line} object with the
+	 * {@link exp.jsapar.types2.Cell} objects that are defined within the
+	 * specified user objects. These user objects must contain JsaPar
+	 * annotations: @Line for the class and @Cell for the members of that class.
 	 * 
-	 * @return the list containing the cells.
+	 * @param objects
+	 *            the user objects which are annotated with JsaPar annotations.
+	 * 
+	 * @throws AnnotationException
+	 *             thrown when a {@code @Line} annotation was not found in the
+	 *             specified class(es), or when no {@code @Cell} annotation was
+	 *             found in the specified class(es) for it's members.
 	 */
-	public List<Cell> getCells() {
-		return cells;
+	public Line(Object... objects) {
+		this();
+		for (Object obj : objects) {
+			ParamsUtil.checkForNullPointer(obj);
+			processAnnotatedObject(obj);
+		}
 	}
 
-	/**
-	 * Sets the list of cells. This method is always applied to the
-	 * <tt>full</tt> list of cells.
-	 * 
-	 * @param cells
-	 *            the list containing the cells.
-	 * @throws IllegalArgumentException
-	 *             thrown when duplicate cell detected.
-	 * @throws NullPointerException
-	 *             thrown when cell name is {@code null}.
-	 */
-	public void setCells(List<Cell> cells) {
-		for (Cell cell : cells) {
-			ParamsUtil.checkForNullPointer(cell);
+	private void processAnnotatedObject(final Object obj) {
+		// check objects that are specified for valid JsaPar annotations:
+		// @Line and @Cell.
+
+		// TODO throw exception when annotation missing for user class
+		// (@Line), or when no @Cell annotations were discovered in the
+		// user class.
+		Object cellValue = null;
+		Cell cell = null;
+
+		// TODO read the @Line annotation attributes.
+		// TODO check for duplicate cell names.
+		// TODO check cell names in JsaPar Schema.
+		// TODO what to do with the cell names that are not listed in a line
+		// definition of the schema?
+		// ignore them? throw exception?
+		// TODO how to deal with arrays of primitives?
+		Class<?> cls = obj.getClass();
+		List<Field> annotatedCellFields = AnnotationUtil
+				.getCellAnnotatedFields(cls);
+
+		if (annotatedCellFields.isEmpty()) {
+			throw new AnnotationException(
+					"No JsaPar specific annotations found in given class.");
 		}
-		setCellListAndCellMap(cells); // TODO rewrite to CellList
+
+		for (Field field : annotatedCellFields) {
+			// suppress Java language access checking for the current field.
+			field.setAccessible(true);
+
+			String cellName = AnnotationUtil
+					.getCellNameFromAnnotatedField(field);
+			try {
+				cellValue = field.get(obj);
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+			} catch (IllegalAccessException e) {
+				// Intentionally swallowed because the accessibility is actively
+				// forced by setting the accessibility of the field to true,
+				// before it is accessed.
+			}
+
+			if (cellValue != null) {
+				cell = new Cell(cellName, cellValue);
+				cells.add(cell);
+			}
+			// restore Java language access checking for the current field.
+			field.setAccessible(false);
+		}
 	}
+
+	// ------------------------------------------------------------------------
 
 	/**
 	 * Adds a cell to the list of cells. This method is always applied to the
@@ -92,6 +143,77 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable,
 	public void addCell(Cell cell) {
 		ParamsUtil.checkForNullPointer(cell);
 		setCellListItemAndCellMapItem(cell); // TODO rewrite
+	}
+
+	public void addCells(Object... annotatedObjects) {
+		// TODO add cells coming from the annotated user classes
+
+		// duplicate code: see ctor!
+		for (Object obj : annotatedObjects) {
+			if (obj != null) {
+				// change to util static class
+			}
+			// check objects that are specified for valid JsaPar annotations:
+			// @Line and @Cell.
+			// TODO throw exception when annotation missing for user class
+			// (@Line), or when no @Cell annotations were discovered in the
+			// user class.
+		}
+
+		throw new AnnotationException(""); // TODO
+	}
+
+	/**
+	 * Gets the cell with the given index.<br>
+	 * <br>
+	 * Note: IndexOutOfBoundsExceptions are swallowed, and {@code null} is
+	 * returned instead.
+	 * 
+	 * @param index
+	 *            the index of the cell.
+	 * @return the cell at the given index or {@code null} when there is no cell
+	 *         at the given index.
+	 */
+	public Cell getCell(int index) {
+		Cell retval = null;
+		try {
+			retval = cells.get(index);
+		} catch (IndexOutOfBoundsException e) {
+			retval = null;
+		}
+		return retval;
+	}
+
+	/**
+	 * Gets the cell with the given name.
+	 * 
+	 * @param name
+	 *            the name of the cell.
+	 * @return the cell with the given name or {@code null} when there is no
+	 *         cell with that name.
+	 */
+	public Cell getCell(String name) {
+		ParamsUtil.checkForNullPointer(name);
+		return cells.get(name);
+	}
+
+	/**
+	 * Gets the list of cells. This method always returns the <tt>full</tt> list
+	 * of cells without any filtering of cells.
+	 * 
+	 * @return the list containing the cells.
+	 */
+	public List<Cell> getCells() {
+		return cells;
+	}
+
+	/**
+	 * Returns the number of cells available in this Line object.
+	 * 
+	 * @return the number of cells.
+	 */
+	public int getNumberOfCells() {
+		return cells.size();
 	}
 
 	/**
@@ -116,6 +238,26 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable,
 		// }
 		cells.add(index, cell);
 		// cellsByName.put(cell.getName(), cell);
+	}
+
+	/**
+	 * TODO
+	 * 
+	 * @return
+	 */
+	public boolean containsCell(String name) {
+		return cells.contains(name);
+	}
+
+	/**
+	 * Checks if the line is empty. If the list of cells is empty, then the line
+	 * is empty too.
+	 * 
+	 * @return {@code true} when line is empty, {@code false} when line is not
+	 *         empty.
+	 */
+	public boolean isEmpty() {
+		return (cells.isEmpty());
 	}
 
 	/**
@@ -156,7 +298,11 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable,
 	}
 
 	/**
-	 * Replaces a cell object from the list with the given cell object.
+	 * Replaces a cell object from the list with the given cell object.<br>
+	 * The cell that is being replaced has the same cell name as the new cell.
+	 * If you want to replace a cell in the list that has a different cell name
+	 * than the one in the list, use the {@link #replaceCell(Cell, String)}
+	 * method.
 	 * 
 	 * @param cell
 	 *            the cell object to be replaced with the old cell in the list
@@ -199,50 +345,40 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable,
 	}
 
 	/**
-	 * Gets the cell with the given index.<br>
-	 * <br>
-	 * Note: IndexOutOfBoundsExceptions are swallowed, and {@code null} is
-	 * returned instead.
+	 * Replaces a cell object from the list with the specified cell name with
+	 * the given cell object. Use this method when the cell name of the new cell
+	 * differs from the old cell. If cell names are equal, use the
+	 * {@link #replaceCell(Cell)} method instead.
 	 * 
-	 * @param index
-	 *            the index of the cell.
-	 * @return the cell at the given index or {@code null} when there is no cell
-	 *         at the given index.
+	 * @param cell
+	 *            the cell object to be replaced with the old cell in the list
+	 *            of cells.
+	 * @param cellName
+	 *            the name of the old cell that is being replaced.
+	 * 
+	 * @return the cell object from the list that is replaced by the new cell.
 	 */
-	public Cell getCell(int index) {
-		Cell retval = null;
-		try {
-			retval = cells.get(index);
-		} catch (IndexOutOfBoundsException e) {
-			retval = null;
+	public Cell replaceCell(Cell cell, String cellName) {
+		// TODO
+		return null;
+	}
+
+	/**
+	 * Sets the list of cells. This method is always applied to the
+	 * <tt>full</tt> list of cells.
+	 * 
+	 * @param cells
+	 *            the list containing the cells.
+	 * @throws IllegalArgumentException
+	 *             thrown when duplicate cell detected.
+	 * @throws NullPointerException
+	 *             thrown when cell name is {@code null}.
+	 */
+	public void setCells(List<Cell> cells) {
+		for (Cell cell : cells) {
+			ParamsUtil.checkForNullPointer(cell);
 		}
-		return retval;
-	}
-
-	/**
-	 * Gets the cell with the given name.
-	 * 
-	 * @param name
-	 *            the name of the cell.
-	 * @return the cell with the given name or {@code null} when there is no
-	 *         cell with that name.
-	 */
-	public Cell getCell(String name) {
-		Cell retval = null;
-		ParamsUtil.checkForNullPointer(name);
-		// TODO get cell by name
-		return retval;
-	}
-
-	/**
-	 * Checks if the line is empty. If the list of cells is empty, then the line
-	 * is empty too.
-	 * 
-	 * @return {@code true} when line is empty, {@code false} when line is not
-	 *         empty.
-	 */
-	public boolean isEmpty() {
-		return (cells.isEmpty());
+		setCellListAndCellMap(cells); // TODO rewrite to CellList
 	}
 
 	// ------------------------------------------------------------------------

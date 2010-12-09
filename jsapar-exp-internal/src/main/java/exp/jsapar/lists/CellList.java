@@ -93,6 +93,7 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
 	public boolean add(Cell cell) {
 		if (!contains(cell)) {
 			allCells.add(cell);
+			allCellsByName.put(cell.getName(), cell);
 			buildfilteredCellList();
 			return true;
 		}
@@ -241,6 +242,25 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
 	}
 
 	/**
+	 * Returns {@code true} if the cell list contains a cell with the specified
+	 * cell name.
+	 * 
+	 * @return {@code true} if the cell list contains a cell with the specified
+	 *         cell name.
+	 */
+	public boolean contains(String cellName) {
+		ParamsUtil.checkForNullPointer(cellName);
+
+		// check if a cell exists with the specified name
+		for (Cell cell : allCells) {
+			if (cell.getName().equals(cellName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Returns {@code true} if this list contains all of the cell elements of
 	 * the specified collection.
 	 * 
@@ -273,6 +293,20 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
 		return allCells.get(index);
 	}
 
+	/**
+	 * Gets the cell element with the specified name.
+	 * 
+	 * @param name
+	 *            the name of the cell element.
+	 * @return the cell element that matched the specified name, or {@code null}
+	 *         when no element could be found.
+	 */
+	public Cell get(String name) {
+		if (allCellsByName.containsKey(name)) {
+			return allCellsByName.get(name);
+		}
+		return null;
+	}
 
 	/**
 	 * Returns the index of the first occurrence of the specified element in the
@@ -430,6 +464,10 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
 		return null;
 	}
 
+	// TODO should we also supply a subList(String cellName1, String cellName2)
+	// which supplies a sub list of cells that is within "range" of cell with
+	// cellname1 and cell with cellname2.
+
 	/**
 	 * Returns an array containing all the cell elements from the complete
 	 * collection in proper sequence (from first to last cell element).
@@ -473,7 +511,8 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
 	 * filtering wouldn't be deactivated, then the filtered collection would be
 	 * rebuild from scratch using the complete collection again.
 	 */
-	@Override // TODO should we really have this operation?
+	@Override
+	// TODO should we really have this operation?
 	public void clearFiltered() {
 		deactivateFiltering();
 		filteredCells.clear();
