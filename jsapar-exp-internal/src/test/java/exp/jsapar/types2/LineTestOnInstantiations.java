@@ -7,9 +7,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import exp.jsapar.UserClass;
-import exp.jsapar.types2.LineDefinitions.LineUserClass1;
-
 /**
  * Unit tests for testing the instantiation of Line objects with divergent data
  * types.
