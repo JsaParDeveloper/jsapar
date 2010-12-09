@@ -10,10 +10,12 @@ import exp.jsapar.utils.DateUtil;
 public class LineDefinitions {
 	private static LineDefinitions ld = new LineDefinitions();
 
-	public static LineUserClass1 getLineUserClass1() {
-		return ld.new LineUserClass1();
+	public static LineDefinitions getLineDefinitions() {
+		return ld;
 	}
 
+	// ------------------------------------------------------------------------
+	
 	@Line
 	class LineUserClass1 {
 		@Cell
@@ -71,6 +73,8 @@ public class LineDefinitions {
 			this.age = age;
 		}
 	}
+	
+	// ------------------------------------------------------------------------
 
 	@Line
 	class LineUserClass2 {
@@ -104,4 +108,85 @@ public class LineDefinitions {
 			this.lotteryNumbers = lotteryNumbers;
 		}
 	}
+
+	// ------------------------------------------------------------------------
+	
+	// no @Line annotation here!
+	class LineUserClass3 {
+		@Cell
+		private String credtiCardNumber;
+		@Cell
+		private String creditCardOwner;
+		
+		private boolean blocked = false;
+
+		public String getCredtiCardNumber() {
+			return credtiCardNumber;
+		}
+
+		public void setCredtiCardNumber(String credtiCardNumber) {
+			this.credtiCardNumber = credtiCardNumber;
+		}
+
+		public String getCreditCardOwner() {
+			return creditCardOwner;
+		}
+
+		public void setCreditCardOwner(String creditCardOwner) {
+			this.creditCardOwner = creditCardOwner;
+		}
+
+		public boolean isBlocked() {
+			return blocked;
+		}
+
+		public void setBlocked(boolean blocked) {
+			this.blocked = blocked;
+		}
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	@Line
+	class LineUserClass4 {
+		// no @Cell annotations here!
+		private String document;
+		private String file;
+		private String archive;
+		
+		public String getDocument() {
+			return document;
+		}
+		public void setDocument(String document) {
+			this.document = document;
+		}
+		public String getFile() {
+			return file;
+		}
+		public void setFile(String file) {
+			this.file = file;
+		}
+		public String getArchive() {
+			return archive;
+		}
+		public void setArchive(String archive) {
+			this.archive = archive;
+		}
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	// no annotations at all!
+	class LineUserClass5 {
+		private boolean useless = true;
+
+		public void setUseless(boolean useless) {
+			this.useless = useless;
+		}
+
+		public boolean isUseless() {
+			return useless;
+		}
+	}
+	
 }
