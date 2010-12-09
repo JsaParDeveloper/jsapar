@@ -69,8 +69,8 @@ public class CellDemo {
 		
 		// Boolean
 		Cell<Boolean> booleanCell = new Cell<Boolean>(true);
-		stringCell.showType();
-		String b = stringCell.getValue();
+		booleanCell.showType();
+		boolean b = booleanCell.getValue();
 		System.out.println("value: " + b);
 		System.out.println("\n");
 		
@@ -83,7 +83,7 @@ public class CellDemo {
 		System.out.println("\n");
 
 		// Empty ???
-		Cell emptyCell = new Cell();
+		Cell<?> emptyCell = new Cell<Object>();
 		emptyCell.showType();
 		// What kind of object comes out of an Empty cell?
 		Object e = emptyCell.getValue();

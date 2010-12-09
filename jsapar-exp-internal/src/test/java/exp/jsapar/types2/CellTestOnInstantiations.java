@@ -894,5 +894,6 @@ public class CellTestOnInstantiations {
 		assertEquals(cellValue, cell.getValue());
 	}
 
+
 	// ------------------------------------------------------------------------
 }

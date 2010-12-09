@@ -219,4 +219,14 @@ public class Cell implements Serializable, Cloneable {
 
 		return representation.toString();
 	}
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Cell clone = (Cell) super.clone();
+        if (value instanceof Date) {
+            clone.setValue(((Date)this.getValue()).clone());
+        } 
+        return clone;
+    }	
+	
 }

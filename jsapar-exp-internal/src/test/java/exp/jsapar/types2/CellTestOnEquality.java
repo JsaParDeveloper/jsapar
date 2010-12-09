@@ -1,5 +1,6 @@
 package exp.jsapar.types2;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 
@@ -32,8 +33,25 @@ public class CellTestOnEquality {
 		cellTwo = new Cell("two", new Byte("0"));
 
 		assertNotSame(cellOne, cellTwo);
+                assertFalse(cellOne.equals(cellTwo));
 	}
 
+        /**
+         * Tests equality of cells with Byte values. Unequal cells.
+         */
+        @Test
+        public void equalityOfByteCellsEqualNameUnequal() {
+                Cell cellOne = null;
+                Cell cellTwo = null;
+
+                cellOne = new Cell("one", new Byte("6"));
+                cellTwo = new Cell("one", new Byte("0"));
+
+                assertNotSame(cellOne, cellTwo);
+                assertFalse(cellOne.equals(cellTwo));
+        }
+
+        
 	/**
 	 * Tests equality of cells with Byte values. Equal cells.
 	 */
@@ -48,6 +66,21 @@ public class CellTestOnEquality {
 		assertEquals(cellOne, cellTwo);
 	}
 
+        /**
+         * Tests equality of cells with Byte values. Unequal cells.
+         */
+        @Test
+        public void equalityOfByteCellsUnequalNameEqual() {
+                Cell cellOne = null;
+                Cell cellTwo = null;
+
+                cellOne = new Cell("one", new Byte("6"));
+                cellTwo = new Cell("two", new Byte("6"));
+
+                assertNotSame(cellOne, cellTwo);
+                assertFalse(cellOne.equals(cellTwo));
+        }
+	
 	// ------------------------------------------------------------------------
 	// Cell value type: java.lang.Boolean
 	// ------------------------------------------------------------------------
@@ -262,7 +295,8 @@ public class CellTestOnEquality {
 		cellOne = new Cell("one", new Long(987654321));
 		cellTwo = new Cell("two", new Long(123456789));
 
-		assertNotSame(cellOne, cellTwo);
+                assertNotSame(cellOne, cellTwo);
+		assertFalse(cellOne.equals(cellTwo));
 	}
 
 	/**
@@ -294,7 +328,8 @@ public class CellTestOnEquality {
 		cellOne = new Cell("one", new Short((short) 321));
 		cellTwo = new Cell("two", new Short((short) 123));
 
-		assertNotSame(cellOne, cellTwo);
+                assertNotSame(cellOne, cellTwo);
+                assertFalse(cellOne.equals(cellTwo));
 	}
 
 	/**
