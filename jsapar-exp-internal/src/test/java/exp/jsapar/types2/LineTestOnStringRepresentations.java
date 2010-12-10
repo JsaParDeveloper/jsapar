@@ -67,7 +67,7 @@ public class LineTestOnStringRepresentations {
 
         Line line = new Line(cell1, cell2, cell3, cell4, cell5);
         String actualResult1 = line.toString();
-        line.addCell(cell6, cell7, cell8, cell9, cell10, cell11);
+        line.addCells(cell6, cell7, cell8, cell9, cell10, cell11);
         String actualResult2 = line.toString();
         assertEquals(expectedResult1, actualResult1);
         assertEquals(expectedResult2, actualResult2);

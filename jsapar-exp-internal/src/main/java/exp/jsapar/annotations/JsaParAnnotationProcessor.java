@@ -12,45 +12,39 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 
+//TODO implement all methods
 public class JsaParAnnotationProcessor implements Processor {
 
-	@Override
-	public Set<String> getSupportedOptions() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Set<String> getSupportedOptions() {
+        return null;
+    }
 
-	@Override
-	public Set<String> getSupportedAnnotationTypes() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Set<String> getSupportedAnnotationTypes() {
+        return null;
+    }
 
-	@Override
-	public SourceVersion getSupportedSourceVersion() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return null;
+    }
 
-	@Override
-	public void init(ProcessingEnvironment processingEnv) {
-		// TODO Auto-generated method stub
+    @Override
+    public void init(ProcessingEnvironment processingEnv) {
 
-	}
+    }
 
-	@Override
-	public boolean process(Set<? extends TypeElement> annotations,
-			RoundEnvironment roundEnv) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        return false;
+    }
 
-	@Override
-	public Iterable<? extends Completion> getCompletions(Element element,
-			AnnotationMirror annotation, ExecutableElement member,
-			String userText) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+    @Override
+    public Iterable<? extends Completion> getCompletions(Element element,
+                                                         AnnotationMirror annotation,
+                                                         ExecutableElement member,
+                                                         String userText) {
+        return null;
+    }
 }

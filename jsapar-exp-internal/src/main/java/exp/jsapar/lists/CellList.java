@@ -12,7 +12,6 @@ import exp.jsapar.filters.CellFilter;
 import exp.jsapar.filters.Filter;
 import exp.jsapar.filters.FilterChain;
 import exp.jsapar.types2.Cell;
-import exp.jsapar.utils.ParamsUtil;
 
 /**
  * An ordered collection (also known as a <i>sequence</i>) of {@code Cell} elements with filtering
@@ -58,9 +57,6 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
     private boolean filteringActive = false;
 
     // ------------------------------------------------------------------------
-
-    // TODO add more definitions to FilterableList and implement
-    // TODO allCellsByName implementing
 
     /**
      * Constructs a CellList.
@@ -211,7 +207,6 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
      */
     @Override
     public boolean contains(Object o) {
-        ParamsUtil.checkForNullPointer(o);
         Cell co = null;
         if (!(o instanceof Cell)) {
             throw new IllegalArgumentException("The specified object is not a Cell object.");
@@ -237,8 +232,6 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
      * @return {@code true} if the cell list contains a cell with the specified cell name.
      */
     public boolean contains(String cellName) {
-        ParamsUtil.checkForNullPointer(cellName);
-
         // check if a cell exists with the specified name
         for (Cell cell : allCells) {
             if (cell.getName().equals(cellName)) {
@@ -256,8 +249,6 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
      */
     @Override
     public boolean containsAll(Collection<?> c) {
-        ParamsUtil.checkForNullPointer(c);
-
         try {
             for (Object obj : c) {
                 if (!contains(obj)) {
@@ -334,7 +325,8 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
      * Returns the index of the last occurrence of the specified cell element in this list, or -1 if
      * this list does not contain the cell element.
      * 
-     * @return TODO
+     * @return the index of the last occurrence of the specified cell element in this list, or -1 if
+     *         this list does not contain the cell element.
      * 
      * @see java.util.List#lastIndexOf(java.lang.Object)
      */
@@ -365,6 +357,11 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
     /**
      * Removes the cell element at the specified index.
      * 
+     * @param index
+     *            the index of the cell element to be removed.
+     * 
+     * @return the removed cell element.
+     * 
      * @see java.util.List#remove(int)
      */
     @Override
@@ -375,10 +372,31 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
     }
 
     /**
+     * Removes the cell element with the specified cell name.
+     * 
+     * @param name
+     *            the name of the cell to be removed.
+     * 
+     * @return the cell object that is removed from the list of cells, or {@code null} when there is
+     *         no cell with that name.
+     */
+    public Cell remove(String name) {
+        Cell removedCell = null;
+        if (allCellsByName.containsKey(name)) {
+            removedCell = allCellsByName.get(name);
+            allCells.remove(removedCell);
+            allCellsByName.remove(name);
+        }
+
+        buildfilteredCellList();
+        return removedCell;
+    }
+
+    /**
      * Removes the first occurrence of the specified element from this list, if it is present
      * (optional operation). If this list does not contain the element, it is unchanged.
      * 
-     * @return TODO
+     * @return {@code true} if this list contained the specified element.
      * 
      * @see java.util.List#remove(java.lang.Object)
      */
@@ -411,6 +429,72 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
         return false;
     }
 
+    /**
+     * Replaces the cell in the list of cells with the specified cell. The cell names are the same.
+     * 
+     * @param cell
+     *            the new cell that replaces the cell in the list with the same name.
+     * 
+     * @return the replaced cell.
+     */
+    public Cell replace(Cell cell) {
+        Cell replacedCell = null;
+        if (allCellsByName.containsKey(cell.getName())) {
+            int index = allCells.indexOf(cell);
+            replacedCell = allCells.get(index);
+            allCells.remove(index);
+            allCellsByName.remove(replacedCell.getName());
+            allCells.add(index, cell);
+        }
+        return replacedCell;
+    }
+
+    /**
+     * Replaces the cell in the list of cells with the specified cell at the given index. The cell
+     * names can be different!
+     * 
+     * @param index
+     *            the position of the cell in the list that needs to be replaced.
+     * @param cell
+     *            the new cell that replaces the cell at the index.
+     * 
+     * @return the replaced cell.
+     */
+    public Cell replace(int index, Cell cell) {
+        Cell replacedCell = null;
+        if (index < allCells.size()) {
+            replacedCell = allCells.get(index);
+            allCells.remove(index);
+            allCellsByName.remove(replacedCell.getName());
+            allCells.add(index, cell);
+        }
+        return replacedCell;
+    }
+
+    /**
+     * Replaces the cell object from the list that has the specified cell name with the given cell
+     * object. The cell names can be different! The new cell is added at the position of the old
+     * cell.
+     * 
+     * @param cellName
+     *            the cell name of the cell to be replaced.
+     * @param cell
+     *            the new cell that replaces the cell with the given cell name.
+     * 
+     * @return the replaced cell.
+     */
+    public Cell replace(String cellName, Cell cell) {
+        Cell replacedCell = null;
+        if (allCellsByName.containsKey(cellName)) {
+            replacedCell = allCellsByName.get(cellName);
+            int index = allCells.indexOf(replacedCell);
+            allCells.remove(replacedCell);
+            allCellsByName.remove(replacedCell.getName());
+            allCells.add(index, cell);
+        }
+        return replacedCell;
+    }
+
     @Override
     public boolean retainAll(Collection<?> c) {
         // TODO implement
@@ -433,6 +517,13 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
         return retval;
     }
 
+    
+    public void setCells(List<Cell> cells) {
+        // TODO check duplicates in list, check for null in list.
+        // update allCellsByName.
+        this.allCells = cells;
+    }
+    
     /**
      * Returns the total size of the collection.
      * 

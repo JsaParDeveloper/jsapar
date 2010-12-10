@@ -39,12 +39,12 @@ public class DocumentTestOnInstantiations {
 		cell1 = new Cell(firstName, firstName1);
 		cell2 = new Cell(lastName, lastName1);
 		line1 = new Line();
-		line1.addCell(cell1);
+		line1.addCells(cell1);
 		line1.insertCell(cell2, 0); // inserted before cel1!
 		cell3 = new Cell(firstName, firstName2);
 		cell4 = new Cell(lastName, lastName2);
 		line2 = new Line();
-		line2.addCell(cell3);
+		line2.addCells(cell3);
 		line2.insertCell(cell4, 0); // inserted before cel3!
 
 		Section sec = new Section();

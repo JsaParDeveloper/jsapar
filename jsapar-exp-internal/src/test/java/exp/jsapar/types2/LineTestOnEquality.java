@@ -32,10 +32,10 @@ public class LineTestOnEquality {
 		cell2 = new Cell("lastname", "rodriques");
 		cell3 = new Cell("age", 22);
 		cell4 = new Cell("shoesize", 11);
-		expectedLine.addCell(cell1);
-		expectedLine.addCell(cell2);
-		expectedLine.addCell(cell3);
-		expectedLine.addCell(cell4);
+		expectedLine.addCells(cell1);
+		expectedLine.addCells(cell2);
+		expectedLine.addCells(cell3);
+		expectedLine.addCells(cell4);
 
 		Cell cell5 = null;
 		Cell cell6 = null;
@@ -46,10 +46,10 @@ public class LineTestOnEquality {
 		cell6 = new Cell("lastname", "rodriques");
 		cell7 = new Cell("age", 25);
 		cell8 = new Cell("shoesize", 9);
-		actualLine.addCell(cell5);
-		actualLine.addCell(cell6);
-		actualLine.addCell(cell7);
-		actualLine.addCell(cell8);
+		actualLine.addCells(cell5);
+		actualLine.addCells(cell6);
+		actualLine.addCells(cell7);
+		actualLine.addCells(cell8);
 
 		assertNotSame(expectedLine, actualLine);
 	}
@@ -71,10 +71,10 @@ public class LineTestOnEquality {
 		cell2 = new Cell("lastname", "springfield");
 		cell3 = new Cell("age", 60);
 		cell4 = new Cell("shoesize", 9);
-		expectedLine.addCell(cell1);
-		expectedLine.addCell(cell2);
-		expectedLine.addCell(cell3);
-		expectedLine.addCell(cell4);
+		expectedLine.addCells(cell1);
+		expectedLine.addCells(cell2);
+		expectedLine.addCells(cell3);
+		expectedLine.addCells(cell4);
 
 		Cell cell5 = null;
 		Cell cell6 = null;
@@ -85,10 +85,10 @@ public class LineTestOnEquality {
 		cell6 = new Cell("lastname", "springfield");
 		cell7 = new Cell("age", 60);
 		cell8 = new Cell("shoesize", 9);
-		actualLine.addCell(cell5);
-		actualLine.addCell(cell6);
-		actualLine.addCell(cell7);
-		actualLine.addCell(cell8);
+		actualLine.addCells(cell5);
+		actualLine.addCells(cell6);
+		actualLine.addCells(cell7);
+		actualLine.addCells(cell8);
 
 		assertEquals(expectedLine, actualLine);
 	}
@@ -113,8 +113,8 @@ public class LineTestOnEquality {
 
 		cell1 = new Cell("carbrand", "ferrari");
 		cell2 = new Cell("cartype", "testarossa");
-		expectedLine.addCell(cell1);
-		expectedLine.addCell(cell2);
+		expectedLine.addCells(cell1);
+		expectedLine.addCells(cell2);
 
 		Cell cell5 = null;
 		Cell cell6 = null;
@@ -123,9 +123,9 @@ public class LineTestOnEquality {
 		cell5 = new Cell("carbrand", "ferrari");
 		cell6 = new Cell("cartype", "testarossa");
 		cell7 = new Cell("carcolor", CarColors.RED);
-		actualLine.addCell(cell5);
-		actualLine.addCell(cell6);
-		actualLine.addCell(cell7);
+		actualLine.addCells(cell5);
+		actualLine.addCells(cell6);
+		actualLine.addCells(cell7);
 
 		assertNotSame(expectedLine, actualLine);
 	}

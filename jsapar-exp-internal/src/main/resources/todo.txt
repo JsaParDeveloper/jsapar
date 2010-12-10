@@ -10,3 +10,6 @@ http://download.oracle.com/javase/6/docs/technotes/guides/apt/GettingStarted.htm
 http://download.oracle.com/javase/6/docs/api/javax/annotation/processing/package-summary.html
 http://download.oracle.com/javase/6/docs/api/javax/lang/model/element/package-summary.html
 http://www.javabeat.net/articles/30-annotations-in-java-50-1.html
+
+http://www.ibm.com/developerworks/java/library/j-dyn0429/
+http://www.ibm.com/developerworks/library/j-dyn0603/

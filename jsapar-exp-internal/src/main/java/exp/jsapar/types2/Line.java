@@ -3,12 +3,9 @@ package exp.jsapar.types2;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import exp.jsapar.exception.AnnotationException;
 import exp.jsapar.filters.Filter;
@@ -41,8 +38,6 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
      */
     private CellList cells = null;
 
-    // TODO completely rewrite to use a CellList!
-
     // ------------------------------------------------------------------------
 
     /**
@@ -67,9 +62,16 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
         }
     }
 
-    public Line(Collection<Cell> aCollection) {
+    /**
+     * Constructs a {@link exp.jsapar.types2.Line} with the given collection of
+     * {@link exp.jsapar.types2.Cell} object(s).
+     * 
+     * @param cellCollection
+     *            the collection of Cell objects to be added to the Line.
+     */
+    public Line(Collection<Cell> cellCollection) {
         this();
-        this.cells.addAll(aCollection);
+        this.cells.addAll(cellCollection);
     }
 
     /**
@@ -93,89 +95,44 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
         }
     }
 
-    // move private method to end of file when fully implemented
-    private void addAnnotatedObject(final Object obj) {
-        // check objects that are specified for valid JsaPar annotations:
-        // @Line and @Cell.
-
-        // TODO throw exception when annotation missing for user class
-        // (@Line), or when no @Cell annotations were discovered in the
-        // user class.
-        Object cellValue = null;
-        Cell cell = null;
-
-        // TODO read the @Line annotation attributes.
-        // TODO check for duplicate cell names.
-        // TODO check cell names in JsaPar Schema.
-        // TODO what to do with the cell names that are not listed in a line
-        // definition of the schema?
-        // ignore them? throw exception?
-        // TODO how to deal with arrays of primitives?
-        Class<?> cls = obj.getClass();
-        List<Field> annotatedCellFields = AnnotationUtil.getCellAnnotatedFields(cls);
-
-        if (annotatedCellFields.isEmpty()) {
-            throw new AnnotationException("No JsaPar specific annotations found in given class.");
-        }
-
-        for (Field field : annotatedCellFields) {
-            // suppress Java language access checking for the current field.
-            field.setAccessible(true);
-
-            String cellName = AnnotationUtil.getCellNameFromAnnotatedField(field);
-            try {
-                cellValue = field.get(obj);
-            } catch (IllegalArgumentException e) {
-                // TODO Auto-generated catch block
-            } catch (IllegalAccessException e) {
-                // Intentionally swallowed because the accessibility is actively
-                // forced by setting the accessibility of the field to true,
-                // before it is accessed.
-            }
-
-            if (cellValue != null) {
-                cell = new Cell(cellName, cellValue);
-                this.cells.add(cell);
-            }
-            // restore Java language access checking for the current field.
-            field.setAccessible(false);
-        }
-    }
-
     // ------------------------------------------------------------------------
 
     /**
-     * Adds a cell to the list of cells. This method is always applied to the <tt>full</tt> list of
-     * cells.
+     * Adds the cell object(s) to the list of cells.
      * 
-     * @param cell
-     *            the cell object to be added to the list of cells.
+     * @param cells
+     *            the cell object(s) to be added to the list of cells.
+     * 
      * @throws IllegalArgumentException
      *             thrown when duplicate cell detected.
      * @throws NullPointerException
-     *             thrown when cell is {@code null}.
+     *             thrown when cell name is {@code null}.
      */
-    public void addCell(Cell cell) {
-        ParamsUtil.checkForNullPointer(cell);
-        cells.add(cell);
+    public void addCells(Cell... cells) {
+        for (Cell cell : cells) {
+            ParamsUtil.checkForNullPointer(cell);
+            this.cells.add(cell);
+        }
     }
 
-    public void addCells(Object... annotatedObjects) {
-        // TODO add cells coming from the annotated user classes
-
-        // duplicate code: see ctor!
-        for (Object obj : annotatedObjects) {
-            if (obj != null) {
-                // change to util static class
-            }
-            // check objects that are specified for valid JsaPar annotations:
-            // @Line and @Cell.
-            // TODO throw exception when annotation missing for user class
-            // (@Line), or when no @Cell annotations were discovered in the
-            // user class.
+    /**
+     * Adds the @Cell annotated fields of the user object(s) to the list of
+     * {@link exp.jsapar.types2.Cell} object(s). These user objects must contain JsaPar annotations: @Line
+     * for the class and @Cell for the members of that class.
+     * 
+     * @param objects
+     *            the user objects which are annotated with JsaPar annotations.
+     * 
+     * @throws IllegalArgumentException
+     *             thrown when duplicate cell detected.
+     * @throws NullPointerException
+     *             thrown when cell name is {@code null}.
+     */
+    public void addCellsOfAnnotatedObjects(Object... objects) {
+        for (Object obj : objects) {
+            ParamsUtil.checkForNullPointer(obj);
+            addAnnotatedObject(obj);
         }
-
-        throw new AnnotationException(""); // TODO
     }
 
     /**
@@ -185,6 +142,7 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
      * 
      * @param index
      *            the index of the cell.
+     * 
      * @return the cell at the given index or {@code null} when there is no cell at the given index.
      */
     public Cell getCell(int index) {
@@ -202,6 +160,7 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
      * 
      * @param name
      *            the name of the cell.
+     * 
      * @return the cell with the given name or {@code null} when there is no cell with that name.
      */
     public Cell getCell(String name) {
@@ -216,7 +175,7 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
      * @return the list containing the cells.
      */
     public List<Cell> getCells() {
-        return cells;
+        return Collections.unmodifiableList(cells);
     }
 
     /**
@@ -229,13 +188,13 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
     }
 
     /**
-     * Inserts a cell object in the list of cells at the given index. This method is always applied
-     * to the <tt>full</tt> list of cells.
+     * Inserts a cell object in the list of cells at the given index.
      * 
      * @param cell
      *            the cell object to be inserted into the list of cells.
      * @param index
      *            the index in the list where the cell should be inserted.
+     * 
      * @throws IllegalArgumentException
      *             thrown when duplicate cell detected.
      * @throws NullPointerException
@@ -243,19 +202,14 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
      */
     public void insertCell(Cell cell, int index) {
         ParamsUtil.checkForNullPointer(cell);
-        // if (cellsByName.containsKey(cell.getName())) {
-        // // name already exists in this Line object!
-        // throw new IllegalArgumentException("Duplicate cell name: "
-        // + cell.getName());
-        // }
         cells.add(index, cell);
-        // cellsByName.put(cell.getName(), cell);
     }
 
     /**
-     * TODO
+     * Checks if the cell list contains a cell with the specified cell name.
      * 
-     * @return
+     * @return {@code true} if a cell with the specified cell name exists in the cell list,
+     *         {@code false} otherwise.
      */
     public boolean containsCell(String name) {
         return cells.contains(name);
@@ -271,7 +225,7 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
     }
 
     /**
-     * Removes a cell object from the list of cells at the given index.
+     * Removes a cell object from the list of cells at the specified index.
      * 
      * Note: IndexOutOfBoundsExceptions are swallowed, and {@code null} is returned instead.
      * 
@@ -284,7 +238,6 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
         Cell removedCell = null;
         try {
             removedCell = cells.remove(index);
-            // cellsByName.remove(removedCell.getName());
         } catch (IndexOutOfBoundsException e) {
             // swallow exception and return null.
             removedCell = null;
@@ -293,7 +246,7 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
     }
 
     /**
-     * Removes a cell object from the list of cells at the given index.
+     * Removes the cell object from the list of cells with the specified cell name.
      * 
      * @param name
      *            the name of the cell to be removed.
@@ -302,15 +255,17 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
      *         no cell with that name.
      */
     public Cell removeCell(String name) {
-        // TODO
-        return null;
+        ParamsUtil.checkForNullPointer(name);
+        ParamsUtil.checkForEmptyString(name);
+        Cell removedCell = cells.remove(name);
+        return removedCell;
     }
 
     /**
      * Replaces a cell object from the list with the given cell object.<br>
      * The cell that is being replaced has the same cell name as the new cell. If you want to
      * replace a cell in the list that has a different cell name than the one in the list, use the
-     * {@link #replaceCell(Cell, String)} method.
+     * {@link #replaceCell(String, Cell)} method.
      * 
      * @param cell
      *            the cell object to be replaced with the old cell in the list of cells.
@@ -319,8 +274,7 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
      */
     public Cell replaceCell(Cell cell) {
         ParamsUtil.checkForNullPointer(cell);
-        // TODO
-        return cell;
+        return cells.replace(cell);
     }
 
     /**
@@ -332,45 +286,36 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
      *            the index in the list where the cell must be removed.
      * @return the cell object from the list that is replaced by the new cell.
      */
-    public Cell replaceCell(Cell cell, int index) {
-        Cell currentCell = null;
+    public Cell replaceCell(int index, Cell cell) {
         ParamsUtil.checkForNullPointer(cell);
-
-        // first check if new cell is not already present in list of cells.
-        currentCell = cells.get(index);
-        // if (!cellsByName.containsKey(cell.getName())
-        // && !cell.getName().equals(currentCell.getName())) {
-        // // name of new cell not in map: remove cell from list and map.
-        // currentCell = cells.remove(index);
-        // cellsByName.remove(currentCell.getName());
-        // cells.add(index, cell);
-        // cellsByName.put(cell.getName(), cell);
-        // }
-        return currentCell;
+        return cells.replace(index, cell);
     }
 
     /**
-     * Replaces a cell object from the list with the specified cell name with the given cell object.
-     * Use this method when the cell name of the new cell differs from the old cell. If cell names
-     * are equal, use the {@link #replaceCell(Cell)} method instead.
+     * Replaces the cell object from the list that has the specified cell name with the given cell
+     * object. Use this method when the cell name of the new cell differs from the old cell. If cell
+     * names are equal, use the {@link #replaceCell(Cell)} method instead.
      * 
-     * @param cell
-     *            the cell object to be replaced with the old cell in the list of cells.
      * @param cellName
      *            the name of the old cell that is being replaced.
+     * @param cell
+     *            the cell object to be replaced with the old cell in the list of cells.
      * 
      * @return the cell object from the list that is replaced by the new cell.
      */
-    public Cell replaceCell(Cell cell, String cellName) {
-        // TODO
-        return null;
+    public Cell replaceCell(String cellName, Cell cell) {
+        ParamsUtil.checkForNullPointer(cell);
+        ParamsUtil.checkForNullPointer(cellName);
+        ParamsUtil.checkForEmptyString(cellName);
+        return cells.replace(cellName, cell);
     }
 
     /**
-     * Sets the list of cells. This method is always applied to the <tt>full</tt> list of cells.
+     * Sets the list of cells. This operation overrides the current list of cells.
      * 
      * @param cells
      *            the list containing the cells.
+     * 
      * @throws IllegalArgumentException
      *             thrown when duplicate cell detected.
      * @throws NullPointerException
@@ -380,7 +325,7 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
         for (Cell cell : cells) {
             ParamsUtil.checkForNullPointer(cell);
         }
-        setCellListAndCellMap(cells); // TODO rewrite to CellList
+        this.cells.setCells(cells);
     }
 
     // ------------------------------------------------------------------------
@@ -409,7 +354,6 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
     @Override
     public void addFilters(Filter... filters) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -439,13 +383,11 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
     @Override
     public void removeAllFilters() {
         // TODO Auto-generated method stub
-
     }
 
     @Override
     public void removeFilter(Filter filter) {
         // TODO Auto-generated method stub
-
     }
 
     // ------------------------------------------------------------------------
@@ -467,9 +409,12 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
             str = cell.toString();
             // check for null otherwise 'null' gets added as a string.
             if (str != null) {
-                representation.append("Cell " + StringUtil.getLeadingZerosString(index, cells.size()) + index + ": ");
+                representation.append("Cell ");
+                representation.append(StringUtil.getLeadingZerosString(index, cells.size()));
+                representation.append(index);
+                representation.append(": ");
                 representation.append(str);
-                // TODO check if next cell is displayed afterwards
+                representation.append("\n");
             }
         }
         return representation.toString();
@@ -513,46 +458,49 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
 
     // ------------------------------------------------------------------------
 
-    // TO BE REMOVED
-    private void setCellListItemAndCellMapItem(final Cell cell) {
-        // if (allCellsByName.containsKey(cell.getName())) {
-        // throw new IllegalArgumentException("Duplicate cell name: " + cell.getName());
-        // }
-        // this.cells.add(cell);
-        // this.cellsByName.put(cell.getName(), cell);
-    }
+    private void addAnnotatedObject(final Object obj) {
+        // check objects that are specified for valid JsaPar annotations:
+        // @Line and @Cell.
 
-    /**
-     * Sets the list of cells and the map of cells. The cell name is used as key in the map, the
-     * cell itself is used as the value. This results in a <cell name, cell object> pair that is
-     * used for quick lookup of the cell object matching the cell name.
-     * 
-     * @param cells
-     *            the list of cells that needs to be added to the map of cells.
-     * @throws IllegalArgumentException
-     *             thrown when duplicate cell detected
-     * @throws NullPointerException
-     *             thrown when cell name is {@code null}.
-     */
-    private void setCellListAndCellMap(final List<Cell> cells) {
-        // set collection used for duplication checking.
-        Set<String> cellSet = new HashSet<String>();
-        // internal map collection used as buffer before Line map gets
-        // overridden.
-        Map<String, Cell> cellMap = new HashMap<String, Cell>();
+        // TODO throw exception when annotation missing for user class
+        // (@Line), or when no @Cell annotations were discovered in the
+        // user class.
 
-        // check if the list doesn't contain duplicate cell names.
-        for (Cell cell : cells) {
-            try {
-                if (!cellSet.add(cell.getName())) {
-                    throw new IllegalArgumentException("Duplicate cell name: " + cell.getName());
-                }
-                cellMap.put(cell.getName(), cell);
-            } catch (NullPointerException e) {
-                throw new NullPointerException("Cell name is NULL.");
-            }
+        Object cellValue = null;
+        Cell cell = null;
+
+        // TODO read the @Line annotation attributes. how to deal with arrays of primitives in user
+        // class as field?
+        Class<?> cls = obj.getClass();
+        List<Field> annotatedCellFields = AnnotationUtil.getCellAnnotatedFields(cls);
+
+        if (annotatedCellFields.isEmpty()) {
+            throw new AnnotationException("No JsaPar specific annotations found in given class.");
         }
-        // this.cells = cells;
-        // this.cellsByName = cellMap;
+
+        for (Field field : annotatedCellFields) {
+            // suppress Java language access checking for the current field.
+            field.setAccessible(true);
+
+            String cellName = AnnotationUtil.getCellNameFromAnnotatedField(field);
+            try {
+                cellValue = field.get(obj);
+            } catch (IllegalArgumentException e) {
+                // TODO what to do with this exception?
+            } catch (IllegalAccessException e) {
+                // Intentionally swallowed because the accessibility is actively
+                // forced by setting the accessibility of the field to true,
+                // before it is accessed.
+            }
+
+            if (cellValue != null) {
+                cell = new Cell(cellName, cellValue);
+                if (this.cells.add(cell)) {
+                    throw new IllegalArgumentException("Cell with cell name: " + cell.getName() + "already exists!");
+                }
+            }
+            // restore Java language access checking for the current field.
+            field.setAccessible(false);
+        }
     }
 }

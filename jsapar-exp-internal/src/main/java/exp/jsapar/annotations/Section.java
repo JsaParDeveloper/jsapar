@@ -7,7 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * TODO
+ * Annotation Section. Indicates if a user class contains members that should be
+ * stored in a {@code exp.jsapar.types2.Section} object.
  * 
  * @author JsaPar Developer
  */
