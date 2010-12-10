@@ -2,6 +2,10 @@
 02. implement filtering
 03. implement CellList, LineList, SectionList
 04. add extra xml element to jsapar.cfg.xsd -> language (optional element)
+05. make the Line interface so that when users add cells (ctor or methods) they can only 
+    add cells that are not duplicate and if they do, a roll-back is possible. Meaning: add the given cells
+    only when no duplicates where found. If there are no duplicates the cells that where added to a buffer
+    will be added to the real cell list. 
 
 http://willcode4beer.com/opinion.jsp?set=annotations_gotchas_best_practices
 http://download.oracle.com/javase/1.5.0/docs/guide/language/annotations.html
