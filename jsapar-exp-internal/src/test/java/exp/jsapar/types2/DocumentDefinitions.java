@@ -46,7 +46,7 @@ class DocumentDefinitions {
         doc = new Document();
         section = new Section();
         line = new Line();
-        section.addLine(line);
+        section.addLines(line);
         doc.addSection(section);
         testDocuments.add(doc);
 
@@ -56,7 +56,7 @@ class DocumentDefinitions {
         line = new Line();
         cell = new Cell("movie", "A View To A Kill");
         line.addCells(cell);
-        section.addLine(line);
+        section.addLines(line);
         doc.addSection(section);
         testDocuments.add(doc);
 
@@ -73,7 +73,7 @@ class DocumentDefinitions {
         line.addCells(cell);
         cell = new Cell("gender", Gender.MALE);
         line.addCells(cell);
-        section.addLine(line);
+        section.addLines(line);
         doc.addSection(section);
         testDocuments.add(doc);
 
@@ -93,7 +93,7 @@ class DocumentDefinitions {
         line.addCells(cell);
         cell = new Cell("hasgirlfriend", new Boolean(true));
         line.addCells(cell);
-        section.addLine(line);
+        section.addLines(line);
         line = new Line();
         cell = new Cell("name", "natascha");
         line.addCells(cell);
@@ -102,7 +102,7 @@ class DocumentDefinitions {
         line.addCells(cell);
         cell = new Cell("favoritesport", "baseball");
         line.addCells(cell);
-        section.addLine(line);
+        section.addLines(line);
         doc.addSection(section);
         testDocuments.add(doc);
 

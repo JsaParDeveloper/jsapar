@@ -80,7 +80,7 @@ public class MyElement implements Filterable<Object> {
 	}
 
 	@Override
-	public void removeFilter(Filter filter) {
+	public void removeFilter(String filterName) {
 		if (hasFilters()) {
 		//	filterChain.getFilters().remove(filter);
 		}

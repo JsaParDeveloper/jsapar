@@ -63,7 +63,7 @@ public class LineTestOnInstantiations {
     }
     
     /**
-     * Tests the instantiation of a Line object with many Cell objects.
+     * Tests the instantiation of a Line object with an array of Cell objects.
      */
     @Test
     public void instantiateLineWithArrayOfCells() {
@@ -79,7 +79,7 @@ public class LineTestOnInstantiations {
     }    
     
     /**
-     * Tests the instantiation of a empty Line object.
+     * Tests the instantiation of a Line object with a collection of cells.
      */
     @Test
     public void instantiateLineWithCollectionOfCells() {

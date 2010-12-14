@@ -58,6 +58,7 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
     public Line(Cell... cells) {
         this();
         for (Cell cell : cells) {
+            ParamsUtil.checkForNullPointer(cell);
             this.cells.add(cell);
         }
     }
@@ -71,6 +72,7 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
      */
     public Line(Collection<Cell> cellCollection) {
         this();
+        ParamsUtil.checkForNullPointer(cellCollection);
         this.cells.addAll(cellCollection);
     }
 
@@ -116,6 +118,17 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
     }
 
     /**
+     * Adds the given collection of {@link exp.jsapar.types2.Cell} object(s) to the list of cells.
+     * 
+     * @param cellCollection
+     *            the collection of Cell objects to be added to the Line.
+     */
+    public void addCells(Collection<Cell> cellCollection) {
+        ParamsUtil.checkForNullPointer(cellCollection);
+        this.cells.addAll(cellCollection);
+    }
+
+    /**
      * Adds the @Cell annotated fields of the user object(s) to the list of
      * {@link exp.jsapar.types2.Cell} object(s). These user objects must contain JsaPar annotations: @Line
      * for the class and @Cell for the members of that class.
@@ -133,6 +146,13 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
             ParamsUtil.checkForNullPointer(obj);
             addAnnotatedObject(obj);
         }
+    }
+
+    /**
+     * Removes all of the cell objects within this Line object.
+     */
+    public void clear() {
+        this.cells.clear();
     }
 
     /**
@@ -165,6 +185,7 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
      */
     public Cell getCell(String name) {
         ParamsUtil.checkForNullPointer(name);
+        ParamsUtil.checkForEmptyString(name);
         return cells.get(name);
     }
 
@@ -190,19 +211,56 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
     /**
      * Inserts a cell object in the list of cells at the given index.
      * 
-     * @param cell
-     *            the cell object to be inserted into the list of cells.
      * @param index
      *            the index in the list where the cell should be inserted.
+     * @param cell
+     *            the cell object to be inserted into the list of cells.
      * 
      * @throws IllegalArgumentException
      *             thrown when duplicate cell detected.
      * @throws NullPointerException
      *             thrown when cell is {@code null}.
      */
-    public void insertCell(Cell cell, int index) {
+    public void insertCell(int index, Cell cell) {
         ParamsUtil.checkForNullPointer(cell);
         cells.add(index, cell);
+    }
+
+    /**
+     * Inserts a cell object in the list of cells at the <u>beginning</u> of the list.
+     * 
+     * @param cell
+     *            the cell object to be inserted into the list of cells.
+     * 
+     * @throws IllegalArgumentException
+     *             thrown when duplicate cell detected.
+     * @throws NullPointerException
+     *             thrown when cell is {@code null}.
+     */
+    public void insertCell(Cell cell) {
+        ParamsUtil.checkForNullPointer(cell);
+        cells.insertCell(cell);
+    }
+
+    /**
+     * Inserts a cell object in the list of cells <u>after</u> the given cell name.
+     * 
+     * @param cellName
+     *            the cell name of the cell that is already in the list.
+     * @param cell
+     *            the cell object to be inserted into the list of cells.
+     * 
+     * @throws IllegalArgumentException
+     *             thrown when duplicate cell detected.
+     * @throws NullPointerException
+     *             thrown when cell is {@code null}.
+     */
+    // FIXME should this really be working like this?
+    public void insertCell(String cellName, Cell cell) {
+        ParamsUtil.checkForNullPointer(cell);
+        ParamsUtil.checkForNullPointer(cellName);
+        ParamsUtil.checkForEmptyString(cellName);
+        cells.insertCell(cellName, cell);
     }
 
     /**
@@ -211,8 +269,10 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
      * @return {@code true} if a cell with the specified cell name exists in the cell list,
      *         {@code false} otherwise.
      */
-    public boolean containsCell(String name) {
-        return cells.contains(name);
+    public boolean containsCell(String cellName) {
+        ParamsUtil.checkForNullPointer(cellName);
+        ParamsUtil.checkForEmptyString(cellName);
+        return cells.contains(cellName);
     }
 
     /**
@@ -270,7 +330,8 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
      * @param cell
      *            the cell object to be replaced with the old cell in the list of cells.
      * 
-     * @return the cell object from the list that is replaced by the new cell.
+     * @return the cell object from the list that is replaced by the new cell, or
+     *         {@code null) when the cell was absent in the list. 
      */
     public Cell replaceCell(Cell cell) {
         ParamsUtil.checkForNullPointer(cell);
@@ -322,6 +383,7 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
      *             thrown when cell name is {@code null}.
      */
     public void setCells(List<Cell> cells) {
+        ParamsUtil.checkForNullPointer(cells);
         for (Cell cell : cells) {
             ParamsUtil.checkForNullPointer(cell);
         }
@@ -353,11 +415,16 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
 
     @Override
     public void addFilters(Filter... filters) {
-        // TODO Auto-generated method stub
+        for (Filter filter : filters) {
+            ParamsUtil.checkForNullPointer(filter);
+            cells.addFilter(filter);
+        }
     }
 
     @Override
     public Filter getFilter(String filterName) {
+        ParamsUtil.checkForNullPointer(filterName);
+        ParamsUtil.checkForEmptyString(filterName);
         // TODO Auto-generated method stub
         return null;
     }
@@ -370,6 +437,8 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
 
     @Override
     public boolean isFilterPresent(String filterName) {
+        ParamsUtil.checkForNullPointer(filterName);
+        ParamsUtil.checkForEmptyString(filterName);
         // TODO Auto-generated method stub
         return false;
     }
@@ -386,8 +455,10 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
     }
 
     @Override
-    public void removeFilter(Filter filter) {
-        // TODO Auto-generated method stub
+    public void removeFilter(String filterName) {
+        ParamsUtil.checkForNullPointer(filterName);
+        ParamsUtil.checkForEmptyString(filterName);
+        cells.removeFilter(filterName);
     }
 
     // ------------------------------------------------------------------------
@@ -427,6 +498,7 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
      */
     @Override
     public boolean equals(Object aThat) {
+        ParamsUtil.checkForNullPointer(aThat);
         // check for self-comparison
         if (this == aThat) {
             return true;
@@ -458,6 +530,12 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
 
     // ------------------------------------------------------------------------
 
+    /**
+     * Adds the @Cell annotated fields of this object to the list of cells.
+     * 
+     * @param obj
+     *            the annotated object that holds the @Cell annotated fields.
+     */
     private void addAnnotatedObject(final Object obj) {
         // check objects that are specified for valid JsaPar annotations:
         // @Line and @Cell.
@@ -495,9 +573,7 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
 
             if (cellValue != null) {
                 cell = new Cell(cellName, cellValue);
-                if (this.cells.add(cell)) {
-                    throw new IllegalArgumentException("Cell with cell name: " + cell.getName() + "already exists!");
-                }
+                this.cells.add(cell);
             }
             // restore Java language access checking for the current field.
             field.setAccessible(false);

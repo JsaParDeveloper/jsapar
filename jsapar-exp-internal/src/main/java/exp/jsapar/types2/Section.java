@@ -79,14 +79,16 @@ public class Section implements Filterable<Line>, Comparable<Section>, Serializa
     }
 
     /**
-     * Adds a line to the list of lines.
+     * Adds line object(s) to the list of lines.
      * 
-     * @param line
-     *            the line object to be added to the list of lines.
+     * @param lines
+     *            the line object(s) to be added to the list of lines.
      */
-    public void addLine(Line line) {
-        ParamsUtil.checkForNullPointer(line);
-        lines.add(line);
+    public void addLines(Line... lines) {
+        for (Line line : lines) {
+            ParamsUtil.checkForNullPointer(line);
+            this.lines.add(line);
+        }
     }
 
     /**
@@ -131,6 +133,33 @@ public class Section implements Filterable<Line>, Comparable<Section>, Serializa
         return (lines.isEmpty());
     }
 
+    
+    public Line removeLine(Line line) {
+        Line removedLine = null;
+        // TODO
+        return removedLine;
+    }
+
+    public Line removeLine(int index) {
+        Line removedLine = null;
+        // TODO
+        return removedLine;
+    }
+
+    
+    public Line replaceLine(Line currentline, Line newLine) {
+        Line replacedLine = null;
+        // TODO
+        return replacedLine;
+    }
+
+    public Line replaceLine(int index, Line newLine) {
+        Line replacedLine = null;
+        // TODO
+        return replacedLine;
+    }
+
+    
     // ------------------------------------------------------------------------
 
     /**
@@ -253,7 +282,7 @@ public class Section implements Filterable<Line>, Comparable<Section>, Serializa
     }
 
     @Override
-    public void removeFilter(Filter filter) {
+    public void removeFilter(String filterName) {
         // TODO Auto-generated method stub
     }
 }

@@ -156,7 +156,7 @@ public class Document implements Filterable<Section>, Serializable, Cloneable {
     }
 
     @Override
-    public void removeFilter(Filter filter) {
+    public void removeFilter(String filterName) {
         // TODO Auto-generated method stub
 
     }

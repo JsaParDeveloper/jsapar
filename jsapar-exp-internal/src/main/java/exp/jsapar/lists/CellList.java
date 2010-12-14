@@ -83,13 +83,14 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
      */
     @Override
     public boolean add(Cell cell) {
-        if (!contains(cell)) {
+        if (!contains(cell) && !hasCellName(cell.getName())) {
             allCells.add(cell);
             allCellsByName.put(cell.getName(), cell);
             buildfilteredCellList();
             return true;
+        } else {
+            throw new IllegalArgumentException("Line already contains a cell with cell name: " + cell.getName() + ".");
         }
-        return false;
     }
 
     /**
@@ -101,8 +102,9 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
      */
     @Override
     public void add(int index, Cell cell) {
-        if (!contains(cell)) {
+        if (!contains(cell) && !hasCellName(cell.getName())) {
             allCells.add(index, cell);
+            allCellsByName.put(cell.getName(), cell);
             buildfilteredCellList();
         }
     }
@@ -199,9 +201,10 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
     }
 
     /**
-     * Returns {@code true} if this list contains the specified cell element.
+     * Returns {@code true} if this list contains the specified cell element with the given (case
+     * sensitive) cell name.
      * 
-     * @return {@code true} if this list contains the specified cell element.
+     * @return {@code true} if list contains specified cell, otherwise {@code false}.
      * 
      * @see java.util.List#contains(java.lang.Object)
      */
@@ -215,11 +218,7 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
         co = (Cell) o;
         // find the cell that has the same name and type
         for (Cell cell : allCells) {
-            // FIXME what should be 'seen' as equal: the name or the name/type
-            // combination of the cell? If we define equal as name/type, then
-            // there is a change that the wrong value is returned when
-            // the name is present in the list but the value type is different.
-            if (cell.equals(co)) {
+            if (cell.getName().equals(co.getName())) {
                 return true;
             }
         }
@@ -298,6 +297,48 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
             return allCells.indexOf(o);
         }
         return -1;
+    }
+
+    /**
+     * Inserts the specified cell at the <u>beginning</u> of the list.
+     * 
+     * @param cell
+     *            the cell to be inserted.
+     */
+    public void insertCell(Cell cell) {
+        this.add(0, cell);
+    }
+
+    /**
+     * Inserts the specified cell <u>after</u> the cell with the specified cellName. If there is no
+     * cell with the specified cellName present, the specified cell gets inserted at the end of the
+     * list.
+     * 
+     * @param cellName
+     *            the name of the cell within the list.
+     * @param cell
+     *            the cell to be inserted.
+     */
+    public void insertCell(String cellName, Cell cell) {
+        Cell searchCell = null;
+        if (!hasCellName(cell.getName())) {
+            if (hasCellName(cellName)) {
+                // current cell with cellName found: insert cell into list.
+                searchCell = allCellsByName.get(cellName);
+                int index = allCells.indexOf(searchCell);
+                index++; // set index to position AFTER found cell.
+                if (index >= allCells.size()) {
+                    this.add(cell);
+                } else {
+                    this.add(index, cell);
+                }
+            } else {
+                // current cell with cellName not found: ADD cell to list.
+                add(cell);
+            }
+        } else {
+            // cell name already exists in list: do not insert cell!
+        }
     }
 
     /**
@@ -440,8 +481,8 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
     public Cell replace(Cell cell) {
         Cell replacedCell = null;
         if (allCellsByName.containsKey(cell.getName())) {
-            int index = allCells.indexOf(cell);
-            replacedCell = allCells.get(index);
+            replacedCell = allCellsByName.get(cell.getName());
+            int index = allCells.indexOf(replacedCell);
             allCells.remove(index);
             allCellsByName.remove(replacedCell.getName());
             allCells.add(index, cell);
@@ -461,13 +502,26 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
      * @return the replaced cell.
      */
     public Cell replace(int index, Cell cell) {
-        Cell replacedCell = null;
-        if (index < allCells.size()) {
-            replacedCell = allCells.get(index);
-            allCells.remove(index);
-            allCellsByName.remove(replacedCell.getName());
-            allCells.add(index, cell);
+        Cell replacedCell = null; // FIXME check for dupe cellname in list
+        if (!(index < allCells.size())) {
+            throw new IndexOutOfBoundsException("The index is out of bounds. Max size of collection = "
+                    + allCells.size() + ", specified index = " + index);
         }
+        replacedCell = allCells.get(index);
+       
+        if (allCellsByName.containsKey(cell.getName())) {
+            // find out if the cell being replaced has the same cell name.
+            if (!replacedCell.getName().equals(cell.getName())) {
+                throw new IllegalArgumentException("The specified cell with cell name: " + cell.getName()
+                        + " already exists in list.");
+            }
+        }
+
+        // cell names are not equal: replace the cell.
+        allCells.remove(index);
+        allCellsByName.remove(replacedCell.getName());
+        allCells.add(index, cell);
+        
         return replacedCell;
     }
 
@@ -517,13 +571,12 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
         return retval;
     }
 
-    
     public void setCells(List<Cell> cells) {
         // TODO check duplicates in list, check for null in list.
         // update allCellsByName.
         this.allCells = cells;
     }
-    
+
     /**
      * Returns the total size of the collection.
      * 
@@ -668,6 +721,24 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
         return filteredCells.contains(o);
     }
 
+    @Override
+    public boolean containsAllFiltered(Collection<?> c) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public Object[] toArrayFiltered() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public <T> T[] toArrayFiltered(T[] a) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     // ------------------------------------------------------------------------
 
     /**
@@ -790,21 +861,17 @@ public class CellList implements List<Cell>, FilterableList<Cell> {
         }
     }
 
-    @Override
-    public boolean containsAllFiltered(Collection<?> c) {
-        // TODO Auto-generated method stub
-        return false;
-    }
+    // ------------------------------------------------------------------------
 
-    @Override
-    public Object[] toArrayFiltered() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public <T> T[] toArrayFiltered(T[] a) {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     * TODO move
+     * 
+     * @param cellName
+     *            the cell name to be investigated for existence in the list.
+     * @return {@code true} when list of cells contains a cell with the given cell name, otherwise
+     *         false.
+     */
+    private boolean hasCellName(String cellName) {
+        return allCellsByName.containsKey(cellName);
     }
 }

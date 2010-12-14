@@ -61,8 +61,8 @@ public interface Filterable<T> extends Iterable<T> {
 	/**
 	 * Removes the specified filter from the chain of filters for this element.
 	 * 
-	 * @param filter
-	 *            the filter to be removed from the chain.
+	 * @param filterName
+	 *            the name of the filter to be removed from the chain.
 	 */
-	public void removeFilter(Filter filter);
+	public void removeFilter(String filterName);
 }

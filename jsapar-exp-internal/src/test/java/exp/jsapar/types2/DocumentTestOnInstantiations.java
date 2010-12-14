@@ -40,15 +40,15 @@ public class DocumentTestOnInstantiations {
 		cell2 = new Cell(lastName, lastName1);
 		line1 = new Line();
 		line1.addCells(cell1);
-		line1.insertCell(cell2, 0); // inserted before cel1!
+		line1.insertCell(0, cell2); // inserted before cel1!
 		cell3 = new Cell(firstName, firstName2);
 		cell4 = new Cell(lastName, lastName2);
 		line2 = new Line();
 		line2.addCells(cell3);
-		line2.insertCell(cell4, 0); // inserted before cel3!
+		line2.insertCell(0, cell4); // inserted before cel3!
 
 		Section sec = new Section();
-		sec.addLine(line1);
+		sec.addLines(line1);
 		sec.insertLine(line2, 0); // inserted before lin1!
 
 		Document doc = new Document();
