@@ -1,5 +1,19 @@
 package exp.jsapar.lists;
 
-public class CellListTestOnMiscellaneous {
+import static org.junit.Assert.assertFalse;
 
+import org.junit.Test;
+
+/**
+ * TODO 
+ * 
+ * @author JsaPar Developer
+ */
+public class CellListTestOnMiscellaneous {
+    
+    @Test
+    public void containingOfCellsInEmptyCellList() {
+        CellList cl = new CellList();
+        assertFalse(cl.contains("test"));
+    }
 }

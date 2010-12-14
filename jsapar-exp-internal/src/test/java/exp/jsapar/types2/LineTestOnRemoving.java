@@ -3,6 +3,7 @@ package exp.jsapar.types2;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.math.BigInteger;
 import java.util.Date;
@@ -29,14 +30,14 @@ public class LineTestOnRemoving {
     /**
      * Tests removing a cell from an empty Line object using an index.
      */
-    @Test
+    @Test(expected = IndexOutOfBoundsException.class)
     public void removingOfCellFromEmptyLineIndex() {
         Line line = new Line();
+        @SuppressWarnings("unused")
         Cell actual = line.removeCell(0);
-        assertNull(actual);
+        fail("Should have thrown an IndexOutOfBoundsException.");
     }
 
-    
     /**
      * Tests removing a cell from a Line object with a valid index.
      */
@@ -55,14 +56,15 @@ public class LineTestOnRemoving {
     /**
      * Tests removing a cell from a Line object with an invalid index (out of bounds).
      */
-    @Test
+    @Test(expected = IndexOutOfBoundsException.class)
     public void removingOfCellFromLineIndexOutOfBounds() {
         Cell c1 = new Cell("one", new Character('1'));
         Cell c2 = new Cell("two", new BigInteger("2"));
         Cell c3 = new Cell("three", new Double(3));
         Line line = new Line(c1, c2, c3);
+        @SuppressWarnings("unused")
         Cell actual = line.removeCell(7);
-        assertNull(actual);
+        fail("Should have thrown an IndexOutOfBoundsException.");
     }
 
     /**

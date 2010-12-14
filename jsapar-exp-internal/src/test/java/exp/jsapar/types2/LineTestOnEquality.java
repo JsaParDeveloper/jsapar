@@ -3,6 +3,7 @@ package exp.jsapar.types2;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -58,8 +59,12 @@ public class LineTestOnEquality {
 
     // ------------------------------------------------------------------------
 
+    /**
+     * Enum for testing purposes.
+     */
+    @Ignore
     private enum CarColors {
-        BLUE, RED, WHITE
+        BLUE, RED, WHITE;
     };
 
     /**

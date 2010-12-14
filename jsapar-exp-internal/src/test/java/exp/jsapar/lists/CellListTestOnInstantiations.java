@@ -11,13 +11,12 @@ import org.junit.Test;
  */
 public class CellListTestOnInstantiations {
 
-	/**
-	 * Tests the instantiation of an empty cell list.
-	 */
-	@Test
-	public void instantiateEmptyCellList() {
-		CellList cl = new CellList();
-
-		assertTrue(cl.isEmpty());
-	}
+    /**
+     * Tests the instantiation of an empty cell list.
+     */
+    @Test
+    public void instantiateEmptyCellList() {
+        CellList cl = new CellList();
+        assertTrue(cl.isEmpty());
+    }
 }

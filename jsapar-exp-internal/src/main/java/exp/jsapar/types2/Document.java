@@ -41,6 +41,23 @@ public class Document implements Filterable<Section>, Serializable, Cloneable {
     }
 
     /**
+     * Constructs a {@link exp.jsapar.types2.Document} with the given
+     * {@link exp.jsapar.types2.Section} object(s).
+     * 
+     * @param lines
+     *            the given Section object(s).
+     */
+    public Document(Section... sections) {
+        this();
+        for (Section section : sections) {
+            ParamsUtil.checkForNullPointer(section);
+            this.sections.add(section);
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
      * Gets the list of sections.
      * 
      * @return the list containing the sections.
@@ -85,24 +102,15 @@ public class Document implements Filterable<Section>, Serializable, Cloneable {
     }
 
     /**
-     * Gets the section with the given index.<br>
-     * <br>
-     * Note: IndexOutOfBoundsExceptions are swallowed, and <tt>null</tt> is returned instead.
+     * Gets the section with the given index.
      * 
      * @param index
      *            the index of the section.
-     * @return the section at the given index or <tt>null</tt> when there is no section at the given
-     *         index.
+     * 
+     * @return the section at the given index.
      */
     public Section getSection(int index) {
-        Section section = null;
-        try {
-            section = sections.get(index);
-        } catch (IndexOutOfBoundsException e) {
-            // swallow exception and return null.
-            section = null;
-        }
-        return section;
+        return sections.get(index);
     }
 
     // public int getNumberOfsections() {}

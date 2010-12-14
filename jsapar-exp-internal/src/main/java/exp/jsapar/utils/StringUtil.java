@@ -75,19 +75,19 @@ public final class StringUtil {
      */
     private static int calculateLeadingZeroPlaces(int numberInRange, int maxNumberInRange) {
         int number = numberInRange;
-        int maxNumber = maxNumberInRange; 
+        int maxNumber = maxNumberInRange;
         int numberOfleadingPlaces;
-        
+
         // make positive first.
         if (number < 0) {
             number = number * (-1);
         }
-        if (maxNumber < 0 ) {
+        if (maxNumber < 0) {
             maxNumber = maxNumber * (-1);
         }
-        
-        numberOfleadingPlaces = (String.valueOf(maxNumber)).length() - (String.valueOf(number)).length(); 
-        
+
+        numberOfleadingPlaces = (String.valueOf(maxNumber)).length() - (String.valueOf(number)).length();
+
         return numberOfleadingPlaces;
     }
 }

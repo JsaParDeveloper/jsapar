@@ -9,21 +9,19 @@ import java.util.List;
  * 
  * <pre>
  * public boolean equals(Object aThat) {
- * 	if (this == aThat)
- * 		return true;
- * 	if (!(aThat instanceof Car))
- * 		return false;
- * 	Car that = (Car) aThat;
- * 	return EqualsUtil.areEqual(this.fName, that.fName)
- * 			&amp;&amp; EqualsUtil.areEqual(this.fNumDoors, that.fNumDoors)
- * 			&amp;&amp; EqualsUtil.areEqual(this.fGasMileage, that.fGasMileage)
- * 			&amp;&amp; EqualsUtil.areEqual(this.fColor, that.fColor)
- * 			&amp;&amp; Arrays.equals(this.fMaintenanceChecks, that.fMaintenanceChecks); // array!
+ *     if (this == aThat)
+ *         return true;
+ *     if (!(aThat instanceof Car))
+ *         return false;
+ *     Car that = (Car) aThat;
+ *     return EqualsUtil.areEqual(this.fName, that.fName) &amp;&amp; EqualsUtil.areEqual(this.fNumDoors, that.fNumDoors)
+ *             &amp;&amp; EqualsUtil.areEqual(this.fGasMileage, that.fGasMileage) &amp;&amp; EqualsUtil.areEqual(this.fColor, that.fColor)
+ *             &amp;&amp; Arrays.equals(this.fMaintenanceChecks, that.fMaintenanceChecks); // array!
  * }
  * </pre>
  * 
- * <em>Arrays are not handled by this class</em>. This is because the
- * <code>Arrays.equals</code> methods should be used for array fields.
+ * <em>Arrays are not handled by this class</em>. This is because the <code>Arrays.equals</code>
+ * methods should be used for array fields.
  * 
  * <em>Collections of type List are handled by this class!</em>.
  * 
@@ -31,76 +29,76 @@ import java.util.List;
  */
 public final class EqualsUtil {
 
-	/**
+    /**
      * Check style rule: utility classes should not have a public constructor.
      */
     private EqualsUtil() {
-    	// Intentionally left blank.
+        // Intentionally left blank.
     }
-	
-	static public boolean areEqual(boolean aThis, boolean aThat) {
-		return aThis == aThat;
-	}
 
-	static public boolean areEqual(char aThis, char aThat) {
-		return aThis == aThat;
-	}
+    static public boolean areEqual(boolean aThis, boolean aThat) {
+        return aThis == aThat;
+    }
 
-	static public boolean areEqual(long aThis, long aThat) {
-		/*
-		 * Implementation Note Note that byte, short, and int are handled by
-		 * this method, through implicit conversion.
-		 */
-		return aThis == aThat;
-	}
+    static public boolean areEqual(char aThis, char aThat) {
+        return aThis == aThat;
+    }
 
-	static public boolean areEqual(float aThis, float aThat) {
-		return Float.floatToIntBits(aThis) == Float.floatToIntBits(aThat);
-	}
+    static public boolean areEqual(long aThis, long aThat) {
+        /*
+         * Implementation Note Note that byte, short, and int are handled by this method, through
+         * implicit conversion.
+         */
+        return aThis == aThat;
+    }
 
-	static public boolean areEqual(double aThis, double aThat) {
-		return Double.doubleToLongBits(aThis) == Double.doubleToLongBits(aThat);
-	}
+    static public boolean areEqual(float aThis, float aThat) {
+        return Float.floatToIntBits(aThis) == Float.floatToIntBits(aThat);
+    }
 
-	/**
-	 * Possibly-null object field.
-	 * 
-	 * Includes type-safe enumerations and collections, but does not include
-	 * arrays. See class comment.
-	 */
-	static public boolean areEqual(Object aThis, Object aThat) {
-		return aThis == null ? aThat == null : aThis.equals(aThat);
-	}
+    static public boolean areEqual(double aThis, double aThat) {
+        return Double.doubleToLongBits(aThis) == Double.doubleToLongBits(aThat);
+    }
 
-	public static <T> boolean areEqual(List<T> aThis, List<T> aThat) {
-		// TODO check if this really works well!
+    /**
+     * Possibly-null object field.
+     * 
+     * Includes type-safe enumerations and collections, but does not include arrays. See class
+     * comment.
+     */
+    static public boolean areEqual(Object aThis, Object aThat) {
+        return aThis == null ? aThat == null : aThis.equals(aThat);
+    }
 
-		// check for null values
-		if ((aThis == null) || (aThat == null)) {
-			return false;
-		}
+    public static <T> boolean areEqual(List<T> aThis, List<T> aThat) {
+        // TODO check if this really works well!
 
-		// check for self-comparison
-		if (aThis == aThat) {
-			return true;
-		}
+        // check for null values
+        if ((aThis == null) || (aThat == null)) {
+            return false;
+        }
 
-		// check for same size
-		if (aThis.size() != aThat.size()) {
-			return false;
-		}
-		
-		// NOTE: Should we check for order to?
-		
-		// check for equality of items
-		for (int index=0; index < aThis.size(); index++) {
-			if (!areEqual(aThis.get(index), aThat.get(index))) {
-				// found unequal items.
-				return false;
-			}
-		}
-		
-		// when this point is reached, the lists must be equal.
-		return true;
-	}
+        // check for self-comparison
+        if (aThis == aThat) {
+            return true;
+        }
+
+        // check for same size
+        if (aThis.size() != aThat.size()) {
+            return false;
+        }
+
+        // NOTE: Should we check for order to?
+
+        // check for equality of items
+        for (int index = 0; index < aThis.size(); index++) {
+            if (!areEqual(aThis.get(index), aThat.get(index))) {
+                // found unequal items.
+                return false;
+            }
+        }
+
+        // when this point is reached, the lists must be equal.
+        return true;
+    }
 }

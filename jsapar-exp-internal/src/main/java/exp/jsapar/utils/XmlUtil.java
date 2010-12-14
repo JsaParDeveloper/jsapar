@@ -20,92 +20,90 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
 /**
- * Provides simple static utility methods for working with XML, like validation
- * and mapping utilities.
+ * Provides simple static utility methods for working with XML, like validation and mapping
+ * utilities.
  * 
  * @author JsaPar Developer
  */
 public final class XmlUtil {
 
-	/**
+    /**
      * Check style rule: utility classes should not have a public constructor.
      */
     private XmlUtil() {
-    	// Intentionally left blank.
+        // Intentionally left blank.
     }
-	
-	// TODO add mapping utility when TWO jsapar documents must be mapped in
-	// international situations. For example: map Swedish jsapar schema to a
-	// Dutch jsapar schema. The cellnames have to be mapped in that situation!
 
-	/**
-	 * TODO rewrite! Find best and quickest validation mechanism using classes
-	 * available in 1.6 jvm
-	 * 
-	 * @param aLocation
-	 */
-	public static void validateXML(final InputStream xmlDocument,
-			final InputStream xmlSchema) throws InvalidXmlException {
+    // TODO add mapping utility when TWO jsapar documents must be mapped in
+    // international situations. For example: map Swedish jsapar schema to a
+    // Dutch jsapar schema. The cellnames have to be mapped in that situation!
 
-		// TODO REALLY BIG TO DO HERE -> find a good and quick validation
-		// implementation.
-		// Use JAXP 1.4.3 validation in combination with Stax?
+    /**
+     * TODO rewrite! Find best and quickest validation mechanism using classes available in 1.6 jvm
+     * 
+     * @param aLocation
+     */
+    public static void validateXML(final InputStream xmlDocument, final InputStream xmlSchema)
+            throws InvalidXmlException {
 
-		// -------------- UNDER THIS LINE IS CRAPPY CODE -------------------
+        // TODO REALLY BIG TO DO HERE -> find a good and quick validation
+        // implementation.
+        // Use JAXP 1.4.3 validation in combination with Stax?
 
-		ErrorHandler myErrorHandler = null;
+        // -------------- UNDER THIS LINE IS CRAPPY CODE -------------------
 
-		// build an XSD-aware SchemaFactory
-		SchemaFactory schemaFactory = SchemaFactory
-				.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        ErrorHandler myErrorHandler = null;
 
-		// hook up org.xml.sax.ErrorHandler implementation.
-		schemaFactory.setErrorHandler(myErrorHandler);
+        // build an XSD-aware SchemaFactory
+        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
-		// get the custom xsd schema describing the required format for my XML
-		// files.
-		Schema schemaXSD = null;
-		try {
-			schemaXSD = schemaFactory.newSchema(new File("myschema.xsd"));
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        // hook up org.xml.sax.ErrorHandler implementation.
+        schemaFactory.setErrorHandler(myErrorHandler);
 
-		// Create a validator capable of validating XML files according to my
-		// custom schema.
-		Validator validator = schemaXSD.newValidator();
+        // get the custom xsd schema describing the required format for my XML
+        // files.
+        Schema schemaXSD = null;
+        try {
+            schemaXSD = schemaFactory.newSchema(new File("myschema.xsd"));
+        } catch (SAXException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-		// Get a parser capable of parsing vanilla XML into a DOM tree
-		DocumentBuilder parser = null;
-		try {
-			parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        // Create a validator capable of validating XML files according to my
+        // custom schema.
+        Validator validator = schemaXSD.newValidator();
 
-		// parse the XML purely as XML and get a DOM tree representation.
-		Document document = null;
-		try {
-			document = parser.parse(new File("myxml.xml"));
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        // Get a parser capable of parsing vanilla XML into a DOM tree
+        DocumentBuilder parser = null;
+        try {
+            parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-		// parse the XML DOM tree against the stricter XSD schema
-		try {
-			validator.validate(new DOMSource(document));
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+        // parse the XML purely as XML and get a DOM tree representation.
+        Document document = null;
+        try {
+            document = parser.parse(new File("myxml.xml"));
+        } catch (SAXException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        // parse the XML DOM tree against the stricter XSD schema
+        try {
+            validator.validate(new DOMSource(document));
+        } catch (SAXException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }

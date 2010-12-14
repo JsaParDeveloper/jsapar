@@ -63,6 +63,23 @@ public class Section implements Filterable<Line>, Comparable<Section>, Serializa
         }
     }
 
+    /**
+     * Constructs a {@link exp.jsapar.types2.Section} with the given {@link exp.jsapar.types2.Line}
+     * object(s).
+     * 
+     * @param lines
+     *            the given Line object(s).
+     */
+    public Section(Line... lines) {
+        this();
+        for (Line line : lines) {
+            ParamsUtil.checkForNullPointer(line);
+            this.lines.add(line);
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
     private void addAnnotatedObject(Object obj) {
         // TODO Auto-generated method stub
         // create new Line object from the given obj.
@@ -91,6 +108,8 @@ public class Section implements Filterable<Line>, Comparable<Section>, Serializa
         }
     }
 
+    // ------------------------------------------------------------------------
+
     /**
      * Inserts a line object in the list of lines at the given index.
      * 
@@ -99,29 +118,28 @@ public class Section implements Filterable<Line>, Comparable<Section>, Serializa
      * @param index
      *            the index in the list where the line should be inserted.
      */
-    public void insertLine(Line line, int index) {
+    public void insertLine(int index, Line line) {
         ParamsUtil.checkForNullPointer(line);
         lines.add(index, line);
     }
 
+    public void insertLine(Line line) {
+        ParamsUtil.checkForNullPointer(line);
+        lines.add(0, line);
+    }
+
+    // ------------------------------------------------------------------------
+
     /**
-     * Gets the line with the given index.<br>
-     * <br>
-     * Note: IndexOutOfBoundsExceptions are swallowed, and <tt>null</tt> is returned instead.
+     * Gets the line with the given index.
      * 
      * @param index
      *            the index of the line.
-     * @return the line at the given index or {@code null} when there is no line at the given index.
+     * 
+     * @return the line at the given index.
      */
     public Line getLine(int index) {
-        Line retval = null;
-        try {
-            retval = lines.get(index);
-        } catch (IndexOutOfBoundsException e) {
-            // swallow exception and return null.
-            retval = null;
-        }
-        return retval;
+        return lines.get(index);
     }
 
     /**
@@ -133,7 +151,8 @@ public class Section implements Filterable<Line>, Comparable<Section>, Serializa
         return (lines.isEmpty());
     }
 
-    
+    // ------------------------------------------------------------------------
+
     public Line removeLine(Line line) {
         Line removedLine = null;
         // TODO
@@ -146,20 +165,26 @@ public class Section implements Filterable<Line>, Comparable<Section>, Serializa
         return removedLine;
     }
 
-    
+    // ------------------------------------------------------------------------
+
+    public Line replaceLine(Line line) {
+        Line replacedLine = null;
+        // TODO
+        return replacedLine;
+    }
+
+    public Line replaceLine(int index, Line line) {
+        Line replacedLine = null;
+        // TODO
+        return replacedLine;
+    }
+
     public Line replaceLine(Line currentline, Line newLine) {
         Line replacedLine = null;
         // TODO
         return replacedLine;
     }
 
-    public Line replaceLine(int index, Line newLine) {
-        Line replacedLine = null;
-        // TODO
-        return replacedLine;
-    }
-
-    
     // ------------------------------------------------------------------------
 
     /**

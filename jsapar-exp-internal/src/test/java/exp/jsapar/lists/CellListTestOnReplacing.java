@@ -7,15 +7,15 @@ import org.junit.Test;
  * 
  * @author JsaPar Developer
  */
-public class CellListTestOnEquality {
-
+public class CellListTestOnReplacing {
+    
     @Test
-    public void equalityOfEmptyCellList() {
+    public void replacingOfCellsInEmptyCellList() {
         // TODO
     }
 
     @Test
-    public void equalityOfCellList() {
+    public void replacingOfCellsInCellList() {
         // TODO
     }
 }

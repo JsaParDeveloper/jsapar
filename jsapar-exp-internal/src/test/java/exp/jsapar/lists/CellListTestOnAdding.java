@@ -4,18 +4,18 @@ import org.junit.Test;
 
 /**
  * TODO
- * 
+ *  
  * @author JsaPar Developer
  */
-public class CellListTestOnEquality {
+public class CellListTestOnAdding {
 
     @Test
-    public void equalityOfEmptyCellList() {
+    public void addingOfCellsIntoEmptyCellList() {
         // TODO
     }
-
+    
     @Test
-    public void equalityOfCellList() {
+    public void addingOfCellsIntoCellList() {
         // TODO
     }
 }

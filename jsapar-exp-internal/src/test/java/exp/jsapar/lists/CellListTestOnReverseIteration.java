@@ -7,15 +7,15 @@ import org.junit.Test;
  * 
  * @author JsaPar Developer
  */
-public class CellListTestOnEquality {
-
+public class CellListTestOnReverseIteration {
+    
     @Test
-    public void equalityOfEmptyCellList() {
+    public void reverseIteratingOverEmptyCellList() {
         // TODO
     }
 
     @Test
-    public void equalityOfCellList() {
+    public void reverseIteratingOverCellList() {
         // TODO
     }
 }

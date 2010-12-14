@@ -156,23 +156,15 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
     }
 
     /**
-     * Gets the cell with the given index.<br>
-     * <br>
-     * Note: IndexOutOfBoundsExceptions are swallowed, and {@code null} is returned instead.
+     * Gets the cell with the given index.
      * 
      * @param index
      *            the index of the cell.
      * 
-     * @return the cell at the given index or {@code null} when there is no cell at the given index.
+     * @return the cell at the given index.
      */
     public Cell getCell(int index) {
-        Cell retval = null;
-        try {
-            retval = cells.get(index);
-        } catch (IndexOutOfBoundsException e) {
-            retval = null;
-        }
-        return retval;
+        return cells.get(index);
     }
 
     /**
@@ -287,22 +279,13 @@ public class Line implements Filterable<Cell>, Comparable<Line>, Serializable, C
     /**
      * Removes a cell object from the list of cells at the specified index.
      * 
-     * Note: IndexOutOfBoundsExceptions are swallowed, and {@code null} is returned instead.
-     * 
      * @param index
      *            the index in the list where the cell must be removed.
      * 
      * @return the cell object that is removed from the list of cells.
      */
     public Cell removeCell(int index) {
-        Cell removedCell = null;
-        try {
-            removedCell = cells.remove(index);
-        } catch (IndexOutOfBoundsException e) {
-            // swallow exception and return null.
-            removedCell = null;
-        }
-        return removedCell;
+        return cells.remove(index);
     }
 
     /**
