@@ -22,7 +22,7 @@ public class SectionBuilder extends Builder {
         super(schema);
         this.lb = new LineBuilder(schema);
     }
-    
+
     // Theory only:
     // a SectionBuilder looks for Line candidates.
     // a Line candidate is a Line within a file/stream that COULD BE the correct type, but depends
@@ -39,12 +39,27 @@ public class SectionBuilder extends Builder {
     // was not a Line of type X, but a type of Y.
     // After a complete Section was created and validated against the JsaPar Schema, the Section is
     // handed over to the DocumentBuilder.
-    
+
+    // A Section can have delimited or fixed width content, but not both at the same time. The
+    // content type of a Section is a logical disjunction: one or the other but not both!
+    // A SectionBuilder needs to detect which kind of contentType is present when construction a
+    // Section.
+    // This can be done by successfully detecting a Line that is defined within a Section.
+    // At first all lines definitions are read from the document definition xml file, next the lines
+    // are put in an array so the matching lines within the file can be traced back to the section
+    // of the xml file. The line-candidates are tried out on the current read line to find a
+    // matching
+    // line definition for the current line. If a line-candidate matches a line, we know two things:
+    // how the line should be parsed into Cells AND in what Section the line belongs: a delimited
+    // section or a fixed width section.
+    // Once a Line is detected within the Section of type "delimited", then that Section cannot hold
+    // lines of type "fixed width".
+
     public void processFragment(String fragment) {
         List<Line> lineCandidates = lb.progessFragment(fragment);
         if (lineCandidates.size() == 1) {
             // TODO
         }
-        
+
     }
 }
