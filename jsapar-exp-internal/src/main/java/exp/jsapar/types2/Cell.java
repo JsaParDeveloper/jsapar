@@ -215,7 +215,9 @@ public class Cell implements Serializable, Cloneable {
         return representation.toString();
     }
 
-    /* (non-Javadoc)
+    /**
+     * Creates and returns a copy of this object.
+     * 
      * @see java.lang.Object#clone()
      */
     @Override

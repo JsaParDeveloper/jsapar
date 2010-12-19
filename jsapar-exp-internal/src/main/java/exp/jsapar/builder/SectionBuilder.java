@@ -1,6 +1,28 @@
 package exp.jsapar.builder;
 
-public class SectionBuilder {
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import exp.jsapar.schema.JsaParSchema;
+import exp.jsapar.types2.Line;
+
+public class SectionBuilder extends Builder {
+    /**
+     * The logger for this class.
+     */
+    private static final Logger log = LoggerFactory.getLogger(SectionBuilder.class);
+    /**
+     * The builder for building lines.
+     */
+    private LineBuilder lb = null;
+
+    protected SectionBuilder(JsaParSchema schema) {
+        super(schema);
+        this.lb = new LineBuilder(schema);
+    }
+    
     // Theory only:
     // a SectionBuilder looks for Line candidates.
     // a Line candidate is a Line within a file/stream that COULD BE the correct type, but depends
@@ -17,4 +39,12 @@ public class SectionBuilder {
     // was not a Line of type X, but a type of Y.
     // After a complete Section was created and validated against the JsaPar Schema, the Section is
     // handed over to the DocumentBuilder.
+    
+    public void processFragment(String fragment) {
+        List<Line> lineCandidates = lb.progessFragment(fragment);
+        if (lineCandidates.size() == 1) {
+            // TODO
+        }
+        
+    }
 }

@@ -17,3 +17,11 @@ http://www.javabeat.net/articles/30-annotations-in-java-50-1.html
 
 http://www.ibm.com/developerworks/java/library/j-dyn0429/
 http://www.ibm.com/developerworks/library/j-dyn0603/
+http://download.oracle.com/javase/tutorial/collections/interfaces/order.html
+http://www.java-tips.org/java-se-tips/java.lang/how-to-use-comparable-interface.html
+http://www.angelikalanger.com/GenericsFAQ/FAQSections/ProgrammingIdioms.html
+http://www.ibm.com/developerworks/java/library/j-5things2.html
+http://www.ibm.com/developerworks/java/library/j-5things3.html
+http://www.ibm.com/developerworks/java/library/j-5things13/index.html
+
+csv data from: http://openflights.org/data.html (routes.dat)
