@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsaparsettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="jsapar.cfg.xsd">
+	<errorhandling>
+		<parser>
+			<exception-threshold>0</exception-threshold>
+			<build-errorset>false</build-error-errorset>
+		</parser>
+	</errorhandling>
+</jsaparsettings>

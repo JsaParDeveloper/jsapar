@@ -9,10 +9,11 @@
 	<modules>
 		<module>jsapar-lib</module>
 		<module>jsapar-examples</module>
+		<module>jsapar-constructionkit</module>
 	</modules>
 	<url>http://jsapar.tigris.org</url>
 	<description>
-	  The JSaPar package containing the library itself and the library examples.
+	  The JSaPar package containing the library itself, the library examples and the construction kit.
 	</description>
 	<inceptionYear>2010</inceptionYear>
 
