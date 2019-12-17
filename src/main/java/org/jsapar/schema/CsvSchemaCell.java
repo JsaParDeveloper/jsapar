@@ -1,79 +1,52 @@
 package org.jsapar.schema;
 
-import java.io.IOException;
-import java.io.Writer;
+import org.jsapar.model.CellType;
 
-import org.jsapar.Cell;
+import java.util.Locale;
 
+/**
+ * Describes the schema for a specific csv cell.
+ */
+@SuppressWarnings("WeakerAccess")
 public class CsvSchemaCell extends SchemaCell {
-    private final static String replaceString = "\u00A0"; // non-breaking space
+
+    /**
+     * The quote behavior for the cell when composing. Default is {@link QuoteBehavior#AUTOMATIC}. Not used while parsing.
+     */
+    private QuoteBehavior quoteBehavior = QuoteBehavior.AUTOMATIC;
 
     /**
      * The maximum number of characters that are read or written to/from the cell. Input and output
      * value will be silently truncated to this length. If you want to get an error when field is to
      * long, use the format regexp pattern instead.
+     * <p>
+     * A negative value indicates that max length will not be checked.
      */
-    private int maxLength=-1;
-    
+    private int maxLength = -1;
+
+    /**
+     * Creates a CSV string cell with specified name. The format can be added after creation by using the {@link #setCellFormat(CellType, String)} method.
+     *
+     * @param sName The name of the cell.
+     */
     public CsvSchemaCell(String sName) {
         super(sName);
     }
 
-    public CsvSchemaCell(String sName, SchemaCellFormat cellFormat) {
-        super(sName, cellFormat);
-    }
-    
-    public CsvSchemaCell() {
-        super();
-    }
-
     /**
-     * Writes the cell to the supplied writer, including quote character if necessary.
-     * @param cell
-     * @param writer
-     * @param cellSeparator
-     * @param quoteChar
-     * @throws IOException
+     * Creates a CSV schema cell with the specified name and format parameters.
+     *
+     * @param sName   The name of the cell.
+     * @param type    The type of the cell.
+     * @param pattern The pattern to use while formatting and parsing. The pattern has different meaning depending on the type of the cell.
+     * @param locale  The locale to use while formatting and parsing dates and numbers that are locale specific. If null, US locale is used.
      */
-    void output(Cell cell, Writer writer, String cellSeparator, char quoteChar) throws IOException {
-        String sValue = format(cell);
-        if(sValue.isEmpty())
-            return;
-        
-        
-        if (quoteChar == 0){
-            sValue = sValue.replace(cellSeparator, replaceString);
-        }
-        else {
-            if (sValue.contains(cellSeparator) || sValue.charAt(0) ==quoteChar){
-                sValue = applyMaxLength(sValue, getMaxLength()-2);
-                sValue = quoteChar + sValue + quoteChar;
-            }
-        }
-        writer.write(sValue);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.jsapar.schema.SchemaCell#format(org.jsapar.Cell)
-     */
-    @Override
-    public String format(Cell cell) {
-        String value = super.format(cell);
-        return applyMaxLength(value, maxLength);
+    public CsvSchemaCell(String sName, CellType type, String pattern, Locale locale) {
+        super(sName, type, pattern, locale);
     }
 
-
-    /**
-     * Same as Groovy String method take(int)
-     * @param sValue
-     * @param maxLength2
-     * @return The sValue, truncated if necessary to fit maxLength2
-     */
-    private String applyMaxLength(String sValue, int maxLength2) {
-        if(isMaxLength() && sValue.length()>maxLength2)
-            return sValue.substring(0, Math.max(maxLength2, 0));
-        else
-            return sValue;
+    public CsvSchemaCell(String name, CellType type) {
+        super(name, type);
     }
 
     @Override
@@ -81,26 +54,9 @@ public class CsvSchemaCell extends SchemaCell {
         return (CsvSchemaCell) super.clone();
     }
 
-    /**
-     * The maximum number of characters that are read or written to/from the cell. Input and output
-     * value will be silently truncated to this length. If you want to get an error when field is to
-     * long, use the format regexp pattern instead.
-     * 
-     * @return the maxLength
-     */
     public int getMaxLength() {
         return maxLength;
     }
-
-    /**
-     * The maximum number of characters that are read or written to/from the cell. Input and output
-     * value will be silently truncated to this length. If you want to get an error when field is to
-     * long, use the format regexp pattern instead. <br/>
-     * Set to a positive value if maxLength should be used.
-     * 
-     * @param maxLength
-     *            the maxLength to set
-     */
     public void setMaxLength(int maxLength) {
         this.maxLength = maxLength;
     }
@@ -108,8 +64,14 @@ public class CsvSchemaCell extends SchemaCell {
     /**
      * @return True if maxLength should be considered.
      */
-    public boolean isMaxLength(){
+    public boolean isMaxLength() {
         return this.maxLength > 0;
     }
 
+    public QuoteBehavior getQuoteBehavior() {
+        return quoteBehavior;
+    }
+    public void setQuoteBehavior(QuoteBehavior quoteBehavior) {
+        this.quoteBehavior = quoteBehavior;
+    }
 }

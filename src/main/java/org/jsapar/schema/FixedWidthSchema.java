@@ -1,113 +1,60 @@
 package org.jsapar.schema;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Iterator;
-import java.util.List;
+import org.jsapar.parse.fixed.FixedWidthParser;
+import org.jsapar.text.TextParseConfig;
+import org.jsapar.parse.text.TextSchemaParser;
 
-import org.jsapar.JSaParException;
-import org.jsapar.Line;
-import org.jsapar.input.ParseSchema;
+import java.io.Reader;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Defines a schema for a fixed position buffer. Each cell is defined by a fixed number of
  * characters. Each line is separated by the line separator defined in the base class {@link Schema}
  * .
- * 
+ * <p>
  * If the end of line is reached before all cells are parsed the remaining cells will not be set.
- * 
+ * <p>
  * If there are remaining characters when the end of line is reached, those characters will be
  * omitted.
- * 
+ * <p>
  * If the line separator is an empty string, the lines will be separated by the sum of the length of
  * the cells within the schema.
- * 
- * @author Jonas Stenberg
- * 
  */
-public class FixedWidthSchema extends Schema implements ParseSchema {
+public class FixedWidthSchema extends Schema {
 
     /**
      * A list of fixed with schema lines which builds up this schema.
      */
-    private java.util.List<FixedWidthSchemaLine> schemaLines = new java.util.LinkedList<FixedWidthSchemaLine>();
+    private LinkedHashMap<String, FixedWidthSchemaLine> schemaLines = new LinkedHashMap<>();
+
 
     /**
-     * @return the schemaLines
-     */
-    public java.util.List<FixedWidthSchemaLine> getFixedWidthSchemaLines() {
-        return schemaLines;
-    }
-
-    /**
-     * @param schemaLines
-     *            the schemaLines to set
-     */
-    public void setSchemaLines(java.util.List<FixedWidthSchemaLine> schemaLines) {
-        this.schemaLines = schemaLines;
-    }
-
-    /**
-     * @param schemaLine
-     *            the schemaLines to set
+     * @param schemaLine the schemaLines to set
      */
     public void addSchemaLine(FixedWidthSchemaLine schemaLine) {
-        this.schemaLines.add(schemaLine);
-        if(schemaLine.getLineTypeControlValue() != null && !schemaLine.getLineTypeControlValue().isEmpty()) {
-            String[] controlValues = schemaLine.getLineTypeControlValue().split("\\|");
-            if(controlValues.length > 1){
-                schemaLine.setLineTypeControlValue(controlValues[0]);
-                for(int i=1;i<controlValues.length; i++){
-                    FixedWidthSchemaLine clone = schemaLine.clone();
-                    clone.setLineTypeControlValue(controlValues[i]);
-                    this.schemaLines.add(clone);
-                }
-            }
-        }
+        this.schemaLines.put(schemaLine.getLineType(), schemaLine);
     }
 
-
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jsapar.schema.Schema#output(org.jsapar.Document, java.io.Writer)
-     */
     @Override
-    public void output(Iterator<Line> itLines, Writer writer) throws IOException, JSaParException {
-
-        for (SchemaLine lineSchema : getFixedWidthSchemaLines()) {
-            for (int i = 0; i < lineSchema.getOccurs(); i++) {
-                if (!itLines.hasNext()) {
-                    return;
-                }
-                Line line = itLines.next();
-                outputLine(lineSchema, line, writer);
-
-                if (itLines.hasNext()) {
-                    if (getLineSeparator().length() > 0) {
-                        writer.write(getLineSeparator());
-                    }
-                } else {
-                    return;
-                }
-            }
-        }
+    public boolean isEmpty() {
+        return this.schemaLines.isEmpty();
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see org.jsapar.schema.Schema#clone()
-     */
+         * (non-Javadoc)
+         *
+         * @see org.jsapar.schema.Schema#clone()
+         */
     @Override
-    public FixedWidthSchema clone(){
+    public FixedWidthSchema clone() {
         FixedWidthSchema schema = (FixedWidthSchema) super.clone();
 
-        schema.schemaLines = new java.util.LinkedList<FixedWidthSchemaLine>();
-        for (FixedWidthSchemaLine line : this.schemaLines) {
-            schema.addSchemaLine(line.clone());
-        }
+        schema.schemaLines = new LinkedHashMap<>();
+        this.stream().map(FixedWidthSchemaLine::clone).forEach(schema::addSchemaLine);
         return schema;
     }
 
@@ -118,44 +65,37 @@ public class FixedWidthSchema extends Schema implements ParseSchema {
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(" schemaLines=");
-        sb.append(this.schemaLines);
-        return sb.toString();
+        return "FixedWidthSchema" + super.toString() + " schemaLines=" + this.schemaLines;
     }
 
     @Override
-    public List<? extends SchemaLine> getSchemaLines() {
-        return this.schemaLines;
+    public Collection<FixedWidthSchemaLine> getSchemaLines() {
+        return this.schemaLines.values();
     }
 
     @Override
-    public void outputAfter(Writer writer) throws IOException, JSaParException {
+    public Optional<FixedWidthSchemaLine> getSchemaLine(String lineType) {
+        return Optional.ofNullable(schemaLines.get(lineType));
     }
 
     @Override
-    public void outputBefore(Writer writer) throws IOException, JSaParException {
-    }
-
-    @Override
-    public SchemaLine getSchemaLine(String lineType) {
-        for (FixedWidthSchemaLine lineSchema : getFixedWidthSchemaLines()) {
-            if (lineSchema.getLineType().equals(lineType)) {
-                return lineSchema;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public int getSchemaLinesCount() {
+    public int size() {
         return this.schemaLines.size();
     }
 
     @Override
-    public SchemaLine getSchemaLineAt(int index) {
-        return this.schemaLines.get(index);
+    public Stream<FixedWidthSchemaLine> stream() {
+        return this.schemaLines.values().stream();
+    }
+
+    @Override
+    public Iterator<FixedWidthSchemaLine> iterator() {
+        return schemaLines.values().iterator();
+    }
+
+    @Override
+    public TextSchemaParser makeSchemaParser(Reader reader, TextParseConfig parseConfig) {
+        return new FixedWidthParser(reader, this, parseConfig);
     }
 
     /**
@@ -165,9 +105,8 @@ public class FixedWidthSchema extends Schema implements ParseSchema {
      * cells after calling this method will add those cells after the filler cell which will probably lead to unexpected
      * behavior.
      */
-    public void addFillerCellsToReachLineMinLength(){
-        for (FixedWidthSchemaLine lineSchema : getFixedWidthSchemaLines()) {
-            lineSchema.addFillerCellToReachMinLength(0);
-        }
+    void addFillerCellsToReachLineMinLength() {
+        stream().forEach(FixedWidthSchemaLine::addFillerCellToReachMinLength);
     }
+
 }

@@ -1,12 +1,19 @@
 package org.jsapar.utils;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 
-public class StringUtilsTest {
+import static org.junit.Assert.assertEquals;
 
-	@Test
+public class StringUtilsTest {
+    @Test
+    public void countMatches() {
+        assertEquals(0, StringUtils.countMatches(null, ""));
+        assertEquals(0, StringUtils.countMatches("", ""));
+        assertEquals(2, StringUtils.countMatches("abABabc", "ab"));
+        assertEquals(2, StringUtils.countMatches("ababaABabac", "aba"));
+    }
+
+    @Test
 	public final void testRemoveAll() {
 		String sOriginal = ".This.text.has.lots.of.dots.";
 		String sResult = StringUtils.removeAll(sOriginal, '.');
@@ -15,23 +22,9 @@ public class StringUtilsTest {
 
 	@Test
 	public final void testRemoveAll_nothing() {
-		String sOriginal = "This text has no dots";
-		String sResult = StringUtils.removeAll(sOriginal, '.');
-		assertEquals("This text has no dots", sResult);
-	}
-
-	@Test
-	public final void testRemoveAll_sb() {
-		String sOriginal = ".This.text.has.lots.of.dots.";
-		String sResult = StringUtils.removeAll(new StringBuilder(sOriginal), '.').toString();
-		assertEquals("Thistexthaslotsofdots", sResult);
-	}
-
-	@Test
-	public final void testRemoveAll_sb_nothing() {
-		String sOriginal = "This text has no dots";
-		String sResult = StringUtils.removeAll(new StringBuilder(sOriginal), '.').toString();
-		assertEquals("This text has no dots", sResult);
+		String sOriginal = "This text has no colons";
+		String sResult = StringUtils.removeAll(sOriginal, ':');
+		assertEquals("This text has no colons", sResult);
 	}
 
 	@Test

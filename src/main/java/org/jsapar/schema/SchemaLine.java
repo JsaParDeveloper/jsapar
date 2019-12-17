@@ -1,88 +1,108 @@
 package org.jsapar.schema;
 
-import java.io.IOException;
-import java.io.Writer;
+import org.jsapar.model.Line;
 
-import org.jsapar.Cell;
-import org.jsapar.JSaParException;
-import org.jsapar.Line;
-import org.jsapar.input.LineParsedEvent;
-import org.jsapar.input.ParsingEventListener;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
+/**
+ * Abstract base class that describes the schema for a line. For instance if you want to ignore a header line you
+ * can add a SchemaLine instance to your schema with occurs==1 and ignoreRead==true;
+ *
+ * @see Schema
+ * @see SchemaCell
+ */
 public abstract class SchemaLine implements Cloneable {
-    private static final int    OCCURS_INFINITE      = Integer.MAX_VALUE;
-    private static final String NOT_SET              = "";
+    /**
+     * Constant to be used in occurs attribute and that indicates that lines can occur infinite number of times.
+     */
+    private static final int OCCURS_INFINITE = Integer.MAX_VALUE;
+    private static final String NOT_SET = "";
 
-    private int                 occurs               = OCCURS_INFINITE;
-    private String              lineType             = NOT_SET;
-    private String              lineTypeControlValue = NOT_SET;
-    private boolean             ignoreReadEmptyLines = true;
-    private boolean             writeNamedCellsOnly  = false;
+    /**
+     * The number of times this type of line occurs in the corresponding input or output.
+     *
+     * @see #isOccursInfinitely()
+     * @see #setOccursInfinitely()
+     */
+    private int occurs = OCCURS_INFINITE;
 
+    /**
+     * The type of the line. This line type will be part of each of the parsed  {@link Line} instances that was created
+     * by using this instance.
+     * <p>
+     * When composing, the line type of the {@link Line} supplied to the composer will be used by the composer to determine
+     * which {@link SchemaLine} instance to use for composing.
+     */
+    private String lineType = NOT_SET;
+
+    /**
+     * If set to true, this type of line will be read from the input but then ignored, thus it will not produce any line
+     * parsed event.
+     */
+    private boolean ignoreRead = false;
+
+    /**
+     * If set to true, this type of line will not be written to the output.
+     */
+    private boolean ignoreWrite = false;
+
+    /**
+     * Creates a SchemaLine that occurs infinite number of times.
+     */
     public SchemaLine() {
-        this.occurs = OCCURS_INFINITE;
     }
 
     /**
-     * Creates a SchemaLine which occurs supplied number of times.
-     * 
-     * @param nOccurs
-     *            The number of times that a line of this type occurs in the corresponding buffer.
+     * Creates a SchemaLine that occurs supplied number of times.
+     *
+     * @param nOccurs The number of times that a line of this type occurs in the input or output text.
      */
     public SchemaLine(int nOccurs) {
         this.occurs = nOccurs;
     }
 
     /**
-     * Creates a SchemaLine with the supplied line type.
-     * 
-     * @param lineType
-     *            The name of the type of the line.
+     * Creates a SchemaLine with the supplied line type and that occurs infinite number of times.
+     *
+     * @param lineType The name of the type of the line.
      */
     public SchemaLine(String lineType) {
         this.setLineType(lineType);
     }
-    
+
     /**
      * Creates a SchemaLine with the supplied line type and occurs supplied number of times.
-     * @param lineType
-     * @param nOccurs
+     *
+     * @param lineType The line type of this schema line.
+     * @param nOccurs  The number of times it should occur.
      */
-    public SchemaLine(String lineType, int nOccurs){
-    	this.setLineType(lineType);
-    	this.setOccurs(nOccurs);
+    public SchemaLine(String lineType, int nOccurs) {
+        this.setLineType(lineType);
+        this.setOccurs(nOccurs);
     }
 
     /**
-     * Creates a SchemaLine with the supplied line type and control value.
-     * 
-     * @param lineType
-     *            The name of the type of the line.
-     * @param lineTypeControlValue
-     *            The tag that determines which type of line it is.
-     */
-    public SchemaLine(String lineType, String lineTypeControlValue) {
-        this(lineType);
-        this.setLineTypeControlValue(lineTypeControlValue);
-    }
-
-    /**
-     * @return The number of times this type of line occurs in the corresponding buffer.
+     * @return The number of times this type of line occurs in the corresponding input or output.
      */
     public int getOccurs() {
         return occurs;
     }
 
     /**
-     * @param occurs
-     *            The number of times this type of line occurs in the corresponding buffer.
+     * @see #isOccursInfinitely()
+     * @see #setOccursInfinitely()
+     * @param occurs The number of times this type of line occurs in the corresponding input or output.
      */
     public void setOccurs(int occurs) {
         this.occurs = occurs;
     }
 
     /**
-     * Setts the occurs attribute so that this type of line occurs until the end of the buffer.
+     * Sets the occurs attribute so that this type of line occurs until the end of the buffer.
      */
     public void setOccursInfinitely() {
         this.occurs = OCCURS_INFINITE;
@@ -96,116 +116,69 @@ public abstract class SchemaLine implements Cloneable {
     }
 
     /**
-     * Finds a schema cell with the specified name. This method probably performs a linear search,
-     * thus the performance is poor if there are many cells on a line.
-     * 
-     * @param cellName
-     *            The name of the schema cell to find.
+     * Finds a schema cell with the specified name.
+     *
+     * @param cellName The name of the schema cell to find.
      * @return The schema cell with the supplied name or null if no such cell was found.
      */
     public abstract SchemaCell getSchemaCell(String cellName);
 
-    /**
-     * Finds the cell to use for output. Each cell is identified from the schema by the name of the
-     * cell. If the schema-cell has no name, the cell at the same position in the line is used under
-     * the condition that it also lacks name.
-     * 
-     * If the schema-cell has a name the cell with the same name is used. If no such cell is found
-     * and the cell at the same position lacks name, it is used instead.
-     * 
-     * 
-     * @param line
-     *            The line to find a cell within.
-     * @param schemaCell
-     *            The schema-cell to use.
-     * @param nSchemaCellIndex
-     *            The index at which the schema-cell is found.
-     * @param namedCellsOnly Only find named cells
-     * @return The cell within the supplied line to use for output according to the supplied
-     *         schemaCell.
-     */
-    protected static Cell findCell(Line line, SchemaCell schemaCell, int nSchemaCellIndex, boolean namedCellsOnly) {
-        // If we should not write the cell, we don't need the cell.
-        if (schemaCell.isIgnoreWrite())
-            return null;
-
-        Cell cellByIndex = null;
-        if (nSchemaCellIndex < line.getNumberOfCells())
-            cellByIndex = line.getCell(nSchemaCellIndex);
-        // Use optimistic matching.
-        if (null != cellByIndex) {
-            if (null == schemaCell.getName()) {
-                // cell = line.getCell(i);
-                if (null == cellByIndex.getName()) {
-                    // If both cell and schema cell names are null then it is ok
-                    // to use cell by index.
-                    if(!namedCellsOnly)
-                        return cellByIndex;
-                } else {
-                    return null;
-                }
-            } else if (namedCellsOnly && null == cellByIndex.getName()) {
-                // Do nothing. We will find named cell later.
-            } else if (schemaCell.getName().equals(cellByIndex.getName())) {
-                // We were lucky.
-                return cellByIndex;
-            }
-        }
-
-        // The optimistic match failed. We take the penalty.
-        Cell cellByName = line.getCell(schemaCell.getName());
-        if (null != cellByName) {
-            return cellByName;
-        } else {
-            if (null == cellByIndex) {
-                return null;
-            } else if (!namedCellsOnly && cellByIndex.getName() == null) {
-                // If it was not found by name we fall back to the
-                // cell with correct index.
-                return cellByIndex;
-            } else {
-                return null;
-            }
-        }
-    }
 
     /**
-     * @return the lineType
+     * @return The type of the line. This line type will be part of each of the parsed  {@link Line} instances that was created
+     * by using this instance.
+     * <p>
+     * When composing, the line type of the {@link Line} supplied to the composer will be used by the composer to determine
+     * which {@link SchemaLine} instance to use for composing.
      */
     public String getLineType() {
         return lineType;
     }
 
     /**
-     * @param lineType
-     *            the lineType to set
+     * @param lineType The type of the line. This line type will be part of each of the parsed  {@link Line} instances that was created
+     *       by using this instance.
+     *       <p>
+     *       When composing, the line type of the {@link Line} supplied to the composer will be used by the composer to determine
+     *       which {@link SchemaLine} instance to use for composing.
      */
     public void setLineType(String lineType) {
         this.lineType = lineType;
-        if (this.lineTypeControlValue == NOT_SET)
-            this.lineTypeControlValue = lineType;
     }
 
     /**
-     * @return the lineTypeControlValue
+     * @return If true, this type of line will be read from the input but then ignored, thus it will not produce any line
+     *       parsed event.
      */
-    public String getLineTypeControlValue() {
-        return lineTypeControlValue;
+    public boolean isIgnoreRead() {
+        return ignoreRead;
     }
 
     /**
-     * @param lineTypeControlValue
-     *            the lineTypeControlValue to set
+     * @param ignoreRead If set to true, this type of line will be read from the input but then ignored, thus it will not produce any line
+     *       parsed event.
      */
-    public void setLineTypeControlValue(String lineTypeControlValue) {
-        this.lineTypeControlValue = lineTypeControlValue.trim();
-        if (this.lineType == NOT_SET)
-            this.lineType = lineTypeControlValue;
+    public void setIgnoreRead(boolean ignoreRead) {
+        this.ignoreRead = ignoreRead;
+    }
+
+    /**
+     * @return If true, this type of line will not be written to the output.
+     */
+    public boolean isIgnoreWrite() {
+        return ignoreWrite;
+    }
+
+    /**
+     * @param ignoreWrite If set to true, this type of line will not be written to the output.
+     */
+    public void setIgnoreWrite(boolean ignoreWrite) {
+        this.ignoreWrite = ignoreWrite;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -213,10 +186,6 @@ public abstract class SchemaLine implements Cloneable {
         StringBuilder sb = new StringBuilder();
         sb.append("SchemaLine lineType=");
         sb.append(this.lineType);
-        if (this.lineTypeControlValue != NOT_SET) {
-            sb.append(" lineTypeControlValue=");
-            sb.append(this.lineTypeControlValue);
-        }
         sb.append(" occurs=");
         if (isOccursInfinitely())
             sb.append("INFINITE");
@@ -225,125 +194,41 @@ public abstract class SchemaLine implements Cloneable {
         return sb.toString();
     }
 
-    /**
-     * Writes a line to the writer. Each cell is identified from the schema by the name of the cell.
-     * If the schema-cell has no name, the cell at the same position in the line is used under the
-     * condition that it also lacks name.
-     * 
-     * If the schema-cell has a name the cell with the same name is used. If no such cell is found
-     * and the cell at the same position lacks name, it is used instead.
-     * 
-     * If no corresponding cell is found for a schema-cell, the cell is left empty. Sub-class
-     * decides how to treat empty cells.
-     * 
-     * @param line
-     * @param writer
-     * @throws IOException
-     * @throws JSaParException
-     */
-    abstract public void output(Line line, Writer writer) throws IOException, JSaParException;
 
-
-    /**
-     * @return the ignoreReadEmptyLines
-     */
-    public boolean isIgnoreReadEmptyLines() {
-        return ignoreReadEmptyLines;
-    }
-
-    /**
-     * @param ignoreEmptyLines
-     */
-    public void setIgnoreReadEmptyLines(boolean ignoreEmptyLines) {
-        this.ignoreReadEmptyLines = ignoreEmptyLines;
-    }
-
-    /**
-     * Handles behavior of empty lines
-     * 
-     * @param lineNumber
-     * @param listener
-     * @return Returns true (always).
-     * @throws JSaParException
-     */
-    protected boolean handleEmptyLine(long lineNumber, ParsingEventListener listener) throws JSaParException {
-        if (!isIgnoreReadEmptyLines()) {
-            listener.lineParsedEvent(new LineParsedEvent(this, new Line(getLineType()), lineNumber));
-        }
-        return true;
-    }
-    
-    
     /**
      * @return Number of cells in a line
      */
-    public abstract int getSchemaCellsCount();
+    public abstract int size();
 
-    /**
-     * @param index
-     * @return The schema cell with the specified index.
-     */
-    public abstract SchemaCell getSchemaCellAt(int index);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof SchemaLine))
+            return false;
+        SchemaLine that = (SchemaLine) o;
+        return Objects.equals(lineType, that.lineType);
+    }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((lineType == null) ? 0 : lineType.hashCode());
-        return result;
+        return Objects.hash(getLineType());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
+    public SchemaLine clone() {
+        try {
+            return (SchemaLine) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError("Can never happen.", e);
         }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof SchemaLine)) {
-            return false;
-        }
-        SchemaLine other = (SchemaLine) obj;
-        if (lineType == null) {
-            if (other.lineType != null) {
-                return false;
-            }
-        } else if (!lineType.equals(other.lineType)) {
-            return false;
-        }
-        return true;
     }
 
-    /**
-     * @param cell
-     * @return The index of the supplied cell within this line. -1 if the cell was not found.
-     */
-    public int getIndexOf(SchemaCell cell) {
-        for (int i = 0; i < getSchemaCellsCount(); i++) {
-            if (cell.equals(getSchemaCellAt(i))) {
-                return i;
-            }
-        }
-        return -1;
-    }
+    public abstract Stream<? extends SchemaCell> stream();
 
-    public boolean isWriteNamedCellsOnly() {
-        return writeNamedCellsOnly;
-    }
+    public abstract Iterator<? extends SchemaCell> iterator();
 
-    public void setWriteNamedCellsOnly(boolean writeNamedCellsOnly) {
-        this.writeNamedCellsOnly = writeNamedCellsOnly;
-    }
+    public abstract void forEach(Consumer<? super SchemaCell> consumer);
 
+    public abstract Collection<? extends SchemaCell> getSchemaCells();
 }

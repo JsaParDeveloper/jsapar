@@ -1,85 +1,104 @@
 package org.jsapar.utils;
 
+import java.util.function.IntPredicate;
+
+@SuppressWarnings("WeakerAccess")
 public class StringUtils {
 
     /**
      * Removes all characters of specified type from the string
-     * 
-     * @param s
-     *            The string to remove from
-     * @param chToRemove
-     *            The character to remove
+     *
+     * @param s          The string to remove from
+     * @param chToRemove The character to remove
      * @return The new string where all character of type chToRemove has been
-     *         removed.
+     * removed.
      */
     public static String removeAll(String s, char chToRemove) {
-	if (s.indexOf(chToRemove) >= 0)
-	    return removeAll(new StringBuilder(s), chToRemove).toString();
-	else
-	    return s;
+        return s.codePoints().filter(it -> it != (int) chToRemove)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
     }
 
-    /**
-     * Removes all characters of specified type from the string builder
-     * 
-     * @param sb
-     *            The string to remove from
-     * @param chToRemove
-     *            The character to remove
-     * @return The new string builder where all character of type chToRemove has
-     *         been removed.
-     */
-    public static StringBuilder removeAll(StringBuilder sb, char chToRemove) {
-	final String sToRemove = Character.toString(chToRemove);
-	int nIndex = sb.indexOf(sToRemove);
-
-	while (nIndex >= 0) {
-	    sb.deleteCharAt(nIndex);
-	    nIndex = sb.indexOf(sToRemove, nIndex);
-	}
-	return sb;
-    }
 
     /**
      * Removes all characters that are regarded as white-space according to
      * Character.isWhitespace(int codePoint) function.
-     * 
-     * @param s
+     *
+     * @param s The string to remove all white-spaces from
      * @return A string without any white-space characters.
      */
     public static String removeAllWhitespaces(String s) {
-	StringBuilder sb = new StringBuilder(s);
-	for (int i = 0; i < sb.length(); i++) {
-	    int codePoint = sb.codePointAt(i);
-	    if (Character.isWhitespace(codePoint)) {
-		for (int k = 0; k < Character.charCount(codePoint); k++) {
-		    sb.deleteCharAt(i);
-		}
-		i--;
-	    }
-	}
-	return sb.toString();
+        return removeAll(s, Character::isWhitespace);
     }
 
     /**
      * Removes all characters that are regarded as space according to
      * Character.isSpaceChar(int codePoint) function.
-     * 
-     * @param s
+     *
+     * @param s The string to remove all spaces from
      * @return A string without any space characters.
      */
     public static String removeAllSpaces(String s) {
-	StringBuilder sb = new StringBuilder(s);
-	for (int i = 0; i < sb.length(); i++) {
-	    int codePoint = sb.codePointAt(i);
-	    if (Character.isSpaceChar(codePoint)) {
-		for (int k = 0; k < Character.charCount(codePoint); k++) {
-		    sb.deleteCharAt(i);
-		}
-		i--;
-	    }
-	}
-	return sb.toString();
+        return removeAll(s, Character::isSpaceChar);
+    }
+
+
+    /**
+     * Removes all characters that are regarded as space according to
+     * provided check
+     *
+     * @param s        String to remove from.
+     * @param check    Check lambda, if returns true, character will be removed.
+     * @return A string without any space characters.
+     */
+    private static String removeAll(String s, IntPredicate check) {
+        return s.codePoints().filter(it -> !check.test(it))
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
+    }
+
+    /**
+     * Counts number of whole occurrences of subString within s
+     * @param s The string to count occurrences within
+     * @param subString The sub string to count
+     * @return The number of whole occurrences of subString within s.
+     */
+    public static int countMatches(final String s, final String subString) {
+        if (s == null || s.isEmpty() ) {
+            return 0;
+        }
+        int count = 0;
+        int index = 0;
+        while ((index = s.indexOf(subString, index)) >= 0 ) {
+            count++;
+            index += subString.length();
+        }
+        return count;
+    }
+
+    /**
+     * Replaces all occurrences of some common control characters into escaped string values.
+     * @param sToReplace The string containing control characters
+     * @return A string containing only escaped character values.
+     */
+    public static String replaceJava2Escapes(String sToReplace) {
+        sToReplace = sToReplace.replace("\r", "\\r");
+        sToReplace = sToReplace.replace("\n", "\\n");
+        sToReplace = sToReplace.replace("\t", "\\t");
+        sToReplace = sToReplace.replace("\f", "\\f");
+        return sToReplace;
+    }
+
+    /**
+     * Replaces escaped string value of \n, \r, \t and \f with their ascii control code values.
+     * @param sToReplace The string to replace escaped strings within.
+     * @return The string with all escaped values replaced with control code values.
+     */
+    public static String replaceEscapes2Java(String sToReplace) {
+        //   Since it is a regex we need 4 \
+        sToReplace = sToReplace.replace("\\r", "\r");
+        sToReplace = sToReplace.replace("\\n", "\n");
+        sToReplace = sToReplace.replace("\\t", "\t");
+        sToReplace = sToReplace.replace("\\f", "\f");
+        return sToReplace;
     }
 
 }

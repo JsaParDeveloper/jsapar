@@ -1,44 +1,87 @@
 package org.jsapar.schema;
 
+import org.jsapar.model.Cell;
+import org.jsapar.model.CellType;
+import org.jsapar.model.EmptyCell;
+import org.jsapar.parse.cell.CellParser;
+
+import java.text.Format;
 import java.util.Locale;
-import java.util.regex.Pattern;
 
-import org.jsapar.Cell;
-import org.jsapar.CellType;
-import org.jsapar.EmptyCell;
-import org.jsapar.input.CellParseError;
-import org.jsapar.input.LineErrorEvent;
-import org.jsapar.input.ParseException;
-import org.jsapar.input.ParsingEventListener;
-
+/**
+ * Denotes the structure of one cell/column. Describes how to parse input text into a {@link Cell } or to compose a {@link Cell } to a text
+ * output.
+ * @see SchemaLine
+ * @see Schema
+ */
 public abstract class SchemaCell implements Cloneable {
-
-    protected static final String         EMPTY_STRING          = "";
 
     private final static SchemaCellFormat CELL_FORMAT_PROTOTYPE = new SchemaCellFormat(CellType.STRING);
 
-    private String                        name;
-    private SchemaCellFormat              cellFormat            = CELL_FORMAT_PROTOTYPE;
+    private final String                  name;
+    private SchemaCellFormat              cellFormat;
     private boolean                       ignoreRead            = false;
-    private boolean                       ignoreWrite = false;
+    private boolean                       ignoreWrite           = false;
     private boolean                       mandatory             = false;
     private Cell                          minValue              = null;
     private Cell                          maxValue              = null;
-    private Cell                          defaultCell           = null;
-    private String                        defaultValue          = null;
-    private Locale                        locale                = Locale.getDefault();
-    private Pattern                       emptyPattern          = null;
 
-    public SchemaCell() {
-    }
+    /**
+     * If parsing an empty value this cell can be used, avoiding a lot of object creation.
+     */
+    private Cell               emptyCell;
+    private String             defaultValue   = null;
+    private Locale             locale         = Locale.US;
+    private CellValueCondition emptyCondition = null;
+    private CellValueCondition lineCondition  = null;
 
+
+    /**
+     * Creates a string cell with specified name. The format can be added after creation by using the {@link #setCellFormat(CellType, String)} method.
+     * @param sName The name of the cell.
+     */
     public SchemaCell(String sName) {
         this(sName, CELL_FORMAT_PROTOTYPE);
     }
 
-    public SchemaCell(String sName, SchemaCellFormat cellFormat) {
+    /**
+     * Creates a schema cell with the specified name and format parameters.
+     * @param sName The name of the cell.
+     * @param type The type of the cell.
+     */
+    public SchemaCell(String sName, CellType type) {
+        this(sName, new SchemaCellFormat(type));
+    }
+
+    /**
+     * Creates a schema cell with the specified name and format parameters.
+     * @param sName The name of the cell.
+     * @param type The type of the cell.
+     * @param format The format to use
+     */
+    public SchemaCell(String sName, CellType type, Format format) {
+        this(sName, new SchemaCellFormat(type, format));
+    }
+
+
+    /**
+     * Creates a schema cell with the specified name and format parameters.
+     * @param sName The name of the cell.
+     * @param type The type of the cell.
+     * @param pattern The pattern to use while formatting and parsing. The pattern has different meaning depending on the type of the cell.
+     * @param locale The locale to use while formatting and parsing dates and numbers that are locale specific. If null, US locale is used.
+     */
+    public SchemaCell(String sName, CellType type, String pattern, Locale locale) {
+        this(sName, new SchemaCellFormat(type, pattern, locale));
+        this.locale=(locale != null) ? locale : Locale.US;
+    }
+
+    protected SchemaCell(String sName, SchemaCellFormat cellFormat) {
+        if(sName == null || sName.isEmpty())
+            throw new IllegalArgumentException("SchemaCell.name cannot be null or empty.");
         this.cellFormat = cellFormat;
         this.name = sName;
+        this.emptyCell = new EmptyCell(sName, cellFormat.getCellType());
     }
 
     /**
@@ -76,19 +119,13 @@ public abstract class SchemaCell implements Cloneable {
     }
     
     /**
+     * The name of the cell
      * @return the name
      */
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name
-     *            the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
 
     /**
      * @return the cellFormat
@@ -97,126 +134,47 @@ public abstract class SchemaCell implements Cloneable {
         return cellFormat;
     }
 
+
+    /**
+     * Sets format of this schema cell using a type that needs no format pattern
+     * @param cellType The type of the cell
+     */
+    public void setCellFormat(CellType cellType)  {
+        this.setCellFormat(new SchemaCellFormat(cellType));
+    }
+
+    /**
+     * Sets format of this schema cell using the locale of the cell.
+     * @param cellType The type of the cell
+     * @param sPattern The pattern
+     */
+    public void setCellFormat(CellType cellType, String sPattern)  {
+        this.setCellFormat(new SchemaCellFormat(cellType, sPattern, locale));
+    }
+
+    /**
+     * Sets format of this schema cell.
+     * @param cellType The type of the cell
+     * @param sPattern The pattern
+     * @param locale The locale to use for the cell.
+     */
+    public void setCellFormat(CellType cellType, String sPattern, Locale locale)  {
+        this.locale = locale;
+        this.setCellFormat(new SchemaCellFormat(cellType, sPattern, locale));
+    }
+
     /**
      * @param cellFormat
      *            the cellFormat to set
      */
-    public void setCellFormat(SchemaCellFormat cellFormat) {
+    void setCellFormat(SchemaCellFormat cellFormat) {
+        if(cellFormat == null)
+            throw new IllegalArgumentException("cellFormat argument cannot be null");
         this.cellFormat = cellFormat;
     }
 
-    /**
-     * Creates a cell with a parsed value according to the schema specification for this cell. This
-     * method does not throw exception of mandatory cell does not exist. Instead it reports an error
-     * event and continues.
-     * 
-     * @param sValue
-     * @param listener
-     * @param nLineNumber
-     * @return A new cell of a type according to the schema specified. Returns null if there is no
-     *         value.
-     * @throws ParseException
-     */
-    public Cell makeCell(String sValue, ParsingEventListener listener, long nLineNumber) throws ParseException {
-        if (sValue.isEmpty()) {
-            checkIfMandatory(listener, nLineNumber);
 
-            if (defaultCell != null) {
-                return defaultCell.makeCopy(getName());
-            } else {
-                return new EmptyCell(getName(), this.cellFormat.getCellType());
-            }
-        }
-        return makeCell(sValue);
-    }
 
-    /**
-     * Checks if cell is mandatory and in that case fires an error event.
-     * 
-     * @param listener
-     * @param nLineNumber
-     * @throws ParseException
-     */
-    public void checkIfMandatory(ParsingEventListener listener, long nLineNumber) throws ParseException {
-        if (isMandatory()) {
-            CellParseError e = new CellParseError(nLineNumber, getName(), EMPTY_STRING, getCellFormat(),
-                    "Mandatory cell requires a value.");
-            listener.lineErrorEvent(new LineErrorEvent(this, e));
-        }
-    }
-
-    /**
-     * Creates a cell with a parsed value according to the schema specification for this cell. Does
-     * not check if cell is mandatory!!
-     * 
-     * @param sValue
-     * @return A new cell of a type according to the schema specified. Returns null if there is no
-     *         value.
-     * @throws SchemaException
-     * @throws ParseException
-     */
-    public Cell makeCell(String sValue) throws ParseException {
-
-        // If the cell is empty, check if default value exists.
-        if (sValue.length() <= 0 || (emptyPattern != null && emptyPattern.matcher(sValue).matches())) {
-            if (defaultCell != null) {
-                return defaultCell.makeCopy(getName());
-            } else {
-                return new EmptyCell(getName(), this.cellFormat.getCellType());
-            }
-        }
-
-        try {
-            CellType cellType = this.cellFormat.getCellType();
-            Cell cell;
-            if (getCellFormat().getFormat() != null)
-                cell = SchemaCell.makeCell(cellType, getName(), sValue, this.getCellFormat().getFormat());
-            else
-                cell = SchemaCell.makeCell(cellType, getName(), sValue, getLocale());
-            validateRange(cell);
-            return cell;
-        } catch (SchemaException e) {
-            throw new ParseException(new CellParseError(getName(), sValue, getCellFormat(), e.getMessage()), e);
-        } catch (java.text.ParseException e) {
-            throw new ParseException(new CellParseError(getName(), sValue, getCellFormat(), e.getMessage()), e);
-        }
-
-    }
-
-    /**
-     * If you have created a custom type you need to override this method and handle the custom type.
-     * @param cellType
-     * @param sName
-     * @param sValue
-     * @param format
-     * @return A cell object that has been parsed from the supplied sValue parameter according to
-     *         the supplied format.
-     * @throws ParseE
-     *             , java.lang.Comparable, java.lang.Comparable, java.lang.Comparablexception
-     * @throws java.text.ParseException
-     * @throws SchemaException
-     */
-    public static Cell makeCell(CellType cellType, String sName, String sValue, java.text.Format format)
-            throws java.text.ParseException, SchemaException {
-        return cellType.makeCell(sName, sValue, format);
-    }
-
-    /**
-     * @param cellType
-     * @param sName
-     * @param sValue
-     * @param locale
-     * @return A cell object that has been parsed from the supplied sValue parameter according to
-     *         the default format for supplied type and locale.
-     * @throws ParseE
-     *             , java.lang.Comparable, java.lang.Comparable, java.lang.Comparablexception
-     * @throws java.text.ParseException
-     * @throws SchemaException
-     */
-    public static Cell makeCell(CellType cellType, String sName, String sValue, Locale locale)
-            throws java.text.ParseException, SchemaException {
-        return cellType.makeCell(sName, sValue, locale);
-    }
 
     /**
      * Indicates if the corresponding cell is mandatory, that is an error will be reported if it
@@ -314,65 +272,41 @@ public abstract class SchemaCell implements Cloneable {
      *            the locale to set
      */
     public void setLocale(Locale locale) {
-        this.locale = locale;
+        // Re-create the format since it may change depending on that locale changed.
+        this.setCellFormat(cellFormat.getCellType(), cellFormat.getPattern(), locale);
     }
 
     /**
-     * Validates that the cell value is within the valid range. Throws a SchemaException if value is
+     * Validates that the default value is within the valid range. Throws a SchemaException if value is
      * not within borders.
-     * 
-     * @param cell
-     * @throws SchemaException
-     * @throws ParseException
-     * @throws SchemaException
+     *
+     * @param defaultCell The default cell to use.
+     * @throws SchemaException If validation fails.
      */
-    protected void validateRange(Cell cell) throws SchemaException {
-
-        if (this.minValue != null && cell.compareValueTo(this.minValue) < 0)
+    @SuppressWarnings("unchecked")
+    private void validateDefaultValueRange(Cell defaultCell) throws SchemaException {
+        if (this.minValue != null && defaultCell.compareValueTo(this.minValue) < 0) {
             throw new SchemaException("The value is below minimum range limit.");
-        else if (this.maxValue != null && cell.compareValueTo(this.maxValue) > 0)
+        } else if (this.maxValue != null && defaultCell.compareValueTo(this.maxValue) > 0) {
             throw new SchemaException("The value is above maximum range limit.");
+        }
 
     }
 
     /**
-     * @param value
-     * @throws SchemaException
-     * @throws java.text.ParseException
+     * @param value The string representation of the min value as it would be presented in the text input.
+     * @throws java.text.ParseException If the string value could not be parsed according to this schema cell
      */
-    public void setMinValue(String value) throws SchemaException, java.text.ParseException {
-        Locale locale = new Locale("US_en");
-        Cell cell = SchemaCell.makeCell(this.getCellFormat().getCellType(), "Min", value, locale);
-        this.minValue = cell;
+    public void setMinValue(String value) throws java.text.ParseException {
+        this.minValue = CellParser.makeCell(this.getCellFormat().getCellType(), this.name, value, this.locale);
     }
 
     /**
-     * @param value
-     * @throws SchemaException
-     * @throws java.text.ParseException
+     * @param value The string representation of the max value as it would be presented in the text input.
+     * @throws java.text.ParseException If the string value could not be parsed according to this schema cell
      */
-    public void setMaxValue(String value) throws SchemaException, java.text.ParseException {
-        Locale locale = new Locale("US_en");
-        Cell cell = SchemaCell.makeCell(this.getCellFormat().getCellType(), "Max", value, locale);
-        this.maxValue = cell;
-    }
-
-    /**
-     * @return The default cell. The value of the default cell will be used if input/output is
-     *         missing.
-     */
-    public Cell getDefaultCell() {
-        return defaultCell;
-    }
-
-    /**
-     * @param defaultCell
-     *            The default cell. The value of the default cell will be used if input/output is
-     *            missing. The name of the cell has no importance, it will not be used.
-     */
-    public void setDefaultCell(Cell defaultCell) {
-        this.defaultCell = defaultCell.makeCopy(getName());
-        this.defaultValue = getDefaultCell().getStringValue(getCellFormat().getFormat());
+    public void setMaxValue(String value) throws java.text.ParseException {
+        this.maxValue = CellParser.makeCell(this.getCellFormat().getCellType(), this.name, value, this.locale);
     }
 
     /**
@@ -383,11 +317,11 @@ public abstract class SchemaCell implements Cloneable {
      * @param sDefaultValue
      *            The default value formatted according to this schema. Will be used if input/output
      *            is missing for this cell.
-     * @throws ParseException
+     * @throws SchemaException If there was a configuration error in the schema.
      */
-    public void setDefaultValue(String sDefaultValue) throws ParseException {
-        this.defaultCell = makeCell(sDefaultValue);
+    public void setDefaultValue(String sDefaultValue) throws SchemaException {
         this.defaultValue = sDefaultValue;
+        validateDefaultValueRange(CellParser.ofSchemaCell(this).makeDefaultCell());
     }
 
     /**
@@ -398,118 +332,93 @@ public abstract class SchemaCell implements Cloneable {
         return defaultValue;
     }
 
-    /**
-     * @return The default value if it is not null or empty string otherwise.
-     */
-    private String getDefaultValueOrEmpty() {
-        return defaultValue == null ? EMPTY_STRING : defaultValue;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof SchemaCell))
+            return false;
+
+        SchemaCell that = (SchemaCell) o;
+
+        return name.equals(that.name);
+
     }
 
-    /**
-     * Formats a cell to a string according to the rules of this schema.
-     * 
-     * @param cell
-     *            The cell to format. If this parameter is null or an empty string, the default
-     *            value will be returned or if there is no default value, an empty string will be
-     *            returned.
-     * @return The formatted value for this cell.
-     */
-    public String format(Cell cell) {
-        if (this.ignoreWrite )
-            return EMPTY_STRING;
-        
-        if (cell == null) {
-            return getDefaultValueOrEmpty();
-        }
-        String value = cell.getStringValue(getCellFormat().getFormat());
-        if (value == null || value.isEmpty()) {
-            return getDefaultValueOrEmpty();
-        }
-        return value;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((cellFormat == null) ? 0 : cellFormat.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        return result;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof SchemaCell)) {
-            return false;
-        }
-        SchemaCell other = (SchemaCell) obj;
-        if (cellFormat == null) {
-            if (other.cellFormat != null) {
-                return false;
-            }
-        } else if (!cellFormat.equals(other.cellFormat)) {
-            return false;
-        }
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!name.equals(other.name)) {
-            return false;
-        }
-        return true;
+        return name.hashCode();
     }
 
     /**
      * @return true if there is a default value, false otherwise.
      */
     public boolean isDefaultValue() {
-        return this.defaultCell != null;
+        return this.defaultValue != null;
     }
 
     /**
-     * @return the emptyPattern
+     * @return True if this cell schema has an empty condition.
      */
-    public Pattern getEmptyPattern() {
-        return emptyPattern;
+    public boolean hasEmptyCondition(){
+        return this.emptyCondition != null;
+    }
+    /**
+     * @return the emptyCondition
+     */
+    public CellValueCondition getEmptyCondition() {
+        return emptyCondition;
     }
 
     /**
-     * The empty pattern can be used to ignore cells that contains a text that should be regared as empty. For instance
-     * the cell might contain the text NULL to indicate that there is no value even though this is a date or a numeric field.
+     * A condition that if satisfied for a specific text input, indicates that the cell is actually empty. For instance
+     * the cell might contain the text NULL to indicate that there is no value even though this is a date or a numeric
+     * field. In that case a {@link MatchingCellValueCondition} can be used to match the pattern "NULL".
      * 
-     * @param emptyPattern the regexp pattern that will be matched against to determine if this cell is empty
+     * @param emptyCondition the cell value condition that needs to be satisfied if this cell is to be considered empty
      */
-    public void setEmptyPattern(Pattern emptyPattern) {
-        this.emptyPattern = emptyPattern;
+    public void setEmptyCondition(CellValueCondition emptyCondition) {
+        this.emptyCondition = emptyCondition;
     }
 
     /**
-     * The empty pattern can be used to ignore cells that contains a text that should be regared as empty. For instance
-     * the cell might contain the text NULL to indicate that there is no value even though this is a date or a numeric field.
-     * 
-     * @param emptyPattern
-     *            the regexp pattern string that will be matched against to determine if this cell is empty
+     * A regular expression that if matching for a specific text input, indicates that the cell is actually empty. For instance
+     * the cell might contain the text NULL to indicate that there is no value even though this is a date or a numeric
+     * field. In that case the pattern "NULL" can be used.
+     * @param pattern The regex pattern to match against
      */
-    public void setEmptyPattern(String sEmptyPattern) {
-        if(sEmptyPattern != null && !sEmptyPattern.isEmpty())
-            this.emptyPattern = Pattern.compile(sEmptyPattern);
+    @SuppressWarnings("SameParameterValue")
+    public void setEmptyPattern(String pattern) {
+        this.emptyCondition = new MatchingCellValueCondition(pattern);
     }
-    
+
+    /**
+     * @return A condition that needs to be satisfied if the parser is going to use this line type.
+     */
+    public CellValueCondition getLineCondition() {
+        return lineCondition;
+    }
+
+    /**
+     * @param lineCondition A condition that needs to be satisfied if the parser is going to use this line type.
+     */
+    public void setLineCondition(CellValueCondition lineCondition) {
+        this.lineCondition = lineCondition;
+    }
+
+    /**
+     * @return True if this cell schema has a line condition, false otherwise.
+     */
+    public boolean hasLineCondition(){
+        return this.lineCondition != null;
+    }
+
+    /**
+     * @return An empty cell for this schema cell.
+     */
+    public Cell makeEmptyCell(){
+        return this.emptyCell;
+    }
+
 }

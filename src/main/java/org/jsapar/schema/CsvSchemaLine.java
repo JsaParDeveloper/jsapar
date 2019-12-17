@@ -1,36 +1,47 @@
 package org.jsapar.schema;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Iterator;
-
-import org.jsapar.Cell;
-import org.jsapar.CellType;
-import org.jsapar.JSaParException;
-import org.jsapar.Line;
-import org.jsapar.StringCell;
-import org.jsapar.input.parse.LineReader;
-import org.jsapar.input.parse.csv.CellSplitter;
-import org.jsapar.input.parse.csv.QuotedCellSplitter;
-import org.jsapar.input.parse.csv.SimpleCellSplitter;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
- * Describes the schema how to parse or write a comma separated line.
- * 
- * @author stejon0
- * 
+ * Describes the schema for a delimiter separated line. For instance if you want to ignore a header line you
+ * can add a SchemaLine instance to your schema with occurs==1 and ignoreRead==true;
+ *
+ * @see CsvSchema
+ * @see CsvSchemaCell
  */
 public class CsvSchemaLine extends SchemaLine {
+    private static final char NO_QUOTING = 0;
 
-    private java.util.List<CsvSchemaCell> schemaCells       = new java.util.ArrayList<CsvSchemaCell>();
-    private boolean                       firstLineAsSchema = false;
-
-    private String                        cellSeparator     = ";";
+    private Map<String, CsvSchemaCell> schemaCells = new LinkedHashMap<>();
 
     /**
-     * Specifies quote characters used to encapsulate cells. Numerical value 0 indicates that quotes are not used.
+     * Set this to true when the first line of the input text contains the names and order of the cells in the following
+     * lines, i.e. the first line is a header line that works as a schema for the rest of the file. In that case this
+     * schema line instance will only be used to get
+     * formatting instructions and default values, it will not denote the order of the cells. The order is given by the
+     * first line of the input instead.
      */
-    private char                          quoteChar         = 0;
+    private boolean firstLineAsSchema = false;
+
+    /**
+     * The character sequence that separates each cell. Default is the ';' (semicolon) character.
+     */
+    private String cellSeparator = ";";
+
+    /**
+     * Specifies quote characters used to encapsulate cells. Default is the standard double quote character (").
+     * Disable quoting by calling {@link #disableQuoteChar()}.
+     * <p>
+     * If quoted cells contain cell separator or line separator characters, these will be treated as content of the cell
+     * instead.
+     * <p>
+     * Specify quoting syntax at schema level by calling {@link CsvSchema#setQuoteSyntax(QuoteSyntax)}.
+     * <p>
+     * Specify the quote behavior for each cell at cell level by calling {@link CsvSchemaCell#setQuoteBehavior(QuoteBehavior)}
+     */
+    private char quoteChar = '"';
 
     /**
      * Creates an empty schema line.
@@ -41,127 +52,87 @@ public class CsvSchemaLine extends SchemaLine {
 
     /**
      * Creates an empty schema line which occurs nOccurs number of times.
-     * 
-     * @param nOccurs
+     *
+     * @param nOccurs The number of times this type of line occurs in the input.
      */
     public CsvSchemaLine(int nOccurs) {
         super(nOccurs);
     }
 
     /**
-     * The type of the line. You could say that this is the class of the line.
-     * 
-     * @param lineType
+     * Creates a CsvSchemaLine with the supplied line type and occurs infinite number of times.
+     *
+     * @param lineType The type of the line
      */
     public CsvSchemaLine(String lineType) {
         super(lineType);
     }
 
-    public CsvSchemaLine(String lineType, String lineTypeControlValue) {
-        super(lineType, lineTypeControlValue);
+    /**
+     * Creates a CsvSchemaLine with the supplied line type and occurs supplied number of times.
+     *
+     * @param lineType The type of the line
+     * @param nOccurs  The number of times this type of line occurs in the input/output.
+     */
+    public CsvSchemaLine(String lineType, int nOccurs) {
+        super(lineType, nOccurs);
     }
 
     /**
      * @return the cells
      */
-    public java.util.List<CsvSchemaCell> getSchemaCells() {
-        return schemaCells;
+    public Collection<CsvSchemaCell> getSchemaCells() {
+        return schemaCells.values();
     }
 
     /**
      * Adds a schema cell to this row.
-     * 
-     * @param cell
+     *
+     * @param cell The cell to add
+     * @return This instance of the schema line, allows to chain calls.
      */
-    public void addSchemaCell(CsvSchemaCell cell) {
-        this.schemaCells.add(cell);
+    public CsvSchemaLine addSchemaCell(CsvSchemaCell cell) {
+        this.schemaCells.put(cell.getName(), cell);
+        return this;
     }
 
-
-    /**
-     * @param sLine
-     * @return An array of all cells found on the line.
-     * @throws JSaParException 
-     * @throws IOException 
-     */
-    CellSplitter makeCellSplitter(LineReader lineReader) {
-        if (quoteChar == 0)
-            return new SimpleCellSplitter(cellSeparator);
-        return new QuotedCellSplitter(cellSeparator, quoteChar, lineReader);
-    }
-
-
-    /**
-     * @return the cellSeparator
-     */
     public String getCellSeparator() {
         return cellSeparator;
     }
 
     /**
-     * Sets the character sequence that separates each cell. This value overrides setting for the schema. <br>
-     * In output schemas the non-breaking space character '\u00A0' is not allowed since that character is used to
-     * replace any occurrence of the separator within each cell.
-     * 
-     * @param cellSeparator
-     *            the cellSeparator to set
+     * Sets the character sequence that separates each cell.
+     * <p>
+     * In output schemas the non-breaking space character '\u00A0' is not allowed unless quote character is specified
+     * since that character is used to replace any occurrence of the separator within each cell.
+     *
+     * @param cellSeparator the cellSeparator to set
      */
     public void setCellSeparator(String cellSeparator) {
         this.cellSeparator = cellSeparator;
     }
 
     /*
-     * Writes the cells of the line to the writer. Inserts cell separator between cells. (non-Javadoc)
-     * 
-     * @see org.jsapar.schema.SchemaLine#output(org.jsapar.Line, java.io.Writer)
-     */
-    @Override
-    public void output(Line line, Writer writer) throws IOException {
-        String sCellSeparator = getCellSeparator();
-
-        Iterator<CsvSchemaCell> iter = getSchemaCells().iterator();
-        for (int i = 0; iter.hasNext(); i++) {
-            CsvSchemaCell schemaCell = iter.next();
-            Cell cell = findCell(line, schemaCell, i, this.isWriteNamedCellsOnly());
-            char quoteChar = getQuoteChar();
-
-            schemaCell.output(cell, writer, sCellSeparator, quoteChar);
-
-            if (iter.hasNext())
-                writer.write(sCellSeparator);
-        }
-    }
-
-    /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#clone()
      */
     @Override
     public CsvSchemaLine clone() {
-        CsvSchemaLine line = cloneWithoutCells();
+        CsvSchemaLine line;
+        line = (CsvSchemaLine) super.clone();
+        line.schemaCells = new LinkedHashMap<>();
 
-        for (CsvSchemaCell cell : this.schemaCells) {
+        for (CsvSchemaCell cell : this.schemaCells.values()) {
             line.addSchemaCell(cell.clone());
         }
         return line;
     }
 
-    protected CsvSchemaLine cloneWithoutCells() {
-        CsvSchemaLine line;
-        try {
-            line = (CsvSchemaLine) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError(e);
-        }
-        line.schemaCells = new java.util.LinkedList<CsvSchemaCell>();
-
-        return line;
-    }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -182,24 +153,14 @@ public class CsvSchemaLine extends SchemaLine {
         return sb.toString();
     }
 
-    /**
-     * @return the firstLineAsSchema
-     */
     public boolean isFirstLineAsSchema() {
         return firstLineAsSchema;
     }
 
-    /**
-     * @param firstLineAsSchema
-     *            the firstLineAsSchema to set
-     */
     public void setFirstLineAsSchema(boolean firstLineAsSchema) {
         this.firstLineAsSchema = firstLineAsSchema;
     }
 
-    /**
-     * @return the quotePattern
-     */
     public char getQuoteChar() {
         return quoteChar;
     }
@@ -208,49 +169,20 @@ public class CsvSchemaLine extends SchemaLine {
      * @return true if quote character is used, false otherwise.
      */
     public boolean isQuoteCharUsed() {
-        return this.quoteChar == 0 ? false : true;
+        return this.quoteChar != NO_QUOTING;
     }
 
-    /**
-     * @param quoteChar
-     *            the quote character to set
-     */
+    public void disableQuoteChar() {
+        this.quoteChar = NO_QUOTING;
+    }
+
     public void setQuoteChar(char quoteChar) {
         this.quoteChar = quoteChar;
     }
 
-    /**
-     * @return
-     * @throws JSaParException
-     */
-    Line buildHeaderLineFromSchema() throws JSaParException {
-        Line line = new Line();
-
-        for (CsvSchemaCell schemaCell : this.getSchemaCells()) {
-            line.addCell(new StringCell(schemaCell.getName(), schemaCell.getName()));
-        }
-
-        return line;
-    }
-
-    /**
-     * Writes header line if first line is schema.
-     * 
-     * @param writer
-     * @throws IOException
-     * @throws JSaParException
-     */
-    public void outputHeaderLine(Writer writer) throws IOException, JSaParException {
-        CsvSchemaLine unformattedSchemaLine = this.clone();
-        for (CsvSchemaCell schemaCell : unformattedSchemaLine.getSchemaCells()) {
-            schemaCell.setCellFormat(new SchemaCellFormat(CellType.STRING));
-        }
-        unformattedSchemaLine.output(this.buildHeaderLineFromSchema(), writer);
-    }
-
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.jsapar.schema.SchemaLine#getSchemaCell(java.lang.String)
      */
     @Override
@@ -259,41 +191,29 @@ public class CsvSchemaLine extends SchemaLine {
     }
 
     /**
-     * @param cellName
-     * @return CsvSchemaCell with specified name that is attached to this line or null if no such cell exist.
+     * @param cellName The name of the cell to get.
+     * @return {@link CsvSchemaCell} with specified name that is attached to this line or null if no such {@link CsvSchemaCell} exist.
      */
     public CsvSchemaCell getCsvSchemaCell(String cellName) {
-        for (CsvSchemaCell schemaCell : this.getSchemaCells()) {
-            if (schemaCell.getName().equals(cellName))
-                return schemaCell;
-        }
-        return null;
+        return schemaCells.get(cellName);
     }
 
     @Override
-    public int getSchemaCellsCount() {
+    public int size() {
         return this.schemaCells.size();
     }
 
     @Override
-    public SchemaCell getSchemaCellAt(int index) {
-        return this.schemaCells.get(index);
+    public Stream<CsvSchemaCell> stream() {
+        return schemaCells.values().stream();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (!super.equals(obj)) {
-            return false;
-        }
-        if (!(obj instanceof CsvSchemaLine)) {
-            return false;
-        }
-        return true;
+    public Iterator<CsvSchemaCell> iterator() {
+        return schemaCells.values().iterator();
+    }
+
+    public void forEach(Consumer<? super SchemaCell> consumer) {
+        schemaCells.values().forEach(consumer);
     }
 
 

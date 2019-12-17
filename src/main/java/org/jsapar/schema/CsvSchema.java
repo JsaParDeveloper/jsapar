@@ -1,149 +1,54 @@
 package org.jsapar.schema;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.Iterator;
-import java.util.List;
+import org.jsapar.parse.csv.CsvParser;
+import org.jsapar.text.TextParseConfig;
+import org.jsapar.parse.text.TextSchemaParser;
 
-import org.jsapar.JSaParException;
-import org.jsapar.Line;
-import org.jsapar.input.ParseException;
-import org.jsapar.input.ParsingEventListener;
-import org.jsapar.input.parse.LineReader;
-import org.jsapar.input.parse.ReaderLineReader;
+import java.io.Reader;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
- * Defines a schema for a fixed position buffer. Each cell is defined by a fixed number of
- * characters. Each line is separated by the line separator defined in the base class {@link Schema}
- * 
- * @author Jonas
- * 
+ * Defines a schema for a delimited input text. Each cell is delimited by a delimiter character sequence.
+ * Lines are separated by the line separator defined by {@link Schema#getLineSeparator()}.
+ * @see Schema
+ * @see SchemaLine
+ * @see CsvSchemaLine
  */
-public class CsvSchema extends Schema {
+public class CsvSchema extends Schema implements Cloneable{
 
     /**
-     * Byte order marker. Some editors (usually in Windows) adds a byte order marker to xml files. 
+     * The schema lines
      */
-    private static final String UTF8_BOM_STR = "\ufeff";
-    private java.util.ArrayList<CsvSchemaLine> schemaLines = new java.util.ArrayList<CsvSchemaLine>(4);
+    private LinkedHashMap<String, CsvSchemaLine> schemaLines = new LinkedHashMap<>();
 
     /**
-     * @return the schemaLines
+     * Specifies the syntax while parsing and composing of quoted cells. Default is {@link QuoteSyntax#FIRST_LAST}
      */
-    public java.util.List<CsvSchemaLine> getCsvSchemaLines() {
-        return schemaLines;
-    }
+    private QuoteSyntax quoteSyntax = QuoteSyntax.FIRST_LAST;
 
     /**
-     * @param schemaLine
-     *            the schemaLines to set
+     * @param schemaLine the schemaLine to add
      */
     public void addSchemaLine(CsvSchemaLine schemaLine) {
-        this.schemaLines.add(schemaLine);
-    }
-
-    /**
-     * Builds a CsvSchemaLine from a header line.
-     * 
-     * @param masterLineSchema The base to use while creating csv schema. May add formatting, defaults etc.
-     * @param sHeaderLine The header line to use while building the schema.
-     * @return A CsvSchemaLine created from the header line.
-     * @throws CloneNotSupportedException
-     * @throws JSaParException 
-     * @throws IOException 
-     */
-    private CsvSchemaLine buildSchemaFromHeader(CsvSchemaLine masterLineSchema, String sHeaderLine)
-            throws CloneNotSupportedException, IOException, JSaParException {
-
-        CsvSchemaLine schemaLine = masterLineSchema.clone();
-        schemaLine.getSchemaCells().clear();
-
-        schemaLine.setOccursInfinitely();
-
-        sHeaderLine = removeLeadingByteOrderMark(sHeaderLine);
-        
-        String[] asCells = schemaLine.makeCellSplitter(null).split(sHeaderLine);
-        for (String sCell : asCells) {
-            CsvSchemaCell masterCell = masterLineSchema.getCsvSchemaCell(sCell);
-            if(masterCell != null)
-                schemaLine.addSchemaCell(masterCell);
-            else
-                schemaLine.addSchemaCell(new CsvSchemaCell(sCell));
-        }
-        addDefaultValuesFromMaster(schemaLine, masterLineSchema);
-        return schemaLine;
-    }
-
-    /**
-     * Normally the byte order mark should be removed from the input buffer before parsing but in case this is forgotten
-     * we do it again because it is so hard to trace the error if it is not done at all when using the header line as a
-     * schema.
-     * 
-     * @param sHeaderLine
-     * @return
-     */
-    private String removeLeadingByteOrderMark(String sHeaderLine) {
-        if (sHeaderLine.startsWith(UTF8_BOM_STR))
-            return sHeaderLine.substring(UTF8_BOM_STR.length());
-        else
-            return sHeaderLine;
-    }
-
-    /**
-     * Add all cells that has a default value in the master schema last on the line with
-     * ignoreRead=true so that the default values are always set.
-     * 
-     * @param schemaLine
-     * @param masterLineSchema
-     */
-    private void addDefaultValuesFromMaster(CsvSchemaLine schemaLine, CsvSchemaLine masterLineSchema) {
-        for(CsvSchemaCell cell : masterLineSchema.getSchemaCells()){
-            if(cell.getDefaultCell() != null){
-                if(schemaLine.getCsvSchemaCell(cell.getName())==null){
-                    CsvSchemaCell defaultCell = cell.clone();
-                    defaultCell.setIgnoreRead(true);
-                    schemaLine.addSchemaCell(defaultCell);
-                }
-            }
-        }
+        this.schemaLines.put(schemaLine.getLineType(), schemaLine);
     }
 
     @Override
-    public void output(Iterator<Line> itLines, Writer writer) throws IOException, JSaParException {
-        for (CsvSchemaLine lineSchema : getCsvSchemaLines()) {
-            if (lineSchema.isFirstLineAsSchema()) {
-                lineSchema.outputHeaderLine(writer);
-                if (itLines.hasNext())
-                    writer.write(getLineSeparator());
-            }
-            for (int i = 0; i < lineSchema.getOccurs(); i++) {
-                if (!itLines.hasNext())
-                    return;
-
-                Line line = itLines.next();
-                ((CsvSchemaLine) lineSchema).output(line, writer);
-
-                if (itLines.hasNext())
-                    writer.write(getLineSeparator());
-                else
-                    return;
-            }
-        }
+    public boolean isEmpty() {
+        return this.schemaLines.isEmpty();
     }
-
-
-
 
     @Override
     public CsvSchema clone() {
         CsvSchema schema;
         schema = (CsvSchema) super.clone();
 
-        schema.schemaLines = new java.util.ArrayList<CsvSchemaLine>();
-        for (CsvSchemaLine line : this.schemaLines) {
-            schema.addSchemaLine(line.clone());
-        }
+        schema.schemaLines = new LinkedHashMap<>();
+        this.stream().map(CsvSchemaLine::clone).forEach(schema::addSchemaLine);
         return schema;
     }
 
@@ -154,62 +59,14 @@ public class CsvSchema extends Schema {
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-
-        sb.append(" schemaLines=");
-        sb.append(this.schemaLines);
-        return sb.toString();
+        return "CsvSchema" + super.toString() +
+                " schemaLines=" +
+                this.schemaLines;
     }
 
     @Override
-    public List<? extends SchemaLine> getSchemaLines() {
-        return this.schemaLines;
-    }
-
-    @Override
-    public void outputAfter(Writer writer) throws IOException, JSaParException {
-    }
-
-    @Override
-    public void outputBefore(Writer writer) throws IOException, JSaParException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jsapar.schema.Schema#outputLine(org.jsapar.Line, long, java.io.Writer)
-     */
-    @Override
-    public boolean outputLine(Line line, long lineNumber, Writer writer) throws IOException, JSaParException {
-        CsvSchemaLine schemaLine = null;
-
-        long nLineMax = 0; // The line number for the last line of this schema line.
-        long nLineWithinSchema = 1; // The line number within this schema.
-        for (CsvSchemaLine currentSchemaLine : this.getCsvSchemaLines()) {
-            nLineWithinSchema = lineNumber - nLineMax;
-            if (currentSchemaLine.isOccursInfinitely()) {
-                schemaLine = currentSchemaLine;
-                break;
-            }
-            nLineMax += (long) currentSchemaLine.getOccurs();
-            if (lineNumber <= nLineMax) {
-                schemaLine = currentSchemaLine;
-                break;
-            }
-        }
-
-        if (schemaLine == null)
-            return false;
-
-        if (lineNumber > 1)
-            writer.append(getLineSeparator());
-        if (nLineWithinSchema == 1 && schemaLine.isFirstLineAsSchema()) {
-            schemaLine.outputHeaderLine(writer);
-            writer.append(getLineSeparator());
-        }
-        schemaLine.output(line, writer);
-        return true;
+    public Collection<CsvSchemaLine> getSchemaLines() {
+        return this.schemaLines.values();
     }
 
     /*
@@ -218,22 +75,35 @@ public class CsvSchema extends Schema {
      * @see org.jsapar.schema.Schema#getSchemaLine(java.lang.String)
      */
     @Override
-    public SchemaLine getSchemaLine(String lineType) {
-        for (CsvSchemaLine lineSchema : this.getCsvSchemaLines()) {
-            if (lineSchema.getLineType().equals(lineType))
-                return lineSchema;
-        }
-        return null;
+    public Optional<CsvSchemaLine> getSchemaLine(String lineType) {
+        return Optional.ofNullable(schemaLines.get(lineType));
     }
 
     @Override
-    public int getSchemaLinesCount() {
+    public int size() {
         return this.schemaLines.size();
     }
 
     @Override
-    public SchemaLine getSchemaLineAt(int index) {
-        return this.schemaLines.get(index);
+    public Stream<CsvSchemaLine> stream() {
+        return this.schemaLines.values().stream();
     }
 
+    @Override
+    public Iterator<CsvSchemaLine> iterator() {
+        return schemaLines.values().iterator();
+    }
+
+    @Override
+    public TextSchemaParser makeSchemaParser(Reader reader, TextParseConfig parseConfig) {
+        return new CsvParser(reader, this, parseConfig);
+    }
+
+    public QuoteSyntax getQuoteSyntax() {
+        return quoteSyntax;
+    }
+
+    public void setQuoteSyntax(QuoteSyntax quoteSyntax) {
+        this.quoteSyntax = quoteSyntax;
+    }
 }

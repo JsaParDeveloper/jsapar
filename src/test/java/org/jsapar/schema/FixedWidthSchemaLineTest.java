@@ -1,39 +1,13 @@
 package org.jsapar.schema;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-
-import org.jsapar.JSaParException;
-import org.jsapar.Line;
-import org.jsapar.StringCell;
-import org.jsapar.input.LineErrorEvent;
-import org.jsapar.input.LineParsedEvent;
-import org.jsapar.input.ParseException;
-import org.jsapar.input.ParsingEventListener;
+import org.jsapar.error.JSaParException;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.*;
+
 public class FixedWidthSchemaLineTest {
     
-    
-
-    private class NullParsingEventListener implements ParsingEventListener {
-
-        @Override
-        public void lineErrorEvent(LineErrorEvent event) throws ParseException {
-            throw new ParseException(event.getCellParseError());
-        }
-
-        @Override
-        public void lineParsedEvent(LineParsedEvent event) {
-        }
-    }
-
     protected boolean foundError = false;
     
     @Before
@@ -43,79 +17,7 @@ public class FixedWidthSchemaLineTest {
 
 
     @Test
-    public void testOutput() throws IOException, JSaParException {
-        Line line = new Line();
-        line.addCell(new StringCell("Jonas"));
-        line.addCell(new StringCell("Stenberg"));
-        line.addCell(new StringCell("Street address", "Spiselvagen 19"));
-
-        org.jsapar.schema.FixedWidthSchema schema = new org.jsapar.schema.FixedWidthSchema();
-        FixedWidthSchemaLine schemaLine = new FixedWidthSchemaLine(1);
-        schemaLine.addSchemaCell(new FixedWidthSchemaCell("First name", 5));
-        schemaLine.addSchemaCell(new FixedWidthSchemaCell("Last name", 8));
-        schemaLine.addSchemaCell(new FixedWidthSchemaCell("Street address", 14));
-        schemaLine.addSchemaCell(new FixedWidthSchemaCell("Zip code", 6));
-        FixedWidthSchemaCell cityCellSchema = new FixedWidthSchemaCell("City", 8);
-        cityCellSchema.setDefaultValue("Huddinge");
-        schemaLine.addSchemaCell(cityCellSchema);
-        schema.addSchemaLine(schemaLine);
-
-        java.io.Writer writer = new java.io.StringWriter();
-        schemaLine.output(line, writer);
-        String sResult = writer.toString();
-
-        assertEquals("JonasStenbergSpiselvagen 19      Huddinge", sResult);
-    }
-
-    @Test
-    public void testOutput_minLength() throws IOException, JSaParException {
-        Line line = new Line();
-        line.addCell(new StringCell("Jonas"));
-        line.addCell(new StringCell("Stenberg"));
-        line.addCell(new StringCell("Street address", "Hemvagen 19"));
-
-        org.jsapar.schema.FixedWidthSchema schema = new org.jsapar.schema.FixedWidthSchema();
-        FixedWidthSchemaLine schemaLine = new FixedWidthSchemaLine(1);
-        schemaLine.setMinLength(50);
-        schemaLine.addSchemaCell(new FixedWidthSchemaCell("First name", 5));
-        schemaLine.addSchemaCell(new FixedWidthSchemaCell("Last name", 8));
-        schemaLine.addSchemaCell(new FixedWidthSchemaCell("Street address", 14));
-        schemaLine.addSchemaCell(new FixedWidthSchemaCell("Zip code", 6));
-        FixedWidthSchemaCell cityCellSchema = new FixedWidthSchemaCell("City", 12);
-        cityCellSchema.setDefaultValue("Storstaden");
-        schemaLine.addSchemaCell(cityCellSchema);
-        schema.addSchemaLine(schemaLine);
-
-        java.io.Writer writer = new java.io.StringWriter();
-        schemaLine.output(line, writer);
-        String sResult = writer.toString();
-
-        assertEquals("JonasStenbergHemvagen 19         Storstaden       ", sResult);
-    }
-    
-    @Test
-    public void testOutput_ignorewrite() throws IOException, JSaParException {
-        Line line = new Line();
-        line.addCell(new StringCell("Jonas"));
-        line.addCell(new StringCell("Stenberg"));
-        line.addCell(new StringCell("Street address", "Spiselvägen 19"));
-
-        org.jsapar.schema.FixedWidthSchema schema = new org.jsapar.schema.FixedWidthSchema();
-        FixedWidthSchemaLine schemaLine = new FixedWidthSchemaLine(1);
-        FixedWidthSchemaCell firstNameSchema = new FixedWidthSchemaCell("First name", 5);
-        firstNameSchema.setIgnoreWrite(true);
-        schemaLine.addSchemaCell(firstNameSchema);
-        schemaLine.addSchemaCell(new FixedWidthSchemaCell("Last name", 8));
-        schema.addSchemaLine(schemaLine);
-
-        java.io.Writer writer = new java.io.StringWriter();
-        schemaLine.output(line, writer);
-        String sResult = writer.toString();
-
-        assertEquals("     Stenberg", sResult);
-    }    
-    @Test
-    public final void testClone() throws CloneNotSupportedException {
+    public final void testClone() {
         FixedWidthSchemaLine schemaLine = new FixedWidthSchemaLine();
         schemaLine.setLineType("Nisse");
         schemaLine.addSchemaCell(new FixedWidthSchemaCell("First name", 5));
@@ -126,13 +28,13 @@ public class FixedWidthSchemaLineTest {
         assertEquals(schemaLine.getLineType(), clone.getLineType());
 
         // Does not clone strings values yet. Might do that in the future.
-        assertTrue(schemaLine.getLineType() == clone.getLineType());
+        assertSame(schemaLine.getLineType(), clone.getLineType());
         assertEquals(schemaLine.getSchemaCells().get(0).getName(), clone.getSchemaCells().get(0).getName());
         assertFalse(schemaLine.getSchemaCells().get(0) == clone.getSchemaCells().get(0));
     }
 
     @Test
-    public void testGetCellPositions() throws IOException, JSaParException {
+    public void testGetCellPositions() throws JSaParException {
         FixedWidthSchemaLine schemaLine = new FixedWidthSchemaLine(1);
         schemaLine.addSchemaCell(new FixedWidthSchemaCell("First name", 5));
         schemaLine.addSchemaCell(new FixedWidthSchemaCell("Last name", 8));
@@ -155,7 +57,7 @@ public class FixedWidthSchemaLineTest {
     }
 
     @Test
-    public void testGetCellFirstPositions() throws IOException, JSaParException {
+    public void testGetCellFirstPositions() throws JSaParException {
         FixedWidthSchemaLine schemaLine = new FixedWidthSchemaLine(1);
         schemaLine.addSchemaCell(new FixedWidthSchemaCell("First name", 5));
         schemaLine.addSchemaCell(new FixedWidthSchemaCell("Last name", 8));
@@ -193,11 +95,11 @@ public class FixedWidthSchemaLineTest {
         schemaLine.setMinLength(10);
         FixedWidthSchemaCell cell1 = new FixedWidthSchemaCell("First name", 5);
         schemaLine.addSchemaCell(cell1);
-        assertEquals(5, schemaLine.getTotalCellLenght());
-        assertEquals(1, schemaLine.getSchemaCellsCount());
+        assertEquals(5, schemaLine.getTotalCellLength());
+        assertEquals(1, schemaLine.size());
         
-        schemaLine.addFillerCellToReachMinLength(2);
-        assertEquals(8, schemaLine.getTotalCellLenght());
-        assertEquals(2, schemaLine.getSchemaCellsCount());
+        schemaLine.addFillerCellToReachMinLength();
+        assertEquals(10, schemaLine.getTotalCellLength());
+        assertEquals(2, schemaLine.size());
     }
 }

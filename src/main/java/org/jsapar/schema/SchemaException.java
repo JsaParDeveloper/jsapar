@@ -1,47 +1,20 @@
-/** 
- * Copyrigth: Jonas Stenberg
- */
 package org.jsapar.schema;
 
-import org.jsapar.JSaParException;
+import org.jsapar.error.JSaParException;
 
 /**
- * @author Jonas
- *
+ * Exception used for when there are errors within a schema or while building a schema.
  */
 public class SchemaException extends JSaParException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 636516160510599949L;
+    private static final long serialVersionUID = 636516160510599949L;
 
-	/**
-	 * 
-	 */
-	public SchemaException() {
-	}
+    public SchemaException(String s) {
+        super(s);
+    }
 
-	/**
-	 * @param arg0
-	 */
-	public SchemaException(String arg0) {
-		super(arg0);
-	}
-
-	/**
-	 * @param arg0
-	 */
-	public SchemaException(Throwable arg0) {
-		super(arg0);
-	}
-
-	/**
-	 * @param arg0
-	 * @param arg1
-	 */
-	public SchemaException(String arg0, Throwable arg1) {
-		super(arg0, arg1);
-	}
+    public SchemaException(String s, Throwable throwable) {
+        super(s, throwable);
+    }
 
 }

@@ -1,26 +1,20 @@
 package org.jsapar.schema;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.Iterator;
-
-import org.jsapar.Cell;
-import org.jsapar.JSaParException;
-import org.jsapar.Line;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * This class represents the schema for a line of a fixed with file. Each cell within the line has a
  * specified size. There are no delimiter characters.
  * 
- * @author stejon0
- * 
+ *
  */
 public class FixedWidthSchemaLine extends SchemaLine {
 
-    private java.util.List<FixedWidthSchemaCell> schemaCells = new java.util.ArrayList<FixedWidthSchemaCell>();
-    private boolean trimFillCharacters = true;
-    private char fillCharacter = ' ';
-    private int minLength = -1;
+    private java.util.List<FixedWidthSchemaCell> schemaCells        = new java.util.ArrayList<>();
+    private char                                 padCharacter       = ' ';
+    private int                                  minLength          = -1;
 
     /**
      * Creates an empty schema line.
@@ -34,7 +28,7 @@ public class FixedWidthSchemaLine extends SchemaLine {
      * has occured nOccurs times this schema-line will not be used any more.
      * 
      * @param nOccurs
-     *            The number of times this schema line is used while parsing or writing.
+     *            The number of times this schema line is used while parsing or writing. Use {@link #OCCURS_INFINITE} constant for infinite number of times.
      */
     public FixedWidthSchemaLine(int nOccurs) {
         super(nOccurs);
@@ -51,16 +45,14 @@ public class FixedWidthSchemaLine extends SchemaLine {
         super(lineType);
     }
 
+
     /**
-     * Creates a schema line with the supplied line type and control value.
-     * 
-     * @param lineType
-     *            The name of the type of the line.
-     * @param lineTypeControlValue
-     *            The tag that determines which type of line it is.
+     * Creates a fixed width schema line with the supplied line type and specified to occur supplied number of times.
+     * @param lineType The line type of this schema line.
+     * @param nOccurs The number of times it should occur. Use {@link #OCCURS_INFINITE} constant for infinite number of times.
      */
-    public FixedWidthSchemaLine(String lineType, String lineTypeControlValue) {
-        super(lineType, lineTypeControlValue);
+    public FixedWidthSchemaLine(String lineType, int nOccurs) {
+        super(lineType, nOccurs);
     }
 
     /**
@@ -73,73 +65,19 @@ public class FixedWidthSchemaLine extends SchemaLine {
     /**
      * Adds a schema cell to this row.
      * 
-     * @param schemaCell
+     * @param schemaCell The schema cell to add
+     * @return This instance of the schema line, allows to chain calls.
      */
-    public void addSchemaCell(FixedWidthSchemaCell schemaCell) {
+    public FixedWidthSchemaLine addSchemaCell(FixedWidthSchemaCell schemaCell) {
         if(schemaCell == null)
             throw new IllegalArgumentException("Cell schema cannot be null.");
         this.schemaCells.add(schemaCell);
+        return this;
     }
 
 
-    /**
-     * Writes a line to the writer. Each cell is identified from the schema by the name of the cell.
-     * If the schema-cell has no name, the cell at the same position in the line is used under the
-     * condition that it also lacks name.
-     * 
-     * If the schema-cell has a name the cell with the same name is used. If no such cell is found
-     * and the cell att the same position lacks name, it is used instead.
-     * 
-     * If no corresponding cell is found for a schema-cell, the positions are filled with the schema
-     * fill character.
-     * 
-     * @param line
-     *            The line to write to the writer
-     * @param writer
-     *            The writer to write to.
-     * @throws IOException
-     * @throws JSaParException
-     */
-    @Override
-    public void output(Line line, Writer writer) throws IOException, JSaParException {
-        output(line, writer, 0);
-    }
 
-    /**
-     * Writes a line to the writer. Each cell is identified from the schema by the name of the cell. If the schema-cell
-     * has no name, the cell at the same position in the line is used under the condition that it also lacks name.
-     * 
-     * If the schema-cell has a name the cell with the same name is used. If no such cell is found and the cell att the
-     * same position lacks name, it is used instead.
-     * 
-     * If no corresponding cell is found for a schema-cell, the positions are filled with the schema fill character.
-     * 
-     * @param line
-     *            The line to write to the writer
-     * @param writer
-     *            The writer to write to.
-     * @param offset
-     *            The number of characters that has already been written on this line.
-     * 
-     * @throws IOException
-     * @throws JSaParException
-     */
-    public void output(Line line, Writer writer, int offset) throws IOException, JSaParException {
-        Iterator<FixedWidthSchemaCell> iter = getSchemaCells().iterator();
 
-        // Iterate all schema cells.
-        int totalLength = offset;
-        for (int i = 0; iter.hasNext(); i++) {
-            FixedWidthSchemaCell schemaCell = iter.next();
-            totalLength += schemaCell.getLength();
-            Cell cell = findCell(line, schemaCell, i, isWriteNamedCellsOnly());
-            schemaCell.output(cell, writer, getFillCharacter());
-        }
-        if(minLength > totalLength){
-            FixedWidthSchemaCell.fill(writer, getFillCharacter(), minLength-totalLength);
-        }
-    }
-    
 
     /*
      * (non-Javadoc)
@@ -148,17 +86,28 @@ public class FixedWidthSchemaLine extends SchemaLine {
      */
     public FixedWidthSchemaLine clone(){
         FixedWidthSchemaLine line;
-        try {
-            line = (FixedWidthSchemaLine) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError(e);
-        }
+        line = (FixedWidthSchemaLine) super.clone();
 
-        line.schemaCells = new java.util.LinkedList<FixedWidthSchemaCell>();
+        line.schemaCells = new java.util.LinkedList<>();
         for (FixedWidthSchemaCell cell : this.schemaCells) {
             line.addSchemaCell(cell.clone());
         }
         return line;
+    }
+
+    @Override
+    public Stream<FixedWidthSchemaCell> stream() {
+        return this.schemaCells.stream();
+    }
+
+    @Override
+    public Iterator<? extends SchemaCell> iterator() {
+        return this.schemaCells.iterator();
+    }
+
+    @Override
+    public void forEach(Consumer<? super SchemaCell> consumer) {
+        this.schemaCells.forEach(consumer);
     }
 
     /*
@@ -168,48 +117,23 @@ public class FixedWidthSchemaLine extends SchemaLine {
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(" trimFillCharacters=");
-        sb.append(this.trimFillCharacters);
-        if (this.trimFillCharacters) {
-            sb.append(" fillCharacter='");
-            sb.append(this.fillCharacter);
-            sb.append("'");
-        }
-        sb.append(" schemaCells=");
-        sb.append(this.schemaCells);
-        return sb.toString();
+        return super.toString() + " padCharacter='" + this.padCharacter + "' schemaCells=" + this.schemaCells;
     }
 
     /**
-     * @return the trimFillCharacters
+     * @return the padCharacter
      */
-    public boolean isTrimFillCharacters() {
-        return trimFillCharacters;
+    public char getPadCharacter() {
+        return padCharacter;
     }
 
     /**
-     * @param trimFillCharacters
-     *            the trimFillCharacters to set
+     * @param padCharacter
+     *            the padCharacter to set
      */
-    public void setTrimFillCharacters(boolean trimFillCharacters) {
-        this.trimFillCharacters = trimFillCharacters;
-    }
-
-    /**
-     * @return the fillCharacter
-     */
-    public char getFillCharacter() {
-        return fillCharacter;
-    }
-
-    /**
-     * @param fillCharacter
-     *            the fillCharacter to set
-     */
-    public void setFillCharacter(char fillCharacter) {
-        this.fillCharacter = fillCharacter;
+    @SuppressWarnings("WeakerAccess")
+    public void setPadCharacter(char padCharacter) {
+        this.padCharacter = padCharacter;
     }
 
     /**
@@ -219,6 +143,7 @@ public class FixedWidthSchemaLine extends SchemaLine {
      *            The name of the cell to find positions for.
      * @return The cell positions for the cell with the supplied name, null if no such cell exists.
      */
+    @SuppressWarnings("WeakerAccess")
     public FixedWidthCellPositions getCellPositions(String cellName) {
         FixedWidthCellPositions pos = new FixedWidthCellPositions();
         for (FixedWidthSchemaCell cell : schemaCells) {
@@ -237,6 +162,7 @@ public class FixedWidthSchemaLine extends SchemaLine {
      * @return The cell's first position for the cell with the supplied name, -1 if no such cell
      *         exists.
      */
+    @SuppressWarnings("WeakerAccess")
     public int getCellFirstPosition(String cellName) {
         FixedWidthCellPositions pos = getCellPositions(cellName);
         return pos != null ? pos.getFirst() : -1;
@@ -252,29 +178,8 @@ public class FixedWidthSchemaLine extends SchemaLine {
     }
 
     @Override
-    public int getSchemaCellsCount() {
+    public int size() {
         return this.schemaCells.size();
-    }
-
-    @Override
-    public SchemaCell getSchemaCellAt(int index) {
-        return this.schemaCells.get(index);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (!super.equals(obj)) {
-            return false;
-        }
-        if (!(obj instanceof FixedWidthSchemaLine)) {
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -303,13 +208,12 @@ public class FixedWidthSchemaLine extends SchemaLine {
      * cell will be the difference between all minLength of the line and the cells added so far. Adding more schema
      * cells after calling this method will add those cells after the filler cell which will probably lead to unexpected
      * behavior.
-     * @param offset The number of bytes written before the line schema writes all the cells.
      */
-    public void addFillerCellToReachMinLength( int offset) {
+    void addFillerCellToReachMinLength() {
         if (getMinLength() <= 0)
             return;
 
-        int diff = getMinLength() - getTotalCellLenght() - offset;
+        int diff = getMinLength() - getTotalCellLength();
         if (diff > 0) {
             addSchemaCell(new FixedWidthSchemaCell("_fillToMinLength_", diff));
         }
@@ -319,12 +223,8 @@ public class FixedWidthSchemaLine extends SchemaLine {
     /**
      * @return The sum of the length of all cells.
      */
-    public int getTotalCellLenght(){
-        int sum = 0;
-        for (FixedWidthSchemaCell schemaCell : schemaCells) {
-            sum += schemaCell.getLength();
-        }
-        return sum;
+    public int getTotalCellLength(){
+        return schemaCells.stream().mapToInt(FixedWidthSchemaCell::getLength).sum();
     }
 
 }
