@@ -8,6 +8,7 @@ If the [JSaPar](https://github.com/org-tigris-jsapar/jsapar) library didn't help
 <b>B</b> <br />
 BeanIO - <a href="http://www.beanio.org/" target="_blank">http://www.beanio.org/</a><br />
 BeanIO (repository) -&nbsp;<a href="https://github.com/kevinseim/beanio" rel="nofollow" target="_blank">https://github.com/kevinseim/beanio</a><br />
+BeanIO .Net (.Net port of BeanIo) -&nbsp;<a href="https://github.com/FubarDevelopment/beanio-net" rel="nofollow" target="_blank">https://github.com/FubarDevelopment/beanio-net</a><br />
 Bindy (Apache Camel) - <a href="http://camel.apache.org/bindy.html" target="_blank">http://camel.apache.org/bindy.html</a><br />
 Binary-CSV -&nbsp;<a href="https://www.npmjs.com/package/binary-csv" rel="nofollow" target="_blank">https://www.npmjs.com/package/binary-csv</a> (Javascript)<br />
 <br />
